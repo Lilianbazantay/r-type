@@ -12,6 +12,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install latest CMake
+      uses: jwlawson/actions-setup-cmake@v1
+      with:
+        cmake-version: '3.27.7'
+
     - name: Run clang-tidy
       uses: HorstBaerbel/action-clang-tidy@1.2
       # These are optional (defaults displayed)
