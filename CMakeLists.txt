@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20S)
+cmake_minimum_required(VERSION 3.20)
 project(r-type LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
