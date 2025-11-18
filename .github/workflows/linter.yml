@@ -25,10 +25,10 @@ jobs:
         directory: ${{ runner.temp }}/llvm
 
     - name: Configure (CMake)
-      run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      run: cmake -S . -B build-test -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
     - name: Run clang-tidy
       run: |
         echo "Running clang-tidy..."
-        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build
+        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build-test
 
