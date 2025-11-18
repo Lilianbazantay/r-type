@@ -41,4 +41,4 @@
 *.dwo
 
 # binaries
-*r-type
+r-type*
