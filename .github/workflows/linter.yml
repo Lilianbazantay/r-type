@@ -12,6 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Install latest CMake
       uses: jwlawson/actions-setup-cmake@v1
       with:
@@ -19,10 +20,10 @@ jobs:
 
     - name: Run clang-tidy
       uses: HorstBaerbel/action-clang-tidy@1.2
-      # These are optional (defaults displayed)
       with:
         scandir: '.'
         builddir: 'build-test'
         excludedirs: ''
         extensions: 'c,h,C,H,cpp,hpp,cc,hh,c++,h++,cxx,hxx'
         cmakeoptions: ''
+        cmake: cmake    # <-- Forces use of upgraded CMake
