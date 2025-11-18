@@ -1,4 +1,4 @@
-name: Clang-Tidy
+name: Clang-tidy
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 jobs:
   clang-tidy:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v4
 
@@ -20,7 +21,7 @@ jobs:
     - name: Install LLVM + Clang + Clang-Tidy
       uses: KyleMayes/install-llvm-action@v2
       with:
-        version: "18.1.6"
+        version: "17"
         directory: ${{ runner.temp }}/llvm
 
     - name: Configure (CMake)
