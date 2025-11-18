@@ -1,7 +1,7 @@
 name: Create a new feature request
 title: "Quick description"
 description: request a new feature here
-projects: "Sigmapitech/9"
+projects: "r-type"
 body:
   - type: textarea
     id: feature_description
@@ -30,7 +30,7 @@ body:
           required: true
         - label: I have UNSET the issue tag
           required: true
-        - label: I have SET the AREA project
+        - label: I have SET the R-TYPE project
           required: true
         - label: I have SET the apropriate milestone
           required: true

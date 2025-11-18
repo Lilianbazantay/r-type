@@ -1,7 +1,7 @@
 name: Create a new bug report
 title: "Quick description"
 description: report a new bug here
-projects: "Sigmapitech/9"
+projects: "r-type"
 body:
   - type: input
     id: bug_description
