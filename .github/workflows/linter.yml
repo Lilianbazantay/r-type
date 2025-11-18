@@ -4,10 +4,10 @@ on:
   push:
     branches: [ main, dev ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ main, dev ]
 
 jobs:
-  checkout-and-check-formatting:
+  clang-tidy:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,12 +18,18 @@ jobs:
       with:
         cmake-version: '3.27.7'
 
-    - name: Run clang-tidy
-      uses: HorstBaerbel/action-clang-tidy@1.2
+    # Install clang and clang-tidy
+    - name: Install Clang/LLVM
+      uses: llvm/llvm-project@llvmorg-18.1.6
       with:
-        scandir: '.'
-        builddir: 'build-test'
-        excludedirs: ''
-        extensions: 'c,h,C,H,cpp,hpp,cc,hh,c++,h++,cxx,hxx'
-        cmakeoptions: ''
-        cmake: cmake    # <-- Forces use of upgraded CMake
+        components: clang clang-tools-extra
+
+    # Configure your project normally
+    - name: Configure (CMake)
+      run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_STANDARD=23
+
+    # Run clang-tidy on all C++ files
+    - name: Run clang-tidy
+      run: |
+        echo "Running clang-tidy..."
+        find src -name '*.cpp' | xargs clang-tidy -p build
