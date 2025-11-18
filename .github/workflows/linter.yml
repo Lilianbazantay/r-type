@@ -1,4 +1,4 @@
-name: Clang-tidy
+name: Clang-Tidy
 
 on:
   push:
@@ -9,7 +9,6 @@ on:
 jobs:
   clang-tidy:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
 
@@ -18,18 +17,17 @@ jobs:
       with:
         cmake-version: '3.27.7'
 
-    # Install clang and clang-tidy
-    - name: Install Clang/LLVM
-      uses: llvm/llvm-project@llvmorg-18.1.6
+    - name: Install LLVM + Clang + Clang-Tidy
+      uses: KyleMayes/install-llvm-action@v2
       with:
-        components: clang clang-tools-extra
+        version: "18.1.6"
+        directory: ${{ runner.temp }}/llvm
 
-    # Configure your project normally
     - name: Configure (CMake)
-      run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_STANDARD=23
+      run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-    # Run clang-tidy on all C++ files
     - name: Run clang-tidy
       run: |
         echo "Running clang-tidy..."
-        find src -name '*.cpp' | xargs clang-tidy -p build
+        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build
+
