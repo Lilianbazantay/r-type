@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 
+/**
+ * @brief Display the usage into the terminal
+ */
 void Parser::descripton()
 {
     std::cout << "USAGE:\n"
@@ -13,6 +16,13 @@ void Parser::descripton()
               << "\t-p or --port\t\tspecify the port number between 1064 and 65535\n";
 }
 
+/**
+ * @brief Parse all data given as argument and store the into the 'Parser' class
+ *
+ * @param argc number of argument
+ * @param argv list of argument
+ * @return int 'EXIT_ERROR' if argument format are invalid else return 'EXIT_SUCCESS'
+ */
 int Parser::ParseData(int argc, char **argv)
 {
     if (argc < 3) {

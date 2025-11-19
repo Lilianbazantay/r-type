@@ -1,5 +1,8 @@
 #pragma once
 
+/**
+ * @brief parse all argument given by the user and print usage if argument are invalid
+ */
 class Parser
 {
 private:
@@ -7,6 +10,6 @@ private:
 public:
     ~Parser() = default;
 
-    int ParseData(int argc, char **argv);
     static void descripton();
+    int ParseData(int argc, char **argv);
 };
