@@ -42,3 +42,6 @@
 
 # binaries
 r-type*
+
+# vs-code
+.vscode/*
