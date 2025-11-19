@@ -1,3 +1,10 @@
+#include "../utils.hpp"
+#include "parser.hpp"
+
 int main(int argc, char **argv) {
-    return 83;
+    Parser parser;
+
+    if (parser.ParseData(argc, argv) == EXIT_ERROR)
+        return EXIT_ERROR;
+    return EXIT_ERROR;
 }
