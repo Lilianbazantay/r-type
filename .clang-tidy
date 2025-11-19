@@ -1,0 +1,18 @@
+---
+Checks: "*, \
+  -cert-env33-c, \
+  -cert-err58-cpp, \
+  -clang-diagnostic-padded, \
+  -clang-analyzer-deadcode.DeadStores, \
+  -cppcoreguidelines-pro-bounds-constant-array-index, \
+  -cppcoreguidelines-pro-type-reinterpret-cast, \
+  -cppcoreguidelines-no-malloc, \
+  -cppcoreguidelines-macro-usage, \
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay, \
+  -fuchsia-multiple-inheritance, \
+  -google-runtime-references, \
+  -google-explicit-constructor, \
+  -hicpp-invalid-access-moved, \
+  -hicpp-signed-bitwise, \
+  -llvm-header-guard
+HeaderFilterRegex: ""

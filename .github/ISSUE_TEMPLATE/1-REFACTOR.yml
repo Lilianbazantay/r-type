@@ -1,7 +1,7 @@
 name: Create a refactor request
 title: "Quick description"
 description: request a refactor here
-projects: "Sigmapitech/9"
+projects: "r-type"
 body:
   - type: textarea
     id: refactor_description
@@ -30,7 +30,7 @@ body:
           required: true
         - label: I have UNSET the issue tag
           required: true
-        - label: I have SET the AREA project
+        - label: I have SET the R-TYPE project
           required: true
         - label: I have SET the apropriate milestone
           required: true
