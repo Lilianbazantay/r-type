@@ -25,7 +25,9 @@ jobs:
         directory: ${{ runner.temp }}/llvm
 
     - name: Configure (CMake)
-      run: cmake -S . -B build-test -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      run: cmake -B build -S . \
+          -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DCMAKE_BUILD_TYPE=Release
 
     - name: Run clang-tidy
       run: |
