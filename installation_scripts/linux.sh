@@ -1,26 +1,50 @@
 #!/usr/bin/env bash
 set -e
 
-#installing cmake
-echo "Installing cmake, user validation required"
-sudo apt install cmake
+# Directories
+VCPKG_DIR=external/vcpkg
+BUILD_DIR=build
 
-# Bootstrap vcpkg if needed
-if [ ! -f ./external/vcpkg/vcpkg ]; then
-    git -C ./external/vcpkg fetch --unshallow || true
-    ./external/vcpkg/bootstrap-vcpkg.sh
+# ------------------------------
+# Install vcpkg if needed
+# ------------------------------
+if [ ! -f "$VCPKG_DIR/vcpkg" ]; then
+    echo "Bootstrapping vcpkg..."
+    "$VCPKG_DIR/bootstrap-vcpkg.sh"
 fi
 
-# Clean build folder
-rm -rf build
-mkdir build
+# Ensure vcpkg is executable
+export PATH="$VCPKG_DIR:$PATH"
 
-# Configure & build
-cmake -B build -S . \
-  -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake \
-  -DCMAKE_BUILD_TYPE=Release
+# ------------------------------
+# Install vcpkg dependencies
+# ------------------------------
+echo "Installing vcpkg dependencies..."
+"$VCPKG_DIR/vcpkg" install --triplet x64-linux --clean-after-build
 
-cmake --build build -- -j$(nproc)
+# ------------------------------
+# Prepare build directory
+# ------------------------------
+mkdir -p "$BUILD_DIR"
+cd "$BUILD_DIR"
 
-cp build/r-type_client r-type_client
-cp build/r-type_server r-type_server
+# ------------------------------
+# Configure CMake
+# ------------------------------
+cmake .. \
+  -DCMAKE_TOOLCHAIN_FILE="$VCPKG_DIR/scripts/buildsystems/vcpkg.cmake" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+# ------------------------------
+# Build project
+# ------------------------------
+cmake --build . --parallel
+
+# ------------------------------
+# Copy executables to root
+# ------------------------------
+cp r-type_client ../r-type_client || true
+cp r-type_server ../r-type_server || true
+
+echo "Build complete!"
