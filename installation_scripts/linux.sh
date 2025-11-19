@@ -6,7 +6,7 @@ VCPKG_DIR=external/vcpkg
 BUILD_DIR=build
 
 # ------------------------------
-# Install vcpkg if needed
+# Bootstrap vcpkg if needed
 # ------------------------------
 if [ ! -f "$VCPKG_DIR/vcpkg" ]; then
     echo "Bootstrapping vcpkg..."
@@ -17,19 +17,13 @@ fi
 export PATH="$VCPKG_DIR:$PATH"
 
 # ------------------------------
-# Install vcpkg dependencies
-# ------------------------------
-echo "Installing vcpkg dependencies..."
-"$VCPKG_DIR/vcpkg" install --triplet x64-linux --clean-after-build
-
-# ------------------------------
 # Prepare build directory
 # ------------------------------
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 # ------------------------------
-# Configure CMake
+# Configure CMake (manifest mode handles vcpkg deps)
 # ------------------------------
 cmake .. \
   -DCMAKE_TOOLCHAIN_FILE="$VCPKG_DIR/scripts/buildsystems/vcpkg.cmake" \
