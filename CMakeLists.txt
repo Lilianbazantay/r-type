@@ -12,6 +12,10 @@ if(NOT DEFINED CMAKE_BUILD_PARALLEL_LEVEL)
     set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
 endif()
 
+find_package(SFML CONFIG REQUIRED COMPONENTS system window graphics)
+find_package(range-v3 CONFIG REQUIRED)
+find_package(asio CONFIG REQUIRED)
+
 # ---- Compiler flags ----
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG_MODE")
@@ -42,6 +46,7 @@ foreach(target r-type_client r-type_server)
         sfml-graphics
         sfml-window
         sfml-system
+        asio
     )
 
     # Definitions
