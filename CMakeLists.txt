@@ -55,7 +55,7 @@ install(TARGETS r-type_client r-type_server
     RUNTIME DESTINATION bin
 )
 
-# ---- Custom targets (unchanged) ----
+# ---- Custom targets ----
 add_custom_target(debug
     COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} --build . -- -j
