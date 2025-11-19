@@ -20,9 +20,10 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          build-essential cmake \
+          build-essential cmake ninja-build \
           libfreetype6-dev libx11-dev libxcb1-dev \
-          libxrandr-dev libudev-dev libopenal-dev libgl1-mesa-dev
+          libxrandr-dev libudev-dev libopenal-dev libgl1-mesa-dev \
+          libxi-dev libxcursor-dev
 
     - name: Install LLVM + Clang + Clang-Tidy
       uses: KyleMayes/install-llvm-action@v2
