@@ -1,18 +1,22 @@
-#!/usr/bin/env bash
+# Bootstrap vcpkg if needed
+if (-Not (Test-Path "./external/vcpkg/vcpkg.exe")) {
+    Write-Host "Bootstrapping vcpkg..."
+    & "./external/vcpkg/bootstrap-vcpkg.bat"
+}
 
-external\vcpkg\bootstrap-vcpkg.bat  
+# Clean build folder
+if (Test-Path "./build") {
+    Remove-Item -Recurse -Force "./build"
+}
+New-Item -ItemType Directory -Path "./build"
 
-# clean up the build directory
-rm -rf ../build
-rm -rf ../CMakeFiles
-rm -f ../CMakeCache.txt
-
-# recreate it fully with the right path
-mkdir ../build
-cd ../build
-cmake ..
-
+# Configure
 cmake -B build -S . `
-  -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake
+    -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake `
+    -G "Visual Studio 17 2022"  # Adjust to your installed VS generator
 
-cmake --build ../build --config Release
+# Build
+cmake --build build --config Release
+
+cp build/r-type_client r-type_client
+cp build/r-type_server r-type_server

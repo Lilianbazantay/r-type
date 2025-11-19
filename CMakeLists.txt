@@ -12,8 +12,7 @@ if(NOT DEFINED CMAKE_BUILD_PARALLEL_LEVEL)
     set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
 endif()
 
-find_package(SFML CONFIG REQUIRED COMPONENTS system window graphics)
-find_package(range-v3 CONFIG REQUIRED)
+find_package(SFML 2.5 COMPONENTS graphics network window audio system REQUIRED)
 find_package(asio CONFIG REQUIRED)
 
 # ---- Compiler flags ----
@@ -44,10 +43,13 @@ foreach(target r-type_client r-type_server)
 
     target_link_libraries(${target} PRIVATE
         sfml-graphics
+        sfml-network
         sfml-window
+        sfml-audio
         sfml-system
-        asio
+        asio::asio
     )
+
 
     # Definitions
     target_compile_definitions(${target} PRIVATE

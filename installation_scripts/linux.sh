@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
+set -e
 
-./external/vcpkg/bootstrap-vcpkg.sh
+# Bootstrap vcpkg if needed
+if [ ! -f ./external/vcpkg/vcpkg ]; then
+    ./external/vcpkg/bootstrap-vcpkg.sh
+fi
 
-# clean up the build directory
-rm -rf ../build
-rm -rf ../CMakeFiles
-rm -f ../CMakeCache.txt
+# Clean build folder
+rm -rf build
+mkdir build
 
-# recreate it fully with the right path
-mkdir ../build
-cd ../build
+# Configure & build
+cmake -B build -S . \
+  -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DCMAKE_BUILD_TYPE=Release
 
-cmake -B ../build -S . \
-  -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build build -- -j$(nproc)
 
-cmake --build ../build
+cp build/r-type_client r-type_client
+cp build/r-type_server r-type_server

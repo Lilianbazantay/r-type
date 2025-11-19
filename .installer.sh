@@ -5,28 +5,15 @@ UNAME=$(uname -s)
 
 case "$UNAME" in
     Linux*)
-        Linux
+        ./installation_scripts/linux.sh
         ;;
     Darwin*)
-        Linux
+        ./installation_scripts/linux.sh
         ;;
     MINGW*|MSYS*|CYGWIN*)
-        windows
+        ./installation_scripts/windows.sh
         ;;
     *)
         echo "Unknown OS: $UNAME"
         ;;
 esac
-
-
-
-# clean up the build directory
-rm -rf build
-rm -rf CMakeFiles
-rm -f CMakeCache.txt
-
-# recreate it fully with the right path
-mkdir build
-cd build
-cmake ..
-
