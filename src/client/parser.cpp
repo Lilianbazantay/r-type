@@ -10,10 +10,11 @@
 void Parser::descripton()
 {
     std::cout << "USAGE:\n"
-              << "\t./server -h -p port\n"
+              << "\t./client -h -i ip_address -p port\n"
               << "OPTIONS:\n"
               << "\t-h\t\tprint the help\n"
-              << "\t-p or --port\t\tspecify the port number between 1064 and 65535\n";
+              << "\t-i or --ip\t\tspecify the ip address of the server\n"
+              << "\t-p or --port\t\tspecify the port of the server\n";
 }
 
 /**
@@ -33,20 +34,27 @@ int Parser::ParseData(int argc, char **argv)
         std::string arg = argv[i];
         if (arg == "-h")
             descripton();
+        if (arg == "-i" || arg == "--ip") {
+            if (i + 1 <= argc) {
+                this->ip = argv[i + 1];
+            } else {
+                return EXIT_ERROR;
+            }
+        }
         if (arg == "-p" || arg == "--port") {
             if (i + 1 <= argc) {
                 try {
                     int tmpPort = std::stoi(argv[i + 1]);
                     if (tmpPort < 1024 || tmpPort > 65535) {
                         std::cerr << "Invalid port value" << argv[i + 1]
-                        << "\nUse \"./server -h\" to get help\n";
+                        << "\nUse \"./client -h\" to get help\n";
                         return EXIT_FAILURE;
                     } else {
                         this->port = tmpPort;
                     }
                 } catch (const std::exception &e) {
                     std::cerr << "Invalid port value: " << argv[i + 1]
-                    << "\nUse \"./server -h\" to get help\n";
+                    << "\nUse \"./client -h\" to get help\n";
                     return EXIT_ERROR;
                 }
             } else {
