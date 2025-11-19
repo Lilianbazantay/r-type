@@ -12,7 +12,7 @@ if(NOT DEFINED CMAKE_BUILD_PARALLEL_LEVEL)
     set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
 endif()
 
-find_package(SFML 2.5 COMPONENTS graphics network window audio system REQUIRED)
+find_package(SFML 2.6 COMPONENTS graphics network window audio system REQUIRED)
 find_package(asio CONFIG REQUIRED)
 
 # ---- Compiler flags ----

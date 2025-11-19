@@ -23,11 +23,12 @@ mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 # ------------------------------
-# Configure CMake (manifest mode handles vcpkg deps)
+# Configure CMake (manifest mode installs dependencies automatically)
 # ------------------------------
 cmake .. \
   -DCMAKE_TOOLCHAIN_FILE="$VCPKG_DIR/scripts/buildsystems/vcpkg.cmake" \
   -DCMAKE_BUILD_TYPE=Release \
+  -DVCPKG_TARGET_TRIPLET=x64-linux \
   -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 # ------------------------------

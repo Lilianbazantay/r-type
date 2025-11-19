@@ -11,32 +11,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Checkout code + submodules
     - uses: actions/checkout@v4
       with:
-        submodules: true
+        submodules: recursive
         fetch-depth: 0
+        submodules-depth: 0
 
+    # Install system dependencies for SFML + building
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
           build-essential cmake ninja-build \
           libfreetype6-dev libx11-dev libxcb1-dev \
-          libxrandr-dev libudev-dev libopenal-dev libgl1-mesa-dev \
-          libxi-dev libxcursor-dev
+          libxrandr-dev libxi-dev libxcursor-dev \
+          libudev-dev libopenal-dev libgl1-mesa-dev
 
+    # Install LLVM / clang / clang-tidy
     - name: Install LLVM + Clang + Clang-Tidy
       uses: KyleMayes/install-llvm-action@v2
       with:
         version: "17"
         directory: ${{ runner.temp }}/llvm
 
+    # Disable vcpkg telemetry
     - name: Disable vcpkg telemetry
       run: echo "VCPKG_DISABLE_METRICS=1" >> $GITHUB_ENV
 
-    - name: Run installer.sh (CMake + vcpkg)
+    # Debug: list vcpkg packages
+    - name: List vcpkg packages
+      run: |
+        external/vcpkg/vcpkg list || echo "No packages installed yet"
+
+    # Build project using installer.sh
+    - name: Build project
       run: ./installer.sh
 
+    # Run clang-tidy
     - name: Run clang-tidy
       run: |
         echo "Running clang-tidy..."
