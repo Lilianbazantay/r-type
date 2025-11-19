@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+#installing cmake
+echo "Installing cmake, user validation required"
+sudo apt install cmake
+
 # Bootstrap vcpkg if needed
 if [ ! -f ./external/vcpkg/vcpkg ]; then
     ./external/vcpkg/bootstrap-vcpkg.sh
