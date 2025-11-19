@@ -7,7 +7,6 @@ sudo apt install cmake
 
 # Bootstrap vcpkg if needed
 if [ ! -f ./external/vcpkg/vcpkg ]; then
-    cd ..
     ./external/vcpkg/bootstrap-vcpkg.sh
 fi
 
