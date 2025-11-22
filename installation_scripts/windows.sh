@@ -6,7 +6,7 @@ winget install --id Kitware.CMake -e --source winget
 
 
 # Bootstrap vcpkg if needed
-if (-Not (Test-Path "./external/vcpkg/vcpkg.exe")) {
+if (!(Test-Path "./external/vcpkg/vcpkg.exe")) {
     Write-Host "Bootstrapping vcpkg..."
     & "./external/vcpkg/bootstrap-vcpkg.bat"
 }
