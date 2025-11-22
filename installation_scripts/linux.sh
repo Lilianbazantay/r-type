@@ -5,10 +5,34 @@ set -e
 VCPKG_DIR=external/vcpkg
 BUILD_DIR=build
 
+echo "Checking for any missing dependencies"
+if command -v dnf &> /dev/null; then
+    sudo dnf update
+    sudo dnf install -y --skip-unavailable \
+      build-essential cmake ninja-build \
+      libfreetype6-dev libx11-dev libxcb1-dev \
+      libxrandr-dev libxi-dev libxcursor-dev \
+      libudev-dev libopenal-dev libgl1-mesa-dev
+elif command -v apt &> /dev/null; then
+    sudo apt-get update
+    sudo apt-get install -y \
+      build-essential cmake ninja-build \
+      libfreetype6-dev libx11-dev libxcb1-dev \
+      libxrandr-dev libxi-dev libxcursor-dev \
+      libudev-dev libopenal-dev libgl1-mesa-dev
+elif command -v pacman &> /dev/null; then
+    sudo pacman update
+    sudo pacman install -y --skip-unavailable \
+      build-essential cmake ninja-build \
+      libfreetype6-dev libx11-dev libxcb1-dev \
+      libxrandr-dev libxi-dev libxcursor-dev \
+      libudev-dev libopenal-dev libgl1-mesa-dev
+fi
+
 # ------------------------------
 # Bootstrap vcpkg if needed
 # ------------------------------
-if [ ! -f "$VCPKG_DIR/vcpkg" ]; then
+if ! -f "$VCPKG_DIR/vcpkg" ]; then
     echo "Bootstrapping vcpkg..."
     "$VCPKG_DIR/bootstrap-vcpkg.sh"
 fi
