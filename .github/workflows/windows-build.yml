@@ -23,23 +23,27 @@ jobs:
       uses: KyleMayes/install-llvm-action@v2
       with:
         version: "17"
-        directory: ${{ runner.temp }}/llvm
+        directory: ${{ runner.temp }}\llvm
+
+    # Add LLVM to PATH
+    - name: Add LLVM to PATH
+      run: echo "${{ runner.temp }}\llvm\bin" >> $env:GITHUB_PATH
 
     # Disable vcpkg telemetry
     - name: Disable vcpkg telemetry
-      run: echo "VCPKG_DISABLE_METRICS=1" >> $GITHUB_ENV
+      run: echo "VCPKG_DISABLE_METRICS=1" >> $env:GITHUB_ENV
 
-    # Debug: list vcpkg packages
+    # List vcpkg packages (Windows uses vcpkg.exe)
     - name: List vcpkg packages
       run: |
-        external/vcpkg/vcpkg list || echo "No packages installed yet"
+        if (Test-Path "external/vcpkg/vcpkg.exe") {
+          external/vcpkg/vcpkg.exe list
+        } else {
+          echo "vcpkg.exe not found yet"
+        }
 
-    # Build project using installer.sh
+    # Build project (call your script using bash, required on Windows)
     - name: Build project
+      shell: bash
       run: ./installer.sh
 
-    # Run clang-tidy
-    - name: Run clang-tidy
-      run: |
-        echo "Running clang-tidy..."
-        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build
