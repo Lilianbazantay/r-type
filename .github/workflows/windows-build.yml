@@ -1,0 +1,45 @@
+name: Windows-build
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  clang-tidy:
+    runs-on: windows-latest
+
+    steps:
+    # Checkout code + submodules
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+        submodules-depth: 0
+
+    # Install LLVM / clang / clang-tidy
+    - name: Install LLVM + Clang + Clang-Tidy
+      uses: KyleMayes/install-llvm-action@v2
+      with:
+        version: "17"
+        directory: ${{ runner.temp }}/llvm
+
+    # Disable vcpkg telemetry
+    - name: Disable vcpkg telemetry
+      run: echo "VCPKG_DISABLE_METRICS=1" >> $GITHUB_ENV
+
+    # Debug: list vcpkg packages
+    - name: List vcpkg packages
+      run: |
+        external/vcpkg/vcpkg list || echo "No packages installed yet"
+
+    # Build project using installer.sh
+    - name: Build project
+      run: ./installer.sh
+
+    # Run clang-tidy
+    - name: Run clang-tidy
+      run: |
+        echo "Running clang-tidy..."
+        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build

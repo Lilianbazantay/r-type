@@ -22,7 +22,7 @@ elif command -v apt &> /dev/null; then
       libudev-dev libopenal-dev libgl1-mesa-dev
 elif command -v pacman &> /dev/null; then
     sudo pacman update
-    sudo pacman install -y --skip-unavailable \
+    sudo pacman install -y \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
