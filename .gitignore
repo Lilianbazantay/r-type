@@ -44,5 +44,6 @@ r-type*
 .env
 
 #build folder
-build/*
-.cache/*
+build
+.cache
+vcpkg_installed
