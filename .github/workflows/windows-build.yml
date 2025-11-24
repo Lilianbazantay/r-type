@@ -7,32 +7,55 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  clang-tidy:
+  build-windows:
     runs-on: windows-latest
 
+    defaults:
+      run:
+        shell: bash
+
     steps:
-    # Checkout code + submodules
     - uses: actions/checkout@v4
       with:
         submodules: recursive
         fetch-depth: 0
-        submodules-depth: 0
 
-    # Disable vcpkg telemetry
-    - name: Disable vcpkg telemetry
-      run: echo "VCPKG_DISABLE_METRICS=1" >> $env:GITHUB_ENV
-
-    # List vcpkg packages
-    - name: List vcpkg packages
+    # Use system vcpkg
+    - name: Configure system vcpkg
       run: |
-        if (Test-Path "external/vcpkg/vcpkg.exe") {
-          external/vcpkg/vcpkg.exe list
-        } else {
-          echo "vcpkg.exe not found yet"
-        }
+        echo "Using system vcpkg at C:/vcpkg"
+        echo "VCPKG_ROOT=C:/vcpkg" >> $GITHUB_ENV
+        echo "VCPKG_EXE=C:/vcpkg/vcpkg.exe" >> $GITHUB_ENV
 
-    # Build project
-    - name: Build project
-      shell: bash
-      run: ./installer.sh
+    # Patch installer.sh to use system vcpkg instead of the submodule version
+    - name: Patch installer.sh to use system vcpkg
+      run: |
+        sed -i 's#external/vcpkg/vcpkg.exe#${VCPKG_EXE//#/\\#}#g' installer.sh
+        sed -i 's#./external/vcpkg/bootstrap-vcpkg.bat#echo "Skipping bootstrap (using system vcpkg)"#g' installer.sh
+        sed -i 's#cd external/vcpkg#cd ${VCPKG_ROOT//#/\\#}#g' installer.sh
 
+    # Install CMake (winget available in bash with this call)
+    - name: Install CMake
+      shell: pwsh
+      run: |
+        winget install --id Kitware.CMake -e --source winget
+
+    # Print vcpkg version (sanity-check system install)
+    - name: Verify vcpkg
+      run: |
+        "$VCPKG_EXE" version
+
+    # Run your installer script
+    - name: Run installer.sh build
+      run: |
+        chmod +x installer.sh
+        ./installer.sh
+
+    # Upload artifacts (optional)
+    - name: Upload build output
+      uses: actions/upload-artifact@v4
+      with:
+        name: rtype-windows-release
+        path: |
+          r-type_client.exe
+          r-type_server.exe
