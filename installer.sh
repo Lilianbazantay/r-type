@@ -3,6 +3,7 @@
 # detect the os and run the installation accordingly
 UNAME=$(uname -s)
 
+# change script depending on os (darwin for mac, mingw/msys/cygwin for windows)
 case "$UNAME" in
     Linux*)
         ./installation_scripts/linux.sh

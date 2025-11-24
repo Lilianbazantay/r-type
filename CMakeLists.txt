@@ -12,16 +12,16 @@ if(NOT DEFINED CMAKE_BUILD_PARALLEL_LEVEL)
     set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
 endif()
 
-# Dependencies
+# Add dependencies
 find_package(SFML 2.6 COMPONENTS graphics network window audio system REQUIRED)
 find_package(asio CONFIG REQUIRED)
 
-# ---- Compiler optimization flags ----
+# Set the compiler optimization flags
 if (MSVC)
-    # MSVC Release flags
+    # Windows Release flags
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /DNDEBUG")
 
-    # MSVC Debug flags
+    # Windows Debug flags
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /DDEBUG_MODE")
 else()
     # GCC/Clang Release flags
@@ -31,25 +31,25 @@ else()
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG_MODE")
 endif()
 
-# ---- Source groups ----
+# Source all files
 file(GLOB_RECURSE ECS_SOURCES CONFIGURE_DEPENDS "src/ecs/*.cpp")
 file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "src/client/*.cpp")
 file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS "src/server/*.cpp")
 
-# ---- Executables ----
+# Add the executables
 add_executable(r-type_client ${CLIENT_SOURCES} ${ECS_SOURCES})
 add_executable(r-type_server ${SERVER_SOURCES} ${ECS_SOURCES})
 
-# ---- Target configuration ----
+# Target configuration
 foreach(target r-type_client r-type_server)
     target_include_directories(${target} PRIVATE
         ${CMAKE_SOURCE_DIR}/src
     )
 
-    # ---- Compiler warnings ----
+    # Add compiler warnings
     if (MSVC)
         target_compile_options(${target} PRIVATE
-            /W4            # good warning level
+            /W4            # applies gcc Wall/Wextra
             /permissive-   # enforce standard C++
             /Zc:preprocessor
         )
@@ -62,7 +62,7 @@ foreach(target r-type_client r-type_server)
         )
     endif()
 
-    # ---- Libraries ----
+    # Add libraries
     target_link_libraries(${target} PRIVATE
         sfml-graphics
         sfml-network
@@ -72,18 +72,18 @@ foreach(target r-type_client r-type_server)
         asio::asio
     )
 
-    # ---- Definitions ----
+    # Define compilation target
     target_compile_definitions(${target} PRIVATE
         PROJECT_ROOT_PATH="${CMAKE_SOURCE_DIR}/"
     )
 endforeach()
 
-# ---- Installation ----
+# Run installation
 install(TARGETS r-type_client r-type_server
     RUNTIME DESTINATION bin
 )
 
-# ---- Custom targets ----
+# Custom targets
 add_custom_target(debug
     COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} --build . -- -j

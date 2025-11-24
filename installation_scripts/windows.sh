@@ -16,12 +16,12 @@ if [ -d "./build" ]; then
 fi
 mkdir -p build
 
-# Configure
+# Configure cmake
 cmake -B build -S . \
     -DCMAKE_TOOLCHAIN_FILE=external/vcpkg/scripts/buildsystems/vcpkg.cmake \
     -G "Visual Studio 17 2022"
 
-# Build
+# Build the .exe
 cmake --build build --config Release
 
 cp build/Release/r-type_client.exe r-type_client.exe
