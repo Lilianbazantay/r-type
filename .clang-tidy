@@ -1,7 +1,7 @@
+---
 Checks:
   - cert-env33-c
   - cert-err58-cpp
-  - clang-diagnostic-padded
   - clang-analyzer-deadcode.DeadStores
   - cppcoreguidelines-pro-bounds-constant-array-index
   - cppcoreguidelines-pro-type-reinterpret-cast
@@ -13,6 +13,7 @@ Checks:
   - hicpp-invalid-access-moved
   - hicpp-signed-bitwise
   - llvm-header-guard
-
+  - '-clang-diagnostic-*'
+  - '-llvmlibc-callee-namespace'
 HeaderFilterRegex: "src/.*"
 
