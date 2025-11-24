@@ -24,5 +24,5 @@ cmake -B build -S . \
 # Build
 cmake --build build --config Release
 
-cp build/r-type_client.exe r-type_client.exe
-cp build/r-type_server.exe r-type_server.exe
+cp build/Release/r-type_client.exe r-type_client.exe
+cp build/Release/r-type_server.exe r-type_server.exe
