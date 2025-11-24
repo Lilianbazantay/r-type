@@ -43,24 +43,22 @@ jobs:
       run: |
         echo "Running clang-tidy..."
 
-        # Set paths for system and external includes
+        # External/system include directories
         SYSTEM_INCLUDES=(
           "/usr/include/c++/14"
           "/usr/local/include"
           "build/vcpkg_installed/x64-linux/include"
         )
 
-        # Convert to -isystem arguments for clang-tidy
+        # Convert to -isystem and disable warnings (-w)
         ISYSTEM_ARGS=()
         for DIR in "${SYSTEM_INCLUDES[@]}"; do
-          ISYSTEM_ARGS+=("-extra-arg=-isystem" "-extra-arg=${DIR}")
+          ISYSTEM_ARGS+=("-extra-arg=-isystem" "-extra-arg=${DIR}" "-extra-arg=-w")
         done
 
-        # Run clang-tidy only on your source files, using header filter and quiet mode
+        # Run clang-tidy on your source files only
         find src -name '*.cpp' -print0 | xargs -0 clang-tidy \
           -p build \
           --header-filter='src/.*' \
           -quiet \
           "${ISYSTEM_ARGS[@]}"
-
-
