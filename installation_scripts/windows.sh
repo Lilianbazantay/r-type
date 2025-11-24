@@ -2,7 +2,9 @@
 set -e
 
 # Install CMake
-winget install --id Kitware.CMake -e --source winget
+# Install CMake (safe if already installed)
+echo "Installing CMake (if not already installed)..."
+winget install --id Kitware.CMake -e --source winget --accept-package-agreements --silent || echo "CMake already installed, skipping."
 
 # Bootstrap vcpkg if needed
 if [ ! -f "./external/vcpkg/vcpkg.exe" ]; then
