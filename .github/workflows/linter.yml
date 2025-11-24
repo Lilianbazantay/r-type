@@ -42,5 +42,15 @@ jobs:
     - name: Run clang-tidy
       run: |
         echo "Running clang-tidy..."
-        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build --header-filter='src/.*'
+        # List all your source files
+        find src -name '*.cpp' -print0 | xargs -0 clang-tidy \
+          -p build \
+          --header-filter='src/.*' \
+          -quiet \
+          -extra-arg=-isystem \
+          -extra-arg=/usr/include/c++ \
+          -extra-arg=-isystem \
+          -extra-arg=/usr/local/include \
+          -extra-arg=-isystem \
+          -extra-arg=build/vcpkg_installed/x64-linux/include
 
