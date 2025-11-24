@@ -15,6 +15,7 @@ Checks: |
   -google-explicit-constructor,
   -hicpp-invalid-access-moved,
   -hicpp-signed-bitwise,
-  -llvm-header-guard
+  -llvm-header-guard,
+  -llvmlibc-*
+HeaderFilterRegex: "src/."
 
-HeaderFilterRegex: ""

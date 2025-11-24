@@ -11,6 +11,16 @@ if [ ! -f "./external/vcpkg/vcpkg.exe" ]; then
     ./external/vcpkg/bootstrap-vcpkg.bat
 fi
 
+# Update vcpkg ports (fixes many brotli issues)
+cd external/vcpkg
+git pull
+./vcpkg.exe update
+cd ../..
+
+# Install all dependencies from vcpkg.json BEFORE running CMake
+echo "Installing dependencies from vcpkg.json..."
+external/vcpkg/vcpkg.exe install --triplet x64-windows
+
 # Clean build folder
 if [ -d "./build" ]; then
     rm -rf "./build"
