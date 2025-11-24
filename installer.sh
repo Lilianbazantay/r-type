@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# detect the os and run the installation accordingly
+UNAME=$(uname -s)
+
+# change script depending on os (darwin for mac, mingw/msys/cygwin for windows)
+case "$UNAME" in
+    Linux*)
+        ./installation_scripts/linux.sh
+        ;;
+    Darwin*)
+        ./installation_scripts/linux.sh
+        ;;
+    MINGW*|MSYS*|CYGWIN*)
+        ./installation_scripts/windows.sh
+        ;;
+    *)
+        echo "Unknown OS: $UNAME"
+        ;;
+esac

@@ -11,24 +11,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Checkout code + submodules
     - uses: actions/checkout@v4
-
-    - name: Install latest CMake
-      uses: jwlawson/actions-setup-cmake@v1
       with:
-        cmake-version: '3.27.7'
+        submodules: recursive
+        fetch-depth: 0
+        submodules-depth: 0
 
+    # Install LLVM / clang / clang-tidy
     - name: Install LLVM + Clang + Clang-Tidy
       uses: KyleMayes/install-llvm-action@v2
       with:
         version: "17"
         directory: ${{ runner.temp }}/llvm
 
-    - name: Configure (CMake)
-      run: cmake -S . -B build-test -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    # Disable vcpkg telemetry
+    - name: Disable vcpkg telemetry
+      run: echo "VCPKG_DISABLE_METRICS=1" >> $GITHUB_ENV
 
+    # Debug: list vcpkg packages
+    - name: List vcpkg packages
+      run: |
+        external/vcpkg/vcpkg list || echo "No packages installed yet"
+
+    # Build project using installer.sh
+    - name: Build project
+      run: ./installer.sh
+
+    # Run clang-tidy
     - name: Run clang-tidy
       run: |
         echo "Running clang-tidy..."
-        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build-test
+        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build
 

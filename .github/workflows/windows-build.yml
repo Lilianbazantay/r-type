@@ -1,0 +1,38 @@
+name: Windows-build
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  clang-tidy:
+    runs-on: windows-latest
+
+    steps:
+    # Checkout code + submodules
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+        submodules-depth: 0
+
+    # Disable vcpkg telemetry
+    - name: Disable vcpkg telemetry
+      run: echo "VCPKG_DISABLE_METRICS=1" >> $env:GITHUB_ENV
+
+    # List vcpkg packages
+    - name: List vcpkg packages
+      run: |
+        if (Test-Path "external/vcpkg/vcpkg.exe") {
+          external/vcpkg/vcpkg.exe list
+        } else {
+          echo "vcpkg.exe not found yet"
+        }
+
+    # Build project
+    - name: Build project
+      shell: bash
+      run: ./installer.sh
+

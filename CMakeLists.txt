@@ -12,50 +12,78 @@ if(NOT DEFINED CMAKE_BUILD_PARALLEL_LEVEL)
     set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
 endif()
 
-# ---- Compiler flags ----
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG_MODE")
+# Add dependencies
+find_package(SFML 2.6 COMPONENTS graphics network window audio system REQUIRED)
+find_package(asio CONFIG REQUIRED)
 
-# ---- Source groups ----
+# Set the compiler optimization flags
+if (MSVC)
+    # Windows Release flags
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /DNDEBUG")
+
+    # Windows Debug flags
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /DDEBUG_MODE")
+else()
+    # GCC/Clang Release flags
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
+
+    # GCC/Clang Debug flags
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG_MODE")
+endif()
+
+# Source all files
 file(GLOB_RECURSE ECS_SOURCES CONFIGURE_DEPENDS "src/ecs/*.cpp")
 file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "src/client/*.cpp")
 file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS "src/server/*.cpp")
 
-# ---- Executables ----
+# Add the executables
 add_executable(r-type_client ${CLIENT_SOURCES} ${ECS_SOURCES})
 add_executable(r-type_server ${SERVER_SOURCES} ${ECS_SOURCES})
 
-# ---- Include paths ----
+# Target configuration
 foreach(target r-type_client r-type_server)
     target_include_directories(${target} PRIVATE
         ${CMAKE_SOURCE_DIR}/src
     )
 
-    # Compiler warnings
-    target_compile_options(${target} PRIVATE
-        -Wall -Wextra -Winit-self -Wredundant-decls
-        -Wshadow -Wstrict-overflow=2 -Wundef -Wunreachable-code
-        -Wwrite-strings -pedantic --param max-inline-insns-single=200
-    )
+    # Add compiler warnings
+    if (MSVC)
+        target_compile_options(${target} PRIVATE
+            /W4            # applies gcc Wall/Wextra
+            /permissive-   # enforce standard C++
+            /Zc:preprocessor
+        )
+    else()
+        target_compile_options(${target} PRIVATE
+            -Wall -Wextra -Wpedantic
+            -Wshadow -Winit-self -Wredundant-decls
+            -Wstrict-overflow=2 -Wundef -Wunreachable-code
+            -Wwrite-strings
+        )
+    endif()
 
+    # Add libraries
     target_link_libraries(${target} PRIVATE
         sfml-graphics
+        sfml-network
         sfml-window
+        sfml-audio
         sfml-system
+        asio::asio
     )
 
-    # Definitions
+    # Define compilation target
     target_compile_definitions(${target} PRIVATE
         PROJECT_ROOT_PATH="${CMAKE_SOURCE_DIR}/"
     )
 endforeach()
 
-# ---- Installation ----
+# Run installation
 install(TARGETS r-type_client r-type_server
     RUNTIME DESTINATION bin
 )
 
-# ---- Custom targets (unchanged) ----
+# Custom targets
 add_custom_target(debug
     COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} --build . -- -j
