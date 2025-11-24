@@ -15,11 +15,10 @@ Asio_network::~Asio_network() {
 }
 
 void Asio_network::start() {
-    if (running_) return;
+    if (running_)
+        return;
     running_ = true;
-
     do_receive();
-
     io_thread_ = std::thread([this]() {
         try {
             io_ctx_.run();
@@ -30,13 +29,12 @@ void Asio_network::start() {
 }
 
 void Asio_network::stop() {
-    if (!running_) return;
+    if (!running_)
+        return;
     running_ = false;
-
     io_ctx_.stop();
     if (io_thread_.joinable())
         io_thread_.join();
-
     socket_.close();
 }
 
@@ -53,7 +51,6 @@ void Asio_network::do_receive() {
                         remote_endpoint_);
                 }
             }
-
             if (running_) {
                 do_receive();
             }
@@ -69,7 +66,6 @@ void Asio_network::send(const std::string& msg,
         asio::ip::address::from_string(host),
         port
     );
-
     socket_.async_send_to(
         asio::buffer(msg),
         endpoint,
