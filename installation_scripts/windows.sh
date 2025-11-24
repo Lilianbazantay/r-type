@@ -15,7 +15,6 @@ fi
 
 # Update vcpkg ports (fixes many brotli issues)
 cd external/vcpkg
-git pull
 ./vcpkg.exe update
 cd ../..
 
