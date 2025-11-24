@@ -13,7 +13,7 @@ This choice aligns with the project requirements:
 ---
 
 ## Why We Chose Asio
-Asio fits perfectly with the constraints of a **fast-paced real-time shooter**:
+Asio fits perfectly with the constraints of a **shoot-them-up**:
 
 ### • Asynchronous, event-driven architecture
 The server must run *frame after frame* regardless of client delays.
@@ -62,6 +62,13 @@ Asio allows us to build our protocol **byte-perfect** without unnecessary abstra
 - too low-level for a multi-platform CMake project
 - requires significant boilerplate
 Asio provides the same control with much better engineering quality.
+
+### IPOAC (IP over Avian Carriers)
++ very long communication range
+- latency incompatible with real-time gameplay
+- extremely low bandwidth
+- unpredictable delivery, high potential loss
+- no asynchronous model suitable for a game engine
 
 ---
 
