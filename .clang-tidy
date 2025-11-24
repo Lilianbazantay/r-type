@@ -10,7 +10,6 @@ Checks:
   - cppcoreguidelines-pro-bounds-array-to-pointer-decay
   - fuchsia-multiple-inheritance
   - google-runtime-references
-  - google-explicit-constructor
   - hicpp-invalid-access-moved
   - hicpp-signed-bitwise
   - llvm-header-guard
