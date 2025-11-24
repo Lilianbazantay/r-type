@@ -7,7 +7,7 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  build-windows:
+  Windows-build:
     runs-on: windows-latest
 
     defaults:
@@ -30,7 +30,7 @@ jobs:
       run: |
         $installer = Get-Content "installer.sh" -Raw
         $installer = $installer -replace "external/vcpkg/vcpkg\.exe", "$env:VCPKG_EXE"
-        $installer = $installer -replace "\./external/vcpkg/bootstrap-vcpkg\.bat", "echo \"Skipping bootstrap (using system vcpkg)\""
+        $installer = $installer -replace "\./external/vcpkg/bootstrap-vcpkg\.bat"
         $installer = $installer -replace "cd external/vcpkg", "cd $env:VCPKG_ROOT"
         Set-Content "installer.sh" $installer
 
