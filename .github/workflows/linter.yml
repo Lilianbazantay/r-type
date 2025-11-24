@@ -42,5 +42,5 @@ jobs:
     - name: Run clang-tidy
       run: |
         echo "Running clang-tidy..."
-        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build
+        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build --header-filter='src/.*'
 
