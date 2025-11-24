@@ -70,6 +70,7 @@ We explicitly **do not** use it for gameplay networking, because:
 - Large community and stable documentation
 - Cross-platform support Linux + Windows
 - Clean integration with vcpkg and CMake
+- We allready have a lot of experiances with sfml
 
 ---
 
