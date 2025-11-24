@@ -3,12 +3,12 @@
 #include <iostream>
 #include <ostream>
 
-Asio_network::Asio_network(unsigned short listen_port,
-                           ReceiveCallback on_receive)
-    : socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
-      receive_callback_(on_receive)
+Asio_network::Asio_network(__uint16_t listen_port, ReceiveCallback on_receive)
+    : socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
 {
+    this->receive_callback_ = on_receive;
 }
+
 
 Asio_network::~Asio_network() {
     stop();
@@ -39,8 +39,7 @@ void Asio_network::stop() {
 }
 
 void Asio_network::do_receive() {
-    socket_.async_receive_from(
-        asio::buffer(recv_buffer_),
+    socket_.async_receive_from(asio::buffer(recv_buffer_),
         remote_endpoint_,
         [this](std::error_code error_code, std::size_t bytes_recvd) {
             if (!error_code && bytes_recvd > 0) {
@@ -58,9 +57,7 @@ void Asio_network::do_receive() {
     );
 }
 
-void Asio_network::send(const std::string& msg,
-                        const std::string& host,
-                        unsigned short port)
+void Asio_network::send(const std::string& msg, const std::string& host, __uint16_t port)
 {
     asio::ip::udp::endpoint endpoint(
         asio::ip::address::from_string(host),
