@@ -20,19 +20,19 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-    # Use system vcpkg
     - name: Configure system vcpkg
       run: |
-        echo "Using system vcpkg at C:/vcpkg"
         echo "VCPKG_ROOT=C:/vcpkg" >> $GITHUB_ENV
         echo "VCPKG_EXE=C:/vcpkg/vcpkg.exe" >> $GITHUB_ENV
 
-    # Patch installer.sh to use system vcpkg instead of the submodule version
     - name: Patch installer.sh to use system vcpkg
+      shell: pwsh
       run: |
-        sed -i 's#external/vcpkg/vcpkg.exe#${VCPKG_EXE//#/\\#}#g' installer.sh
-        sed -i 's#./external/vcpkg/bootstrap-vcpkg.bat#echo "Skipping bootstrap (using system vcpkg)"#g' installer.sh
-        sed -i 's#cd external/vcpkg#cd ${VCPKG_ROOT//#/\\#}#g' installer.sh
+        $installer = Get-Content "installer.sh" -Raw
+        $installer = $installer -replace "external/vcpkg/vcpkg\.exe", "$env:VCPKG_EXE"
+        $installer = $installer -replace "\./external/vcpkg/bootstrap-vcpkg\.bat", "echo \"Skipping bootstrap (using system vcpkg)\""
+        $installer = $installer -replace "cd external/vcpkg", "cd $env:VCPKG_ROOT"
+        Set-Content "installer.sh" $installer
 
     # Install CMake (winget available in bash with this call)
     - name: Install CMake
