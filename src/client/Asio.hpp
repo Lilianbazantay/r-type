@@ -9,15 +9,12 @@
 class Asio_network {
     public:
         using ReceiveCallback = std::function<void(const std::string&, const asio::ip::udp::endpoint&)>;
-        Asio_network(unsigned short listen_port,
-                     ReceiveCallback on_receive = nullptr);
+        Asio_network(__uint16_t listen_port, ReceiveCallback on_receive = nullptr);
         ~Asio_network();
 
         void start();
         void stop();
-        void send(const std::string& msg,
-                  const std::string& host,
-                  unsigned short port);
+        void send(const std::string& msg, const std::string& host, __uint16_t port);
         bool gotText = false;
 
     private:
