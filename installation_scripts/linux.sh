@@ -10,29 +10,33 @@ echo "Checking for any missing dependencies"
 if command -v dnf &> /dev/null; then
     sudo dnf update
     sudo dnf install -y --skip-unavailable \
-      build-essential cmake ninja-build \
-      libfreetype6-dev libx11-dev libxcb1-dev \
-      libxrandr-dev libxi-dev libxcursor-dev \
-      libudev-dev libopenal-dev libgl1-mesa-dev
+      @development-tools cmake ninja-build \
+      freetype-devel libX11-devel libxcb-devel \
+      libXrandr-devel libXi-devel libXcursor-devel \
+      libudev-devel openal-soft-devel mesa-libEGL-devel pkg-config \
+      libtool
 elif command -v apt &> /dev/null; then
     sudo apt-get update
     sudo apt-get install -y \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
-      libudev-dev libopenal-dev libgl1-mesa-dev
+      libudev-dev libopenal-dev libgl1-mesa-dev pkg-config \
+      libtool
 elif command -v pacman &> /dev/null; then
     sudo pacman update
     sudo pacman install -y \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
-      libudev-dev libopenal-dev libgl1-mesa-dev
+      libudev-dev libopenal-dev libgl1-mesa-dev pkg-config \
+      libtool
 fi
 
-# Bootstrap vcpkg if needed
-if ! -f "$VCPKG_DIR/vcpkg" ]; then
+# Bootstrap vcpkg if neededcd $VCPKG_DIR
+if [ ! -f "$VCPKG_DIR/vcpkg" ] ; then
     echo "Bootstrapping vcpkg..."
+    git submodule update --init --recursive
     "$VCPKG_DIR/bootstrap-vcpkg.sh"
 fi
 
