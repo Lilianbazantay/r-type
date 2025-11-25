@@ -7,6 +7,7 @@ winget install --id Kitware.CMake -e --source winget
 # Bootstrap vcpkg if needed
 if [ ! -f "./external/vcpkg/vcpkg.exe" ]; then
     echo "Bootstrapping vcpkg..."
+    git submodule update --init --recursive
     ./external/vcpkg/bootstrap-vcpkg.bat
 fi
 

@@ -13,26 +13,27 @@ if command -v dnf &> /dev/null; then
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
-      libudev-dev libopenal-dev libgl1-mesa-dev
+      libudev-dev libopenal-dev libgl1-mesa-dev pkg-config
 elif command -v apt &> /dev/null; then
     sudo apt-get update
     sudo apt-get install -y \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
-      libudev-dev libopenal-dev libgl1-mesa-dev
+      libudev-dev libopenal-dev libgl1-mesa-dev pkg-config
 elif command -v pacman &> /dev/null; then
     sudo pacman update
     sudo pacman install -y \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
-      libudev-dev libopenal-dev libgl1-mesa-dev
+      libudev-dev libopenal-dev libgl1-mesa-dev pkg-config
 fi
 
-# Bootstrap vcpkg if needed
+# Bootstrap vcpkg if neededcd $VCPKG_DIR
 if ! -f "$VCPKG_DIR/vcpkg" ]; then
     echo "Bootstrapping vcpkg..."
+    git submodule update --init --recursive
     "$VCPKG_DIR/bootstrap-vcpkg.sh"
 fi
 
