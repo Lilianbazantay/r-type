@@ -11,9 +11,9 @@ if command -v dnf &> /dev/null; then
     sudo dnf update
     sudo dnf install -y --skip-unavailable \
       @development-tools cmake ninja-build \
-      libfreetype6-devel libX11-devel libxcb1-devel \
+      freetype-devel libX11-devel libxcb-devel \
       libXrandr-devel libXi-devel libXcursor-devel \
-      libudev-devel libopenal-devel libgl1-mesa-devel pkg-config \
+      libudev-devel openal-soft-devel mesa-libEGL-devel pkg-config \
       libtool
 elif command -v apt &> /dev/null; then
     sudo apt-get update
