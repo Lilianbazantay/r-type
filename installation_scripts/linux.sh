@@ -13,21 +13,24 @@ if command -v dnf &> /dev/null; then
       @development-tools cmake ninja-build \
       libfreetype6-devel libX11-devel libxcb1-devel \
       libXrandr-devel libXi-devel libXcursor-devel \
-      libudev-devel libopenal-devel libgl1-mesa-devel pkg-config
+      libudev-devel libopenal-devel libgl1-mesa-devel pkg-config \
+      libtool
 elif command -v apt &> /dev/null; then
     sudo apt-get update
     sudo apt-get install -y \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
-      libudev-dev libopenal-dev libgl1-mesa-dev pkg-config
+      libudev-dev libopenal-dev libgl1-mesa-dev pkg-config \
+      libtool
 elif command -v pacman &> /dev/null; then
     sudo pacman update
     sudo pacman install -y \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
-      libudev-dev libopenal-dev libgl1-mesa-dev pkg-config
+      libudev-dev libopenal-dev libgl1-mesa-dev pkg-config \
+      libtool
 fi
 
 # Bootstrap vcpkg if neededcd $VCPKG_DIR
