@@ -47,9 +47,6 @@ jobs:
           xargs -0 -n1 -P $NPROC ${{ runner.temp }}/llvm/bin/clang-tidy \
             -p build \
             --header-filter='src/.*' \
-            --system-headers=false \
             -extra-arg=-std=c++23 \
-            -extra-arg=-stdlib=libc++ \
+            -extra-arg=-Ibuild \
             -quiet
-
-
