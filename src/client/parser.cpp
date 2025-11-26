@@ -62,5 +62,5 @@ int Parser::ParseData(int argc, char **argv)
             }
         }
     }
-    return EXIT_SUCCESS;
+    return EXIT_DESIRED;
 }
