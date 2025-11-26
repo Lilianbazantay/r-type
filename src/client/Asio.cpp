@@ -15,18 +15,20 @@ Asio_network::~Asio_network() {
     stop();
 }
 
+void Asio_network::run() {
+    try {
+        io_ctx_.run();
+    } catch (const std::exception& e) {
+        std::cerr << "IO thread exception: " << e.what() << "\n";
+    }
+}
+
 void Asio_network::start() {
     if (running_)
         return;
     running_ = true;
     do_receive();
-    io_thread_ = std::jthread{[this] {
-        try {
-            io_ctx_.run();
-        } catch (const std::exception& e) {
-            std::cerr << "IO thread exception: " << e.what() << "\n";
-        }
-    }};
+    io_thread_ = std::jthread(&Asio_network::run, this);
 }
 
 void Asio_network::stop() {

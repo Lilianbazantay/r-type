@@ -22,6 +22,7 @@ class Asio_network {
 
     private:
         void do_receive();
+        void run();
 
     private:
         asio::io_context io_ctx_;
