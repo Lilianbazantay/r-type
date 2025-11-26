@@ -1,4 +1,4 @@
-#ifndef ASIO_HPP
+#ifndef ASIO
     #define ASIO
 
 #pragma once
