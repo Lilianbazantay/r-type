@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <iostream>
 #include <ostream>
+#include <thread>
 
 Asio_network::Asio_network(__uint16_t listen_port, ReceiveCallback on_receive)
     : socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
@@ -19,14 +20,13 @@ void Asio_network::start() {
         return;
     running_ = true;
     do_receive();
-    std::jthread thread([this]() {
+    io_thread_.emplace([this]() {
         try {
             io_ctx_.run();
         } catch (const std::exception& e) {
             std::cerr << "IO thread exception: " << e.what() << "\n";
         }
     });
-    std::swap(io_thread_, thread);
 }
 
 void Asio_network::stop() {
