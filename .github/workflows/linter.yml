@@ -54,8 +54,4 @@ jobs:
             --header-filter='src/.*' \
             --system-headers=false \
             -extra-arg=-std=c++23 \
-            -extra-arg=-stdlib=libc++ \
-            -extra-arg=-nostdinc++ \
-            -extra-arg=-isystem/usr/include/c++/v1 \
             -quiet
-
