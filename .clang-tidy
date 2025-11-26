@@ -12,8 +12,5 @@ Checks:
   - google-runtime-references
   - hicpp-invalid-access-moved
   - hicpp-signed-bitwise
-  - llvm-header-guard
-  - '-clang-diagnostic-*'
-  - '-llvmlibc-callee-namespace'
 HeaderFilterRegex: "src/.*"
 
