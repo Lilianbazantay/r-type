@@ -41,25 +41,11 @@ jobs:
     # Run clang-tidy
     - name: Run clang-tidy
       run: |
-        echo "Running clang-tidy..."
-
-        # Base Clang arguments
-        CLANG_ARGS=(
-          "-extra-arg=-std=c++23"
-          "-extra-arg=-fsyntax-only"
-          "-extra-arg=--gcc-toolchain=/usr"
-        )
-
-        # Add vcpkg includes (safe, won't override libstdc++)
-        VCPKG_INCLUDE="build/vcpkg_installed/x64-linux/include"
-        if [ -d "$VCPKG_INCLUDE" ]; then
-          CLANG_ARGS+=("-extra-arg=-isystem" "-extra-arg=$VCPKG_INCLUDE")
-        fi
-
-        # Run clang-tidy on source files
-        find src -name '*.cpp' -print0 | xargs -0 clang-tidy \
+       find src -name '*.cpp' -print0 | xargs -0 ${{ runner.temp }}/llvm/bin/clang-tidy \
           -p build \
           --header-filter='src/.*' \
-          -quiet \
-          "${CLANG_ARGS[@]}"
+          --system-headers=false \
+          -extra-arg=-std=c++23 \
+          -extra-arg=--gcc-toolchain=/usr \
+          -quiet
 
