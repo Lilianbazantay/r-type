@@ -20,14 +20,13 @@ void Asio_network::start() {
         return;
     running_ = true;
     do_receive();
-    auto task = [this] {
+    io_thread_ = std::jthread{[this] {
         try {
             io_ctx_.run();
         } catch (const std::exception& e) {
             std::cerr << "IO thread exception: " << e.what() << "\n";
         }
-    };
-    io_thread_ = std::jthread(task);
+    }};
 }
 
 void Asio_network::stop() {
