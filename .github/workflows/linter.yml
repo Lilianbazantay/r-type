@@ -51,7 +51,9 @@ jobs:
         )
 
         # Convert to -isystem and disable warnings (-w)
-        ISYSTEM_ARGS=()
+        ISYSTEM_ARGS=(
+          "-extra-arg=-std=c++23"
+          )
         for DIR in "${SYSTEM_INCLUDES[@]}"; do
           ISYSTEM_ARGS+=("-extra-arg=-isystem" "-extra-arg=${DIR}" "-extra-arg=-w")
         done
