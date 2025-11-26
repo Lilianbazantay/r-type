@@ -49,9 +49,8 @@ void Asio_network::do_receive() {
                         remote_endpoint_);
                 }
             }
-            if (running_) {
+            if (running_)
                 do_receive();
-            }
         }
     );
 }
