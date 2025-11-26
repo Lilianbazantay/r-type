@@ -45,7 +45,7 @@ jobs:
 
         # External/system include directories
         SYSTEM_INCLUDES=(
-          "/usr/include/c++/14"
+          "/usr/include/c++/23"
           "/usr/local/include"
           "build/vcpkg_installed/x64-linux/include"
         )

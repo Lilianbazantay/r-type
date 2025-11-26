@@ -35,14 +35,13 @@ int Parser::ParseData(int argc, char **argv)
         if (arg == "-h")
             descripton();
         if (arg == "-i" || arg == "--ip") {
-            if (i + 1 <= argc) {
+            if (i + 1 <= argc)
                 this->ip = argv[i + 1];
-            } else {
+            else
                 return EXIT_ERROR;
-            }
         }
         if (arg == "-p" || arg == "--port") {
-            if (i + 1 <= argc) {
+            if (i + 1 <= argc)
                 try {
                     int tmpPort = std::stoi(argv[i + 1]);
                     if (tmpPort < 1024 || tmpPort > 65535) {
@@ -57,9 +56,8 @@ int Parser::ParseData(int argc, char **argv)
                     << "\nUse \"./client -h\" to get help\n";
                     return EXIT_ERROR;
                 }
-            } else {
+            else
                 return EXIT_ERROR;
-            }
         }
     }
     return EXIT_DESIRED;
