@@ -19,7 +19,7 @@ void Asio_network::start() {
         return;
     running_ = true;
     do_receive();
-    io_thread_ = std::thread([this]() {
+    io_thread_ = std::jthread([this]() {
         try {
             io_ctx_.run();
         } catch (const std::exception& e) {
@@ -33,8 +33,6 @@ void Asio_network::stop() {
         return;
     running_ = false;
     io_ctx_.stop();
-    if (io_thread_.joinable())
-        io_thread_.join();
     socket_.close();
 }
 

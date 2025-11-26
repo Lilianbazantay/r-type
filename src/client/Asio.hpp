@@ -1,5 +1,6 @@
-#ifndef ASIO
-    #define ASIO
+#ifndef ASIO_NETWORK_HPP
+#define ASIO_NETWORK_HPP
+
 
 #pragma once
 #include <asio.hpp>
@@ -29,7 +30,7 @@ class Asio_network {
 
         std::array<char, 2048> recv_buffer_{};
 
-        std::thread io_thread_;
+        std::jthread io_thread_;
         std::atomic<bool> running_{false};
 
         ReceiveCallback receive_callback_;
