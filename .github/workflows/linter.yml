@@ -53,5 +53,5 @@ jobs:
             -p build \
             --header-filter='src/.*' \
             --system-headers=false \
-            -extra-arg=-std=c++23 \
+            -extra-arg=-std=gnu++23 \
             -quiet
