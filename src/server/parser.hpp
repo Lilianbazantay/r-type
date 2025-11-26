@@ -1,3 +1,6 @@
+#ifndef SERVER_PARSER
+    #define SERVER_PARSER
+
 #pragma once
 
 /**
@@ -13,3 +16,5 @@ public:
     static void descripton();
     int ParseData(int argc, char **argv);
 };
+
+#endif

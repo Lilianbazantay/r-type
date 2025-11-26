@@ -1,4 +1,9 @@
+#ifndef UTILS
+    #define UTILS
+
 #pragma once
 
-#define EXIT_ERROR 84
-#define EXIT_SUCCESS 0
+constexpr int EXIT_ERROR = 84;
+constexpr int EXIT_SUCCESS = 0;
+
+#endif
