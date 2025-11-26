@@ -41,11 +41,15 @@ jobs:
     # Run clang-tidy
     - name: Run clang-tidy
       run: |
-       find src -name '*.cpp' -print0 | xargs -0 ${{ runner.temp }}/llvm/bin/clang-tidy \
-          -p build \
-          --header-filter='src/.*' \
-          --system-headers=false \
-          -extra-arg=-std=c++23 \
-          -extra-arg=--gcc-toolchain=/usr \
-          -quiet
+        NPROC=$(nproc)
+
+        find src -name '*.cpp' -print0 | \
+          xargs -0 -n1 -P $NPROC ${{ runner.temp }}/llvm/bin/clang-tidy \
+            -p build \
+            --header-filter='src/.*' \
+            --system-headers=false \
+            -extra-arg=-std=c++23 \
+            -extra-arg=-stdlib=libc++ \
+            -quiet
+
 
