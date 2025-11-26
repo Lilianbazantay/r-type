@@ -1,3 +1,5 @@
+#ifndef ASIO_HPP
+    #define ASIO
 
 #pragma once
 #include <asio.hpp>
@@ -32,3 +34,5 @@ class Asio_network {
 
         ReceiveCallback receive_callback_;
 };
+
+#endif
