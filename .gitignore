@@ -22,10 +22,6 @@
 *.dylib
 *.dll
 
-# Fortran module files
-*.mod
-*.smod
-
 # Compiled Static libraries
 *.lai
 *.la
@@ -39,3 +35,15 @@
 
 # debug information files
 *.dwo
+
+#vs-code
+.vscode/*
+
+# binaries
+r-type*
+.env
+
+#build folder
+build
+.cache
+vcpkg_installed

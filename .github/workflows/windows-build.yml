@@ -1,0 +1,46 @@
+name: Windows-build
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  Windows-build:
+    runs-on: windows-latest
+
+    steps:
+    # Checkout code + submodules
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    # Install winget CMake and configure system vcpkg
+    - name: Configure system vcpkg
+      run: |
+        echo "VCPKG_ROOT=C:/vcpkg" >> $GITHUB_ENV
+        echo "VCPKG_EXE=C:/vcpkg/vcpkg.exe" >> $GITHUB_ENV
+
+    # Checkout full vcpkg clone for CI (needed for baselines)
+    - name: Checkout vcpkg for CI
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git external/vcpkg
+        cd external/vcpkg
+        ./bootstrap-vcpkg.bat
+
+    # Patch installer.sh for CI
+    - name: Patch installer.sh for CI
+      shell: pwsh
+      run: |
+        $installer = Get-Content "installer.sh" -Raw
+        # Remove any git pull / vcpkg update lines
+        $installer = $installer -replace ".*vcpkg\.exe update.*", ""
+        Set-Content "installer.sh" $installer
+        # Set CI flag for installer
+        $env:USE_CI_VCPKG = "1"
+
+    # Run the installer
+    - name: Run installer.sh
+      run: ./installer.sh

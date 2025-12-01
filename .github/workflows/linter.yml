@@ -1,0 +1,57 @@
+name: Clang-tidy
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  clang-tidy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout code + submodules
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+        submodules-depth: 0
+
+    # Install LLVM / clang / clang-tidy
+    - name: Install LLVM + Clang + Clang-Tidy
+      uses: KyleMayes/install-llvm-action@v2
+      with:
+        version: "17"
+        directory: ${{ runner.temp }}/llvm
+
+    - name: Install libc++ headers
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libc++-dev libc++abi-dev
+
+    # Disable vcpkg telemetry
+    - name: Disable vcpkg telemetry
+      run: echo "VCPKG_DISABLE_METRICS=1" >> $GITHUB_ENV
+
+    # Debug: list vcpkg packages
+    - name: List vcpkg packages
+      run: |
+        external/vcpkg/vcpkg list || echo "No packages installed yet"
+
+    # Build project using installer.sh
+    - name: Build project
+      run: ./installer.sh
+
+    # Run clang-tidy
+    - name: Run clang-tidy
+      run: |
+        NPROC=$(nproc)
+
+        find src -name '*.cpp' -print0 | \
+          xargs -0 -n1 -P $NPROC ${{ runner.temp }}/llvm/bin/clang-tidy \
+            -p build \
+            --header-filter='src/.*' \
+            --system-headers=false \
+            -extra-arg=-std=gnu++23 \
+            -quiet

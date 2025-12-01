@@ -25,12 +25,3 @@ Closes #xx
 <!-- Any additional information or context relevant to this PR. -->
 <!-- Remove this part otherwise -->
 
-## Checklist
-- [ ] I have renamed the first header of the template -_-
-- [ ] I have tested my modifications
-- [ ] I have done the relevant documentation
-- [ ] I have set the Reviewers & Assignees
-- [ ] I have set the correct `Labels`
-- [ ] I have set the `area` project
-- [ ] I have set `Status` / `Priority` / `Size` / `Start date` / `End date`
-- [ ] I have set the relevant `Milestone`

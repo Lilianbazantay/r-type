@@ -1,7 +1,7 @@
 name: Create a refactor request
 title: "Quick description"
 description: request a refactor here
-projects: "Sigmapitech/9"
+projects: "r-type"
 body:
   - type: textarea
     id: refactor_description
@@ -21,18 +21,3 @@ body:
         - Resources
         - Screenshots
         - Any other relevant information.
-  - type: checkboxes
-    attributes:
-      label: Pre-submission checklist
-      description: "Please ensure you have completed the following before submitting your feature request:"
-      options:
-        - label: I have SET the apropriate label
-          required: true
-        - label: I have UNSET the issue tag
-          required: true
-        - label: I have SET the AREA project
-          required: true
-        - label: I have SET the apropriate milestone
-          required: true
-    validations:
-      required: true
