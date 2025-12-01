@@ -25,6 +25,11 @@ jobs:
         version: "17"
         directory: ${{ runner.temp }}/llvm
 
+    - name: Install libc++ headers
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libc++-dev libc++abi-dev
+
     # Disable vcpkg telemetry
     - name: Disable vcpkg telemetry
       run: echo "VCPKG_DISABLE_METRICS=1" >> $GITHUB_ENV
@@ -41,6 +46,12 @@ jobs:
     # Run clang-tidy
     - name: Run clang-tidy
       run: |
-        echo "Running clang-tidy..."
-        find src -name '*.cpp' -print0 | xargs -0 clang-tidy -p build
+        NPROC=$(nproc)
 
+        find src -name '*.cpp' -print0 | \
+          xargs -0 -n1 -P $NPROC ${{ runner.temp }}/llvm/bin/clang-tidy \
+            -p build \
+            --header-filter='src/.*' \
+            --system-headers=false \
+            -extra-arg=-std=gnu++23 \
+            -quiet

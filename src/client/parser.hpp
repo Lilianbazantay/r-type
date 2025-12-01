@@ -1,3 +1,7 @@
+#ifndef CLIENT_PARSER
+    #define CLIENT_PARSER
+
+
 #pragma once
 
 #include <string>
@@ -16,3 +20,5 @@ public:
     static void descripton();
     int ParseData(int argc, char **argv);
 };
+
+#endif

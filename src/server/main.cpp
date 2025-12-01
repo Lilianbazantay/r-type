@@ -14,5 +14,5 @@ int main(int argc, char **argv) {
 
     if (parser.ParseData(argc, argv) == EXIT_ERROR)
         return EXIT_ERROR;
-    return EXIT_ERROR;
+    return EXIT_DESIRED;
 }
