@@ -67,5 +67,5 @@ int Parser::parse(int argc, char **argv)
         show_help();
         return EXIT_FAILURE;
     }
-    return EXIT_DESIRED;
+    return 0;
 }
