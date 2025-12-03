@@ -2,13 +2,17 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <stdexcept>
 
+void Parser::show_help()
 void Parser::show_help()
 {
     std::cout << "USAGE:\n"
               << "\t./client -h -i ip_address -p port\n"
               << "OPTIONS:\n"
               << "\t-h\t\tprint the help\n"
+              << "\t-i --ip\t\tserver ip address\n"
+              << "\t-p --port\tserver port (1024-65535)\n";
               << "\t-i --ip\t\tserver ip address\n"
               << "\t-p --port\tserver port (1024-65535)\n";
 }
