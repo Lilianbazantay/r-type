@@ -1,15 +1,20 @@
 #pragma once
 
-#include <string>
+enum class ComponentType {
+    HP,
+    POSITION,
+    UNKNOWN
+};
 
 class IComponent
 {
-    private:
-        std::string _name;
+    protected:
+        ComponentType _type = ComponentType::UNKNOWN;
+
     public:
-        ~IComponent() = default;
+        virtual ~IComponent() = default;
 
         // SET/GET
-        std::string getName() const { return _name; }
-        void setName(const std::string& name) { _name = name; }
+        virtual ComponentType GetType() const { return _type; }
+        virtual void SetType(ComponentType type) { _type = type; }
 };
