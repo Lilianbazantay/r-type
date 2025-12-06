@@ -4,6 +4,17 @@ enum class ComponentType {
     HP,
     POSITION,
     VELOCITY,
+    DIRECTION,
+    ENTITY_SPAWNER,
+    SPRITE,
+    ANIMATED_SPRITE,
+    SOUND,
+    COOLDOWN,
+    CLOCK,
+    HITBOX,
+    ATTACK,
+    BULLET,
+    GRAVITY,
     UNKNOWN
 };
 
