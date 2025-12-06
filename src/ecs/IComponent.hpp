@@ -15,7 +15,6 @@ enum class ComponentType {
     ATTACK,
     BULLET,
     GRAVITY,
-    MASK_LAYER,
     UNKNOWN
 };
 
