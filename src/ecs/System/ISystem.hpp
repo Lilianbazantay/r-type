@@ -8,13 +8,19 @@
 
 class ISystem {
     private:
-        std::vector<ComponentType> requiedComponents;
-
         virtual void executeEntity(IMediatorEntity&) = 0;
         bool checkRequirements(IMediatorEntity&);
+    protected:
+        std::vector<ComponentType> requiedComponents;
+        std::vector<ComponentType> optionnalComponents;
     public:
         ~ISystem() = default;
 
-        void addRequiredComponent(std::shared_ptr<IComponent> component);
+        void addRequiredComponentType(std::shared_ptr<IComponent>);
+        void addRequiredComponentType(ComponentType);
+        void addRequiredComponentType(std::vector<ComponentType>);
+
+        void addOptionnalComponentType(ComponentType);
+
         void checkEntity(IMediatorEntity&);
 };
