@@ -1,5 +1,6 @@
 #pragma once
 #include <utility>
+#include "../IComponent.hpp"
 
 /**
  * @class Position
@@ -8,13 +9,16 @@
  * @param x The x coordinate with a float value
  * @param y The y coordinate with a float value
  */
-class Position
+class Position : public IComponent
 {
     private:
         float x;
         float y;
     public:
-        Position(float x = 0, float y = 0) : x(x), y(y) {};
+        Position(float x = 0, float y = 0) : x(x), y(y)
+        {
+            _type = ComponentType::POSITION;
+        };
         ~Position() = default;
 
         // SET/GET
