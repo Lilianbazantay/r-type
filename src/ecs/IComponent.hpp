@@ -15,6 +15,7 @@ enum class ComponentType {
     ATTACK,
     BULLET,
     GRAVITY,
+    STRATEGY,
     UNKNOWN
 };
 
