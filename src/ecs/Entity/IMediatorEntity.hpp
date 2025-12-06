@@ -18,4 +18,10 @@ class IMediatorEntity
         ~IMediatorEntity() = default;
 
         virtual void run() = 0;
+
+        // Components management
+        std::vector<IComponent> GetActuatorComponents();
+        void AddActuatorComponent(IComponent component);
+        std::vector<IComponent> GetUnderGoerComponents();
+        void AddUndergoerComponent(IComponent component);
 };
