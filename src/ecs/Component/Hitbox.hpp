@@ -8,7 +8,10 @@
  * @class Hitbox
  * @brief Represents the Hitbox of a component
  *
- * @param _value The Hitbox value
+ * @param _sizeX The width of the hitbox
+ * @param _sizeY The height of the hitbox
+ * @param _layers The layers the hitbox belongs to
+ * @param _masks The masks the hitbox interacte with
  */
 class Hitbox : public IComponent
 {
