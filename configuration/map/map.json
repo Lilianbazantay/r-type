@@ -1,0 +1,116 @@
+{
+    "size" : {
+        "width": 2000,
+        "height": 100
+    },
+    "paralaxe": {
+        "paralaxe_sprite": [
+            "assets/backgrounds/level1.png",
+            "assets/backgrounds/level2.png",
+            "assets/backgrounds/level3.png",
+            "assets/backgrounds/level4.png",
+            "assets/backgrounds/level5.png"
+        ],
+        "paralaxe_speed": [
+            0.2,
+            0.4,
+            0.6,
+            0.8,
+            1.0
+        ]
+    },
+    "player": {
+        "player_number": "5",
+        "start_position": [
+            "100, 300",
+            "100, 400",
+            "100, 500",
+            "100, 600",
+            "100, 700"
+        ],
+        "player_type": [
+            "player1",
+            "player1",
+            "player3",
+            "player1",
+            "player5"
+        ]
+    },
+    "map": {
+        "obstacles": {
+            "wall_1": {
+                "position": [
+                    "150, 0",
+                    "150, 10",
+                    "150, 20",
+                    "150, 70",
+                    "150, 80",
+                    "150, 90"
+                ],
+                "size": {
+                    "width": 10,
+                    "height": 10
+                },
+                "sprite": "assets/obstacles/wall.png"
+            },
+            "wall_2": {
+                "position": [
+                    "400, 30",
+                    "400, 45",
+                    "400, 60",
+                    "400, 75"
+                ],
+                "size": {
+                    "width": 15,
+                    "height": 15
+                },
+                "sprite": "assets/obstacles/wall.png"
+            }
+        },
+        "ennemies": {
+            "ennemy_1": {
+                "position": [
+                    "600, 100",
+                    "800, 200",
+                    "1000, 300"
+                ]
+            },
+            "ennemy_2": {
+                "position": [
+                    "700, 150",
+                    "900, 250",
+                    "1100, 350"
+                ]
+            },
+            "ennemies_wave": {
+                "spawnrate" : 0.5,
+                "ennemies_type": "../ennemy/ennemy_1.json",
+                "spawn_range": [
+                    1,
+                    100
+                ],
+                "number_of_spawn": -1
+            }
+        },
+        "weapon": {
+            "weapon_1": {
+                "type": "../weapon/pistol.json",
+                "position": [
+                    "600, 50",
+                    "500, 20"
+                ]
+            },
+            "weapon_2": {
+                "type": "../weapon/weapon_2.json",
+                "position": [
+                    "600, 50",
+                    "500, 20"
+                ]
+            }
+        },
+        "boss": {
+            "type": "../boss/boss_1.json",
+            "position": 2000
+        }
+    }
+}

@@ -1,0 +1,54 @@
+{
+    "player": {
+          "input": {
+              "up": "Z",
+              "down": "S",
+              "left": "Q",
+              "right": "D",
+              "shoot": "X",
+              "leave": "ESCAPE"
+          },
+          "stats": {
+              "health": 100,
+              "armor": 50,
+              "speed": 5,
+              "damage": 20,
+              "size": {
+                  "width": 64,
+                  "height": 64
+              },
+              "weapon_type": "../weapon/pistol.json"
+          },
+          "sprite": {
+              "idle": "assets/sprites/player_idle.png",
+              "up": [
+                  "assets/sprites/player_walk_1.png"
+              ],
+              "down": [
+                  "assets/sprites/player_walk_1.png"
+              ],
+              "right": [
+                  "assets/sprites/player_walk_1.png"
+              ],
+              "left": [
+                  "assets/sprites/player_walk_1.png"
+              ],
+              "shoot": [
+                  "assets/sprites/player_shoot_1.png"
+              ],
+              "hit": [
+                  "assets/sprites/player_hit_1.png"
+              ],
+              "death": [
+                  "assets/sprites/player_death_1.png"
+              ]
+          }
+    },
+    "mask": [
+        0
+    ],
+    "layer": [
+        10,
+        1
+    ]
+}

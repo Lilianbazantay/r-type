@@ -1,0 +1,11 @@
+{
+  "name": "pistol",
+  "sprite_on_map": "assets/sprites/weapon_on_map.png",
+  "fireRate": 0.3,
+  "bullets": [
+    "bullet_1.json",
+    "bullet_2.json"
+  ],
+  "sound": "assets/sounds/shoot.wav",
+  "damageMultiplier": 1.0
+}

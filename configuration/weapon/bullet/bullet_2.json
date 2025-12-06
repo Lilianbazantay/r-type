@@ -1,0 +1,9 @@
+{
+  "name": "bullet_type_2",
+  "sprite": "assets/sprites/bullet_type_2.png",
+  "velocity": 8,
+  "damage": 12,
+  "size": {"width": 10, "height": 10},
+  "direction": "angled",
+  "angles": [45, -45]
+}
