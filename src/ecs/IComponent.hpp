@@ -3,6 +3,7 @@
 enum class ComponentType {
     HP,
     POSITION,
+    VELOCITY,
     UNKNOWN
 };
 
