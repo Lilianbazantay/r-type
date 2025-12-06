@@ -7,17 +7,17 @@
  */
 int Hp::GetHp()
 {
-    return this->_number;
+    return this->_value;
 }
 
 /**
  * @brief Set the Hp object
  *
- * @param number The new Hp value
+ * @param value The new Hp value
  */
-void Hp::SetHp(int number)
+void Hp::SetHp(int value)
 {
-    this->_number = number;
+    this->_value = value;
 }
 
 /**
@@ -25,17 +25,17 @@ void Hp::SetHp(int number)
  */
 void Hp::AddHp()
 {
-    this->_number += 1;
+    this->_value += 1;
 }
 
 /**
- * @brief Add a specific number to the current Hp value
+ * @brief Add a specific value to the current Hp value
  *
- * @param number The number to add
+ * @param value The value to add
  */
-void Hp::AddHp(int number)
+void Hp::AddHp(int value)
 {
-    this->_number += number;
+    this->_value += value;
 }
 
 /**
@@ -43,15 +43,15 @@ void Hp::AddHp(int number)
  */
 void Hp::SubHp()
 {
-    this->_number -= 1;
+    this->_value -= 1;
 }
 
 /**
- * @brief Subtract a specific number from the current Hp value
+ * @brief Subtract a specific value from the current Hp value
  *
- * @param number The number to subtract
+ * @param value The value to subtract
  */
-void Hp::SubHp(int number)
+void Hp::SubHp(int value)
 {
-    this->_number -= number;
+    this->_value -= value;
 }

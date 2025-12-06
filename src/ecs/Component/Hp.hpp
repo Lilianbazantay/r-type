@@ -5,25 +5,25 @@
  * @class Hp
  * @brief Represents the Hp of a component
  *
- * @param _number The Hp value
+ * @param _value The Hp value
  */
 class Hp : public IComponent
 {
     private:
-        int _number;
+        int _value;
     public:
-        Hp(int number) : _number(number) {
+        Hp(int value) : _value(value) {
             _type = ComponentType::HP;
         };
         ~Hp() override = default;
 
         // SET/GET
         int GetHp();
-        void SetHp(int number);
+        void SetHp(int value);
 
         // ADD/SUB
         void AddHp();
-        void AddHp(int number);
+        void AddHp(int value);
         void SubHp();
-        void SubHp(int number);
+        void SubHp(int value);
 };
