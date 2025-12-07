@@ -116,6 +116,27 @@ void Sprite::deviseSize(float divisor_x, float divisor_y)
 }
 
 /**
+ * @brief Return _is_visible
+ *
+ * @return true the sprite is visible
+ * @return false the sprite is not visible
+ */
+bool Sprite::GetVisibility()
+{
+    return _is_visible;
+}
+
+/**
+ * @brief Set the visibility
+ *
+ * @param visibility Set _is_visible
+ */
+void Sprite::SetVisibility(bool visibility)
+{
+    _is_visible = visibility;
+}
+
+/**
  * @brief Set is_visible to true
  */
 void Sprite::show()

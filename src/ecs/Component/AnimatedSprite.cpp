@@ -6,6 +6,8 @@
  * @param link is the link of the AnimatedSprite
  * @param size_x set the size x
  * @param size_y set the size y
+ * @param number_of_spritex set _number_of_sprite_x
+ * @param number_of_sprite_y set _number_of_sprite_y
  */
 AnimatedSprite::AnimatedSprite(std::string link, float size_x, float size_y, int number_of_sprite_x, int number_of_sprite_y) :
 _link(link), _size_x(size_x), _size_y(size_y), _number_of_sprite_x(number_of_sprite_x), _number_of_sprite_y(number_of_sprite_y)
@@ -167,6 +169,27 @@ void AnimatedSprite::deviseSize(float divisor_x, float divisor_y)
         _size_x /= divisor_x;
         _size_y /= divisor_y;
     }
+}
+
+/**
+ * @brief Return _is_visible
+ *
+ * @return true the animates sprite is visible
+ * @return false the animates sprite is not visible
+ */
+bool AnimatedSprite::GetVisibility()
+{
+    return _is_visible;
+}
+
+/**
+ * @brief Set the visibility
+ *
+ * @param visibility Set _is_visible
+ */
+void AnimatedSprite::SetVisibility(bool visibility)
+{
+    _is_visible = visibility;
 }
 
 /**

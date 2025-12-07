@@ -34,6 +34,8 @@ public:
     void deviseSize(float divisor_x, float divisor_y);
 
     // VISIBILITY
+    bool GetVisibility();
+    void SetVisibility(bool visibility);
     void show();
     void hide();
 };
