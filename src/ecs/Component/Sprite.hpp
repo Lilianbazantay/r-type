@@ -11,12 +11,12 @@ class Sprite : public IComponent
 {
 private:
     std::string _link;
-    float _sizeX;
-    float _sizeY;
+    float _size_x;
+    float _size_y;
     bool is_visible = true;
 
 public:
-    Sprite(std::string link, float sizeX, float sizeY);
+    Sprite(std::string link, float size_x, float size_y);
     ~Sprite() override = default;
 
     // SET / GET
@@ -25,13 +25,13 @@ public:
 
     std::pair<float, float> GetSize();
     void SetSize(std::pair<float, float> size);
-    void SetSize(float sizeX, float sizeY);
+    void SetSize(float size_x, float size_y);
 
     // OPERATOR
     void multiplySize(std::pair<float, float> multiplicator);
     void multiplySize(float multiplicatorX, float multiplicatorY);
     void deviseSize(std::pair<float, float> divisor);
-    void deviseSize(float divisorX, float divisorY);
+    void deviseSize(float divisor_x, float divisor_y);
 
     // VISIBILITY
     void show();

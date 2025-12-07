@@ -4,10 +4,10 @@
  * @brief Construct a new Sprite:: Sprite object
  *
  * @param link is the link of the sprite
- * @param sizeX set the size x
- * @param sizeY set the size y
+ * @param size_x set the size x
+ * @param size_y set the size y
  */
-Sprite::Sprite(std::string link, float sizeX, float sizeY): _link(link), _sizeX(sizeX), _sizeY(sizeY)
+Sprite::Sprite(std::string link, float size_x, float size_y): _link(link), _size_x(size_x), _size_y(size_y)
 {
     _type = ComponentType::SPRITE;
 }
@@ -35,83 +35,83 @@ void Sprite::SetLink(std::string link)
 /**
  * @brief Return the sprite size
  *
- * @return std::pair<float, float> First : sizeX, Second: sizeY
+ * @return std::pair<float, float> First : size_x, Second: size_y
  */
 std::pair<float, float> Sprite::GetSize()
 {
-    return {_sizeX, _sizeY};
+    return {_size_x, _size_y};
 }
 
 /**
  * @brief Set the sprite size with a pair
  *
- * @param size First: sizeX, Second: sizeY
+ * @param size First: size_x, Second: size_y
  */
 void Sprite::SetSize(std::pair<float, float> size)
 {
-    _sizeX = size.first;
-    _sizeY = size.second;
+    _size_x = size.first;
+    _size_y = size.second;
 }
 
 /**
  * @brief Set the Sprite size
  *
- * @param sizeX Set _sizeX
- * @param sizeY Set _sizeY
+ * @param size_x Set _size_x
+ * @param size_y Set _size_y
  */
-void Sprite::SetSize(float sizeX, float sizeY)
+void Sprite::SetSize(float size_x, float size_y)
 {
-    _sizeX = sizeX;
-    _sizeY = sizeY;
+    _size_x = size_x;
+    _size_y = size_y;
 }
 
 /**
- * @brief Multiply the _sizeX and _sizeY of the sprite
+ * @brief Multiply the _size_x and _size_y of the sprite
  *
- * @param multiplicator value the size is multiply by. First: sizeX, Second: sizeY
+ * @param multiplicator value the size is multiply by. First: size_x, Second: size_y
  */
 void Sprite::multiplySize(std::pair<float, float> multiplicator)
 {
-    _sizeX *= multiplicator.first;
-    _sizeY *= multiplicator.second;
+    _size_x *= multiplicator.first;
+    _size_y *= multiplicator.second;
 }
 
 /**
- * @brief Multiply the _sizeX and _sizeY of the sprite
+ * @brief Multiply the _size_x and _size_y of the sprite
  *
- * @param multiplicatorX value _sizeX is multiply by
- * @param multiplicatorY value _sizeY is multiply by
+ * @param multiplicator_x value _size_x is multiply by
+ * @param multiplicator_y value _size_y is multiply by
  */
-void Sprite::multiplySize(float multiplicatorX, float multiplicatorY)
+void Sprite::multiplySize(float multiplicator_x, float multiplicator_y)
 {
-    _sizeX *= multiplicatorX;
-    _sizeY *= multiplicatorY;
+    _size_x *= multiplicator_x;
+    _size_y *= multiplicator_y;
 }
 
 /**
- * @brief Divise the _sizeX and _sizeY of the sprite
+ * @brief Divise the _size_x and _size_y of the sprite
  *
- * @param divisor value the size is devise by. First: sizeX, Second: sizeY
+ * @param divisor value the size is devise by. First: size_x, Second: size_y
  */
 void Sprite::deviseSize(std::pair<float, float> divisor)
 {
     if (divisor.first != 0 && divisor.second != 0) {
-        _sizeX /= divisor.first;
-        _sizeY /= divisor.second;
+        _size_x /= divisor.first;
+        _size_y /= divisor.second;
     }
 }
 
 /**
- * @brief Divise the _sizeX and _sizeY of the sprite
+ * @brief Divise the _size_x and _size_y of the sprite
  *
- * @param divisorX value _sizeX is divise by
- * @param divisorY value _sizeY is divise by
+ * @param divisor_x value _size_x is divise by
+ * @param divisor_y value _size_y is divise by
  */
-void Sprite::deviseSize(float divisorX, float divisorY)
+void Sprite::deviseSize(float divisor_x, float divisor_y)
 {
-    if (divisorX != 0 && divisorY != 0) {
-        _sizeX /= divisorX;
-        _sizeY /= divisorY;
+    if (divisor_x != 0 && divisor_y != 0) {
+        _size_x /= divisor_x;
+        _size_y /= divisor_y;
     }
 }
 
