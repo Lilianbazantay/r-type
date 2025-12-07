@@ -120,7 +120,7 @@ void Sprite::deviseSize(float divisor_x, float divisor_y)
  */
 void Sprite::show()
 {
-    is_visible = true;
+    _is_visible = true;
 }
 
 /**
@@ -128,5 +128,5 @@ void Sprite::show()
  */
 void Sprite::hide()
 {
-    is_visible = false;
+    _is_visible = false;
 }

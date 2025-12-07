@@ -13,7 +13,7 @@ private:
     std::string _link;
     float _size_x;
     float _size_y;
-    bool is_visible = true;
+    bool _is_visible = true;
 
 public:
     Sprite(std::string link, float size_x, float size_y);
