@@ -4,12 +4,16 @@
 
 #include <string>
 
+/**
+ * @brief Class for a Sprite not animated like a bakground or an
+ */
 class Sprite : public IComponent
 {
 private:
     std::string _link;
     float _sizeX;
     float _sizeY;
+    bool is_visible = true;
 
 public:
     Sprite(std::string link, float sizeX, float sizeY);
@@ -28,4 +32,8 @@ public:
     void multiplySize(float multiplicatorX, float multiplicatorY);
     void deviseSize(std::pair<float, float> divisor);
     void deviseSize(float divisorX, float divisorY);
+
+    // VISIBILITY
+    void show();
+    void hide();
 };

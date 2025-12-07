@@ -114,3 +114,19 @@ void Sprite::deviseSize(float divisorX, float divisorY)
         _sizeY /= divisorY;
     }
 }
+
+/**
+ * @brief Set is_visible to true
+ */
+void Sprite::show()
+{
+    is_visible = true;
+}
+
+/**
+ * @brief Set is_visible to false
+ */
+void Sprite::hide()
+{
+    is_visible = false;
+}
