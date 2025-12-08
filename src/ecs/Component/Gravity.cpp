@@ -17,7 +17,7 @@ Gravity::Gravity(bool is_activated, float attraction_strength): _is_activated(is
  * @return true The gravity is enable
  * @return false The gravity is disable
  */
-bool Gravity::GetActivationState()
+bool Gravity::IsActivated()
 {
     return _is_activated;
 }
@@ -25,7 +25,7 @@ bool Gravity::GetActivationState()
 /**
  * @brief Set if the gravity is enable
  *
- * @param new_state Set _is_activated
+ * @param new_state Set _is_activated (true or false)
  */
 void Gravity::SetActivationState(bool new_state)
 {
