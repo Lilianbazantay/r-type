@@ -3,9 +3,25 @@
 #include <cstdint>
 #include <vector>
 
+
+/**
+ * @brief static class used to encode packets with all sort of informations
+ *
+ */
 class PacketEncoder {
-public:
-    // Build full packet
+private:
+    /**
+     * @brief encode a packet based on given datas
+     *
+     * @param packetID id of the packet to encode
+     * @param payloadSize size of the body of the packet
+     * @param actionType type of action
+     * @param entityType type of entity (if you send any entities)
+     * @param entityID id of the entity that is affected by the action
+     * @param posX position X of the entity (if any entity or if position is needed)
+     * @param posY position Y of the entity (if any entity or if position is needed)
+     * @return std::vector<uint8_t> packet containing the information
+     */
     static std::vector<uint8_t> encode(
         uint16_t packetID, uint8_t payloadSize, uint8_t actionType,
         uint8_t entityType = 0, uint16_t entityID = 0,
@@ -34,6 +50,17 @@ public:
             return out;
         }
 
+public:
+        /**
+         * @brief helper functions that creates an entity
+         *
+         * @param packetID id of the packet
+         * @param entityType type of the entity to be created
+         * @param entityID id of the entity to be created
+         * @param posX position X of the entity to be created
+         * @param posY position Y of the entity to be created
+         * @return std::vector<uint8_t> packet with the information
+         */
     static std::vector<uint8_t> encodeCreate(
         uint16_t packetID,
         uint8_t entityType, uint16_t entityID,
@@ -47,7 +74,15 @@ public:
                 posY);
         }
 
-    // entity moved
+    /**
+     * @brief helper functions to signal that an entity has moved
+     *
+     * @param packetID id of the packet
+     * @param entityID id of the entity
+     * @param posX new position X of the entity
+     * @param posY new position Y of the entity
+     * @return std::vector<uint8_t> packet with the information
+     */
     static std::vector<uint8_t> encodeMove(
         uint16_t packetID,
         uint16_t entityID,
@@ -61,7 +96,13 @@ public:
                 posY);
         }
 
-    // entity deleted
+    /**
+     * @brief helper functions to signal that an entity has been deleted
+     *
+     * @param packetID id of the packet to be sent
+     * @param entityID id of the deleted entity
+     * @return std::vector<uint8_t> packet with the information
+     */
     static std::vector<uint8_t> encodeDelete(
         uint16_t packetID,
         uint16_t entityID) {
@@ -73,7 +114,12 @@ public:
                 0, 0);
         }
 
-    // start game
+    /**
+     * @brief helper function to signal that a game is starting
+     *
+     * @param packetID id of the packet to be sent
+     * @return std::vector<uint8_t> packet with the information
+     */
     static std::vector<uint8_t> encodeStart(
         uint16_t packetID) {
             return encode(packetID,
@@ -81,15 +127,25 @@ public:
             0x4u);
         }
 
-    // package not received
+    /**
+     * @brief function to tell that a package hasn't been received
+     *
+     * @param packetID id of the package to be sent
+     * @return std::vector<uint8_t> packet with the information
+     */
     static std::vector<uint8_t> encodeNotReceived(
         uint16_t packetID){
             return encode(packetID,
             0,
             0x12u);
         }
-    
-    // OK msg
+
+    /**
+     * @brief function to tell the client that the data has been received
+     * 
+     * @param packetID id of the package to be sent
+     * @return std::vector<uint8_t> packet with the information
+     */
     static std::vector<uint8_t> encodeOK(
         uint16_t packetID){
             return encode(packetID,
