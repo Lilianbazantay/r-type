@@ -13,6 +13,10 @@
 #include <functional>
 #include <string>
 
+/**
+ * @brief server class, is the one communicating and parsing data with game and ECS
+ *
+ */
 class Server {
     public:
         using ReceiveCallback = std::function<void(const std::string&, const asio::ip::udp::endpoint&)>;
