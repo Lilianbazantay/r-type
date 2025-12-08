@@ -1,5 +1,9 @@
-#include "../utils.hpp"
+#include "utils.hpp"
 #include "parser.hpp"
+#include "server.hpp"
+
+#include <iostream>
+
 
 /**
  * @brief Main function that launch the programe
@@ -14,5 +18,16 @@ int main(int argc, char **argv) {
 
     if (parser.ParseData(argc, argv) == EXIT_ERROR)
         return EXIT_ERROR;
+    Server test(BASE_PORT, nullptr);
+    test.start();
+    if (argc >= 2) {
+        std::cout << "listening on port " << BASE_PORT << std::endl;
+        while (!test.gotText)
+        test.stop();
+        return EXIT_DESIRED;
+    }
+    std::cout << "sending message" << std::endl;
+    test.send(0, "127.0.0.1", 8081);
+    test.stop();
     return EXIT_DESIRED;
 }
