@@ -5,7 +5,10 @@
 
 #define ACT_SIZE           (uint64_t)4
 
-
+/**
+ * @brief store and parse a packet received data
+ *
+ */
 class Packet {
     private:
         uint16_t packetID;
