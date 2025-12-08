@@ -13,10 +13,10 @@ public:
     ~Gravity() override = default;
 
     // GET / SET
-    bool GetIsActivated();
-    void SetisActivated(bool new_state);
-    void Activate();
-    void Unactivate();
+    bool GetActivationState();
+    void SetActivationState(bool new_state);
+    void Enable();
+    void Disable();
 
     float GetAttractionStrength();
     void SetAttractionStrength(float new_strength);
