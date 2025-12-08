@@ -1,9 +1,13 @@
 #include "server.hpp"
 #include "protocol.hpp"
+#include "server/encoder.hpp"
 
+#include <cstddef>
+#include <cstdint>
 #include <cstdio>
 #include <iostream>
 #include <thread>
+#include <vector>
 
 /**
  * @brief Construct a new Server:: Server object
@@ -74,6 +78,7 @@ void Server::do_receive() {
 
                 std::array<uint8_t, 8> arr;
                 std::memcpy(arr.data(), recv_buffer_.data(), 8);
+                std::cout << arr.data();
 
                 Packet pkt;
                 pkt.getReceivedData(arr);
@@ -93,14 +98,15 @@ void Server::do_receive() {
  * @param host host's IP
  * @param port host's port
  */
-void Server::send(const std::string& msg, const std::string& host, __uint16_t port)
+void Server::send(size_t packetId, const std::string& host, __uint16_t port)
 {
     asio::ip::udp::endpoint endpoint(
         asio::ip::address::from_string(host),
         port
     );
+    std::vector<uint8_t> buffer = PacketEncoder::encodeStart(packetId);
     socket_.async_send_to(
-        asio::buffer(msg),
+        asio::buffer(buffer),
         endpoint,
         [](std::error_code, std::size_t) {}
     );
