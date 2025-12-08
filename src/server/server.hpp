@@ -2,7 +2,10 @@
 #define SERVER_HPP
 
 
+#include <cstddef>
 #pragma once
+
+#define BASE_PORT 8080
 
 #include <asio.hpp>
 #include <thread>
@@ -18,7 +21,7 @@ class Server {
 
         void start();
         void stop();
-        void send(const std::string& msg, const std::string& host, __uint16_t port);
+        void send(size_t packetId, const std::string& host, __uint16_t port);
         bool gotText = false;
 
     private:
