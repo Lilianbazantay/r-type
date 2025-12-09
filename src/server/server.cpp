@@ -113,7 +113,11 @@ void Server::send(size_t packetId, const std::string& host, __uint16_t port)
         [](std::error_code, std::size_t) {}
     );
 }
-
+/**
+ * @brief add the ip stored inside the receiver to the list of connected ips
+ *
+ * @return std::vector<size_t> ip received by the receiver
+ */
 std::vector<size_t> Server::addIp() {
     std::vector<size_t> IP;
     uint32_t binIP = receiver.getIP();
@@ -126,7 +130,11 @@ std::vector<size_t> Server::addIp() {
             list_ip.at(i) = IP;
     return IP;
 }
-
+/**
+ * @brief add the port stored inside the receiver to the list of ports
+ *
+ * @param tmpIP IP of the client linked to the port
+ */
 void Server::addPort(std::vector<size_t> tmpIP) {
     std::string stringIP = "";
     for (size_t i = 0; i < tmpIP.size(); i++)
@@ -138,7 +146,10 @@ void Server::addPort(std::vector<size_t> tmpIP) {
         }
     send(currentID, stringIP, receiver.getPort());
 }
-
+/**
+ * @brief dispatch the content of the receiver based on the payload (the amount of content inside of it)
+ *
+ */
 void Server::packetDispatch() {
     if (receiver.getPayload() == 7) {
         std::vector<size_t> tmpIP = addIp();
