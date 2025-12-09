@@ -61,7 +61,7 @@ void EntitySpawner::SetCooldownLenth(double new_cooldown)
  */
 IMediatorEntity *EntitySpawner::GetEntity()
 {
-    return _entity;
+    return _entity->Clone();
 }
 
 /**
