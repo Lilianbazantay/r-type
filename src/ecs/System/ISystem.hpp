@@ -1,14 +1,15 @@
 
 #pragma once
 
-#include "../Entity/IMediatorEntity.hpp"
+#include "../relevant_data.hpp"
 #include "ecs/IComponent.hpp"
 #include <memory>
 #include <vector>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 class ISystem {
     private:
-        virtual void executeEntity(IMediatorEntity&) = 0;
+        virtual void executeEntity(IMediatorEntity&, relevant_data&) = 0;
         bool checkRequirements(IMediatorEntity&);
     protected:
         std::vector<ComponentType> requiedComponents;
@@ -22,5 +23,5 @@ class ISystem {
 
         void addOptionnalComponentType(ComponentType);
 
-        void checkEntity(IMediatorEntity&);
+        void checkEntity(IMediatorEntity&, relevant_data&);
 };
