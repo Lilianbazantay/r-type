@@ -12,10 +12,10 @@
 class Position : public IComponent
 {
     private:
-        float x;
-        float y;
+        float _x;
+        float _y;
     public:
-        Position(float x = 0, float y = 0) : x(x), y(y)
+        Position(float x = 0, float y = 0) : _x(x), _y(y)
         {
             _type = ComponentType::POSITION;
         };

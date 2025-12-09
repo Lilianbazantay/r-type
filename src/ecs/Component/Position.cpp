@@ -7,7 +7,7 @@
  */
 std::pair<float, float> Position::GetPosition()
 {
-    return std::make_pair(x, y);
+    return std::make_pair(_x, _y);
 }
 
 /**
@@ -20,8 +20,8 @@ std::pair<float, float> Position::GetPosition()
  */
 void Position::SetPosition(float newX, float newY)
 {
-    x = newX;
-    y = newY;
+    _x = newX;
+    _y = newY;
 }
 
 /**
@@ -31,8 +31,8 @@ void Position::SetPosition(float newX, float newY)
  */
 void Position::SetPosition(std::pair<float, float> newPos)
 {
-    x = newPos.first;
-    y = newPos.second;
+    _x = newPos.first;
+    _y = newPos.second;
 }
 
 /**
@@ -42,7 +42,7 @@ void Position::SetPosition(std::pair<float, float> newPos)
  */
 void Position::moveUp()
 {
-    y += 1;
+    _y += 1;
 }
 
 /**
@@ -54,7 +54,7 @@ void Position::moveUp()
  */
 void Position::moveUp(float distance)
 {
-    y += distance;
+    _y += distance;
 }
 
 /**
@@ -64,7 +64,7 @@ void Position::moveUp(float distance)
  */
 void Position::moveDown()
 {
-    y -= 1;
+    _y -= 1;
 }
 
 /**
@@ -76,7 +76,7 @@ void Position::moveDown()
  */
 void Position::moveDown(float distance)
 {
-    y -= distance;
+    _y -= distance;
 }
 
 /**
@@ -86,7 +86,7 @@ void Position::moveDown(float distance)
  */
 void Position::moveLeft()
 {
-    x -= 1;
+    _x -= 1;
 }
 
 /**
@@ -98,7 +98,7 @@ void Position::moveLeft()
  */
 void Position::moveLeft(float distance)
 {
-    x -= distance;
+    _x -= distance;
 }
 
 /**
@@ -108,7 +108,7 @@ void Position::moveLeft(float distance)
  */
 void Position::moveRight()
 {
-    x += 1;
+    _x += 1;
 }
 
 /**
@@ -120,5 +120,5 @@ void Position::moveRight()
  */
 void Position::moveRight(float distance)
 {
-    x += distance;
+    _x += distance;
 }
