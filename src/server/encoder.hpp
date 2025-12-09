@@ -142,7 +142,7 @@ public:
 
     /**
      * @brief function to tell the client that the data has been received
-     * 
+     *
      * @param packetID id of the package to be sent
      * @return std::vector<uint8_t> packet with the information
      */
