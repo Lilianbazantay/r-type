@@ -8,7 +8,7 @@
  * @param sizeX set _sizeX with a float value
  * @param sizeY set _sizeY with a float value
  */
-Hitbox::Hitbox(float sizeX, float sizeY) : _sizeX(sizeX), _sizeY(sizeY)
+Hitbox::Hitbox(float sizeX, float sizeY, int damage) : _sizeX(sizeX), _sizeY(sizeY), _damage(damage)
 {
     _type = ComponentType::HITBOX;
 }
@@ -21,7 +21,7 @@ Hitbox::Hitbox(float sizeX, float sizeY) : _sizeX(sizeX), _sizeY(sizeY)
  * @param layers set all layers
  * @param masks set all masks
  */
-Hitbox::Hitbox(float sizeX, float sizeY, std::vector<int> layers, std::vector<int> masks) : _sizeX(sizeX), _sizeY(sizeY), _layers(layers), _masks(masks)
+Hitbox::Hitbox(float sizeX, float sizeY, int damage, std::vector<int> layers, std::vector<int> masks) : _sizeX(sizeX), _sizeY(sizeY), _layers(layers), _masks(masks), _damage(damage)
 {
     _type = ComponentType::HITBOX;
 }
@@ -137,4 +137,45 @@ std::vector<int> Hitbox::GetMask()
 void Hitbox::SetMask(std::vector<int> mask)
 {
     _masks = mask;
+}
+
+/**
+ * @brief Return the damage of the Hitbox
+ *
+ * @return int Damage to return
+ */
+int Hitbox::GetDamage()
+{
+    return _damage;
+}
+
+/**
+ * @brief Set the damage
+ *
+ * @param new_damage Set _damage
+ */
+void Hitbox::SetDamage(int new_damage)
+{
+    _damage = new_damage;
+}
+
+/**
+ * @brief Multiply the damage with multiplyer
+ *
+ * @param multiplyer Multiply the damage
+ */
+void Hitbox::MultiplyDamage(int multiplyer)
+{
+    _damage *= multiplyer;
+}
+
+/**
+ * @brief Divise the damage if the diviser is != 0
+ *
+ * @param diviser Divise the damage
+ */
+void Hitbox::DiviseDamage(int diviser)
+{
+    if (diviser != 0)
+        _damage /= diviser;
 }

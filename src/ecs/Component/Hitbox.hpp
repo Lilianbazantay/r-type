@@ -20,10 +20,11 @@ class Hitbox : public IComponent
         float _sizeY;
         std::vector<int> _layers;
         std::vector<int> _masks;
+        int _damage;
 
     public:
-        Hitbox(float sizeX, float sizeY);
-        Hitbox(float sizeX, float sizeY, std::vector<int> layers, std::vector<int> mask);
+        Hitbox(float sizeX, float sizeY, int damage);
+        Hitbox(float sizeX, float sizeY, int damage, std::vector<int> layers, std::vector<int> mask);
         ~Hitbox() override = default;
 
         // Size
@@ -42,4 +43,10 @@ class Hitbox : public IComponent
         void SubMask(int mask);
         std::vector<int> GetMask();
         void SetMask(std::vector<int> mask);
+
+        // Damage
+        int GetDamage();
+        void SetDamage(int new_damage);
+        void MultiplyDamage(int multiplyer);
+        void DiviseDamage(int diviser);
 };
