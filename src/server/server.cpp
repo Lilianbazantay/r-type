@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <cstdio>
 #include <iostream>
-#include <memory>
 #include <thread>
 #include <vector>
 
@@ -149,7 +148,7 @@ void Server::addPort(std::vector<size_t> tmpIP) {
  *
  */
 void Server::packetDispatch() {
-    if (receiver.getPayload() == 7)
+    if (receiver.getPayload() == 6)
         addPort(addIp());
     else if (receiver.getPayload() == 1)
         switch (receiver.getActionType()) {
@@ -159,5 +158,12 @@ void Server::packetDispatch() {
                 input_released(receiver.getActionvalue());
             default:
                 send(currentID, ipToString(list_ip.at(0)), list_port.at(0));
+    } else if (receiver.getPayload() == 0) {
+        switch (receiver.getActionType()) {
+            case (4):
+                return;
+            case (15):
+                return;
+        }
     }
 }
