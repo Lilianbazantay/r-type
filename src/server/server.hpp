@@ -5,6 +5,7 @@
 #include "server/protocol.hpp"
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 #pragma once
 
@@ -29,6 +30,8 @@ class Server {
         void send(size_t packetId, const std::string& host, __uint16_t port);
         bool gotText = false;
         size_t currentID;
+        void input_pressed(uint8_t action);
+        void input_released(uint8_t action);
 
     private:
         void do_receive();

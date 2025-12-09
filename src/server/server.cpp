@@ -1,6 +1,7 @@
 #include "server.hpp"
 #include "protocol.hpp"
-#include "server/encoder.hpp"
+#include "encoder.hpp"
+#include "utils.hpp"
 
 #include <atomic>
 #include <cstddef>
@@ -136,23 +137,27 @@ std::vector<size_t> Server::addIp() {
  * @param tmpIP IP of the client linked to the port
  */
 void Server::addPort(std::vector<size_t> tmpIP) {
-    std::string stringIP = "";
-    for (size_t i = 0; i < tmpIP.size(); i++)
-        stringIP += std::format("{}{}", tmpIP[i], (i + 1 < tmpIP.size() ? "." : ""));
     for (size_t i = 0; i < list_port.size(); i++)
         if (list_port.at(i) == 0 || !list_port.at(i)) {
             list_port.at(i) = receiver.getPort();
             return;
         }
-    send(currentID, stringIP, receiver.getPort());
+    send(currentID, ipToString(tmpIP), receiver.getPort());
 }
 /**
  * @brief dispatch the content of the receiver based on the payload (the amount of content inside of it)
  *
  */
 void Server::packetDispatch() {
-    if (receiver.getPayload() == 7) {
-        std::vector<size_t> tmpIP = addIp();
-        addPort(tmpIP);
+    if (receiver.getPayload() == 7)
+        addPort(addIp());
+    else if (receiver.getPayload() == 1)
+        switch (receiver.getActionType()) {
+            case (0):
+                input_pressed(receiver.getActionvalue());
+            case (1):
+                input_released(receiver.getActionvalue());
+            default:
+                send(currentID, ipToString(list_ip.at(0)), list_port.at(0));
     }
 }

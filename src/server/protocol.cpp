@@ -73,10 +73,10 @@ void Packet::FillActionValue(std::array<uint8_t, 8> received) {
 void Packet::FillIP(std::array<uint8_t, 8> received) {
     uint8_t offset = 3;
     IP =
-        (static_cast<uint32_t>(received.at(offset + 0)) << 24u) |
-        (static_cast<uint32_t>(received.at(offset + 1)) << 16u) |
-        (static_cast<uint32_t>(received.at(offset + 2)) << 8u)  |
-        (static_cast<uint32_t>(received.at(offset + 3)));
+        (static_cast<uint32_t>(received.at(offset + 0))) |
+        (static_cast<uint32_t>(received.at(offset + 1)) << 8u) |
+        (static_cast<uint32_t>(received.at(offset + 2)) << 16u)  |
+        (static_cast<uint32_t>(received.at(offset + 3)) << 24u);
 }
 
 /**
