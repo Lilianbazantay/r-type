@@ -9,10 +9,10 @@ class IMediatorEntity
 {
     private:
         // Components lists
-        std::vector<IComponent> undergoerComponents;   // Ex: Healt, Shield, Position ...
-        std::vector<IComponent> actuatorComponents;    // Ex: Input Catcher, Button, ...
+        std::vector<IComponent> _undergoerComponents;   // Ex: Healt, Shield, Position ...
+        std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
         // Linked Entities
-        std::vector<IMediatorEntity> attachedEntities; // Ex: weapon attached to a player, ...
+        std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
     public:
         ~IMediatorEntity() = default;
@@ -24,4 +24,6 @@ class IMediatorEntity
         void AddActuatorComponent(IComponent component);
         std::vector<IComponent> GetUnderGoerComponents();
         void AddUndergoerComponent(IComponent component);
+
+        IComponent *FindComponent(ComponentType type);
 };

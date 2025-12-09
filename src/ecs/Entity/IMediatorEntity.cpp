@@ -1,4 +1,5 @@
 #include "IMediatorEntity.hpp"
+#include "ecs/IComponent.hpp"
 
 /**
  * @brief returns the actuators components of the entity
@@ -7,7 +8,7 @@
  */
 std::vector<IComponent> IMediatorEntity::GetActuatorComponents()
 {
-    return actuatorComponents;
+    return _actuatorComponents;
 };
 
 /**
@@ -17,7 +18,7 @@ std::vector<IComponent> IMediatorEntity::GetActuatorComponents()
  */
 void IMediatorEntity::AddActuatorComponent(IComponent component)
 {
-    actuatorComponents.push_back(component);
+    _actuatorComponents.push_back(component);
 };
 
 /**
@@ -27,7 +28,7 @@ void IMediatorEntity::AddActuatorComponent(IComponent component)
  */
 std::vector<IComponent> IMediatorEntity::GetUnderGoerComponents()
 {
-    return undergoerComponents;
+    return _undergoerComponents;
 };
 
 /**
@@ -37,5 +38,24 @@ std::vector<IComponent> IMediatorEntity::GetUnderGoerComponents()
  */
 void IMediatorEntity::AddUndergoerComponent(IComponent component)
 {
-    undergoerComponents.push_back(component);
+    _undergoerComponents.push_back(component);
 };
+
+/**
+ * @brief Return the adresse of the Component with the type given in parametter
+ *
+ * @param type Component searched
+ * @return IComponent* Return the addre of the component searcher or nullptr if there is no component
+ */
+IComponent *IMediatorEntity::FindComponent(ComponentType type)
+{
+    for (size_t i = 0; i < _actuatorComponents.size(); i++) {
+        if (_actuatorComponents[i].GetType() == type)
+            return &_actuatorComponents[i];
+    }
+    for (size_t i = 0; i < _undergoerComponents.size(); i++) {
+        if (_undergoerComponents[i].GetType() == type)
+            return &_undergoerComponents[i];
+    }
+    return nullptr;
+}
