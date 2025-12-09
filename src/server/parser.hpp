@@ -15,6 +15,7 @@ public:
 
     static void descripton();
     int ParseData(int argc, char **argv);
+    int getPort() {return port; };
 };
 
 #endif

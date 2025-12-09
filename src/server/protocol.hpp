@@ -23,11 +23,18 @@ class Packet {
         ~Packet() = default;
 
 
-        void getPacketID(std::array<uint8_t, 8>);
-        void getActionType(std::array<uint8_t, 8>);
-        void getPayloadSize(std::array<uint8_t, 8>);
-        void getActionValue(std::array<uint8_t, 8>);
-        void getIP(std::array<uint8_t, 8>);
-        void getPort(std::array<uint8_t, 8>);
-        void getReceivedData(std::array<uint8_t, 8>);
+        void FillPacketID(std::array<uint8_t, 8>);
+        void FillActionType(std::array<uint8_t, 8>);
+        void FillPayloadSize(std::array<uint8_t, 8>);
+        void FillActionValue(std::array<uint8_t, 8>);
+        void FillIP(std::array<uint8_t, 8>);
+        void FillPort(std::array<uint8_t, 8>, uint8_t offset);
+        void FillReceivedData(std::array<uint8_t, 8>);
+
+        inline uint16_t getID(void) { return packetID; };
+        inline uint8_t getActionType(void) { return actionType; };
+        inline uint8_t getPayload(void) { return payloadSize; };
+        inline uint8_t getActionvalue(void) { return  actionValue; };
+        inline uint64_t getIP(void) { return IP; };
+        inline uint16_t getPort(void) { return port; };
 };
