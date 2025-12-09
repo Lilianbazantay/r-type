@@ -2,10 +2,12 @@
 #define SERVER_HPP
 
 
+#include "server/protocol.hpp"
+#include <array>
 #include <cstddef>
+#include <cstdint>
+#include <vector>
 #pragma once
-
-#define BASE_PORT 8080
 
 #include <asio.hpp>
 #include <thread>
@@ -27,10 +29,16 @@ class Server {
         void stop();
         void send(size_t packetId, const std::string& host, __uint16_t port);
         bool gotText = false;
+        size_t currentID;
 
     private:
         void do_receive();
         void run();
+
+        void packetDispatch();
+
+        std::vector<size_t> addIp();
+        void addPort(std::vector <size_t> IP);
 
     private:
         asio::io_context io_ctx_;
@@ -38,6 +46,9 @@ class Server {
         asio::ip::udp::endpoint remote_endpoint_;
 
         std::array<char, 2048> recv_buffer_{};
+        Packet receiver;
+        std::array<std::vector<size_t>, 4> list_ip;
+        std::array<size_t, 4> list_port;
 
         std::jthread io_thread_;
         std::atomic<bool> running_{false};

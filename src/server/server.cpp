@@ -11,7 +11,7 @@
 
 /**
  * @brief Construct a new Server:: Server object
- * 
+ *
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
@@ -23,7 +23,7 @@ Server::Server(__uint16_t listen_port, ReceiveCallback on_receive)
 
 /**
  * @brief Destroy the Server:: Server object
- * 
+ *
  */
 Server::~Server() {
     stop();
@@ -31,7 +31,7 @@ Server::~Server() {
 
 /**
  * @brief server's runner
- * 
+ *
  */
 void Server::run() {
     try {
@@ -43,7 +43,7 @@ void Server::run() {
 
 /**
  * @brief server's starter function
- * 
+ *
  */
 void Server::start() {
     if (running_)
@@ -55,7 +55,7 @@ void Server::start() {
 
 /**
  * @brief server stopping function
- * 
+ *
  */
 void Server::stop() {
     if (!running_)
@@ -67,7 +67,7 @@ void Server::stop() {
 
 /**
  * @brief server's receiver function.
- * 
+ *
  */
 void Server::do_receive() {
     socket_.async_receive_from(
@@ -80,8 +80,8 @@ void Server::do_receive() {
                 std::memcpy(arr.data(), recv_buffer_.data(), 8);
                 std::cout << arr.data();
 
-                Packet pkt;
-                pkt.getReceivedData(arr);
+                receiver.FillReceivedData(arr);
+                packetDispatch();
             }
 
             if (running_)
@@ -93,7 +93,7 @@ void Server::do_receive() {
 
 /**
  * @brief server's sender function. It will send the msg contained to the host at a certain port
- * 
+ *
  * @param msg message to send
  * @param host host's IP
  * @param port host's port
@@ -110,4 +110,29 @@ void Server::send(size_t packetId, const std::string& host, __uint16_t port)
         endpoint,
         [](std::error_code, std::size_t) {}
     );
+}
+
+std::vector<size_t> Server::addIp() {
+    std::vector<size_t> IP;
+    return IP;
+}
+
+void Server::addPort(std::vector<size_t> tmpIP) {
+    std::string stringIP = "";
+    for (size_t i = 0; i < tmpIP.size(); i++)
+        stringIP += std::format("{}{}", tmpIP[i], (i + 1 < tmpIP.size() ? "." : ""));
+    if (list_port.empty())
+        send(currentID, stringIP, receiver.getPort());
+    else {
+        for (size_t i = 0; i < list_port.size(); i++)
+            if (list_port.at(i) == 0 || !list_port.at(i))
+                list_port.at(i) = receiver.getPort();
+    }
+}
+
+void Server::packetDispatch() {
+    if (receiver.getPayload() == 7) {
+        std::vector<size_t> tmpIP = addIp();
+        addPort(tmpIP);
+    }
 }
