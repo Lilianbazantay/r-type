@@ -15,7 +15,7 @@ class Packet {
         uint8_t actionType;
         uint8_t payloadSize;
         uint8_t actionValue;
-        uint64_t IP;
+        uint32_t IP;
         uint16_t port;
 
     public:
@@ -35,6 +35,6 @@ class Packet {
         inline uint8_t getActionType(void) { return actionType; };
         inline uint8_t getPayload(void) { return payloadSize; };
         inline uint8_t getActionvalue(void) { return  actionValue; };
-        inline uint64_t getIP(void) { return IP; };
+        inline uint32_t getIP(void) { return IP; };
         inline uint16_t getPort(void) { return port; };
 };
