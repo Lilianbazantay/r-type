@@ -1,135 +1,146 @@
 #include "Sprite.hpp"
+#include <stdexcept>
 
 /**
- * @brief Construct a new Sprite:: Sprite object
+ * @brief Construct a new Sprite object
  *
- * @param link is the link of the sprite
- * @param size_x set the size x
- * @param size_y set the size y
+ * @param file_path Path to the texture file
+ * @param size_x Initial width
+ * @param size_y Initial height
  */
-Sprite::Sprite(std::string link, float size_x, float size_y): _link(link), _size_x(size_x), _size_y(size_y)
+Sprite::Sprite(const std::string& file_path, float size_x, float size_y)
 {
+    if (!_texture.loadFromFile(file_path))
+        throw std::runtime_error("Failed to load texture: " + file_path);
+
+    _sprite.setTexture(_texture);
+    _sprite.setScale(size_x / _texture.getSize().x, size_y / _texture.getSize().y);
     _type = ComponentType::SPRITE;
 }
 
 /**
- * @brief Get the sprite link
+ * @brief Get the SFML sprite
  *
- * @return std::string return the sprite link
+ * @return sf::Sprite& Reference to the sprite
  */
-std::string Sprite::GetLink()
+sf::Sprite& Sprite::GetSprite()
 {
-    return _link;
+    return _sprite;
 }
 
 /**
- * @brief Replace _link by a new link
+ * @brief Set a new texture from file
  *
- * @param link new link
+ * @param file_path Path to the new texture file
  */
-void Sprite::SetLink(std::string link)
+void Sprite::SetTexture(const std::string& file_path)
 {
-    _link = link;
+    if (!_texture.loadFromFile(file_path))
+        throw std::runtime_error("Failed to load texture: " + file_path);
+    _sprite.setTexture(_texture, true);
 }
 
 /**
  * @brief Return the sprite size
  *
- * @return std::pair<float, float> First : size_x, Second: size_y
+ * @return std::pair<float, float> First: width, Second: height
  */
-std::pair<float, float> Sprite::GetSize()
+std::pair<float, float> Sprite::GetSize() const
 {
-    return {_size_x, _size_y};
+    sf::Vector2f scale = _sprite.getScale();
+    sf::Vector2u texSize = _texture.getSize();
+    return {texSize.x * scale.x, texSize.y * scale.y};
 }
 
 /**
  * @brief Set the sprite size with a pair
  *
- * @param size First: size_x, Second: size_y
+ * @param size First: width, Second: height
  */
 void Sprite::SetSize(std::pair<float, float> size)
 {
-    _size_x = size.first;
-    _size_y = size.second;
+    SetSize(size.first, size.second);
 }
 
 /**
- * @brief Set the Sprite size
+ * @brief Set the sprite size
  *
- * @param size_x Set _size_x
- * @param size_y Set _size_y
+ * @param size_x Width
+ * @param size_y Height
  */
 void Sprite::SetSize(float size_x, float size_y)
 {
-    _size_x = size_x;
-    _size_y = size_y;
+    sf::Vector2u texSize = _texture.getSize();
+    _sprite.setScale(size_x / texSize.x, size_y / texSize.y);
 }
 
 /**
- * @brief Multiply the _size_x and _size_y of the sprite
+ * @brief Multiply the sprite size
  *
- * @param multiplicator value the size is multiply by. First: size_x, Second: size_y
+ * @param multiplicator First: width multiplier, Second: height multiplier
  */
 void Sprite::multiplySize(std::pair<float, float> multiplicator)
 {
-    _size_x *= multiplicator.first;
-    _size_y *= multiplicator.second;
+    sf::Vector2f scale = _sprite.getScale();
+    _sprite.setScale(scale.x * multiplicator.first, scale.y * multiplicator.second);
 }
 
 /**
- * @brief Multiply the _size_x and _size_y of the sprite
+ * @brief Multiply the sprite size
  *
- * @param multiplicator_x value _size_x is multiply by
- * @param multiplicator_y value _size_y is multiply by
+ * @param multiplicator_x Width multiplier
+ * @param multiplicator_y Height multiplier
  */
 void Sprite::multiplySize(float multiplicator_x, float multiplicator_y)
 {
-    _size_x *= multiplicator_x;
-    _size_y *= multiplicator_y;
+    sf::Vector2f scale = _sprite.getScale();
+    _sprite.setScale(scale.x * multiplicator_x, scale.y * multiplicator_y);
 }
 
 /**
- * @brief Divise the _size_x and _size_y of the sprite
+ * @brief Divide the sprite size
  *
- * @param divisor value the size is devise by. First: size_x, Second: size_y
+ * @param divisor First: width divisor, Second: height divisor
  */
 void Sprite::deviseSize(std::pair<float, float> divisor)
 {
-    if (divisor.first != 0 && divisor.second != 0) {
-        _size_x /= divisor.first;
-        _size_y /= divisor.second;
+    if (divisor.first != 0 && divisor.second != 0)
+    {
+        sf::Vector2f scale = _sprite.getScale();
+        _sprite.setScale(scale.x / divisor.first, scale.y / divisor.second);
     }
 }
 
 /**
- * @brief Divise the _size_x and _size_y of the sprite
+ * @brief Divide the sprite size
  *
- * @param divisor_x value _size_x is divise by
- * @param divisor_y value _size_y is divise by
+ * @param divisor_x Width divisor
+ * @param divisor_y Height divisor
  */
 void Sprite::deviseSize(float divisor_x, float divisor_y)
 {
-    if (divisor_x != 0 && divisor_y != 0) {
-        _size_x /= divisor_x;
-        _size_y /= divisor_y;
+    if (divisor_x != 0 && divisor_y != 0)
+    {
+        sf::Vector2f scale = _sprite.getScale();
+        _sprite.setScale(scale.x / divisor_x, scale.y / divisor_y);
     }
 }
 
 /**
- * @brief Return _is_visible
+ * @brief Return whether the sprite is visible
  *
- * @return true the sprite is visible
- * @return false the sprite is not visible
+ * @return true if visible
+ * @return false if not visible
  */
-bool Sprite::GetVisibility()
+bool Sprite::GetVisibility() const
 {
     return _is_visible;
 }
 
 /**
- * @brief Set the visibility
+ * @brief Set the sprite visibility
  *
- * @param visibility Set _is_visible
+ * @param visibility Visibility flag
  */
 void Sprite::SetVisibility(bool visibility)
 {
@@ -137,7 +148,7 @@ void Sprite::SetVisibility(bool visibility)
 }
 
 /**
- * @brief Set is_visible to true
+ * @brief Make the sprite visible
  */
 void Sprite::show()
 {
@@ -145,7 +156,7 @@ void Sprite::show()
 }
 
 /**
- * @brief Set is_visible to false
+ * @brief Hide the sprite
  */
 void Sprite::hide()
 {
