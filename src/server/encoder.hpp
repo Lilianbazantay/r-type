@@ -79,18 +79,19 @@ public:
      *
      * @param packetID id of the packet
      * @param entityID id of the entity
+     * @param entityType type of the entity
      * @param posX new position X of the entity
      * @param posY new position Y of the entity
      * @return std::vector<uint8_t> packet with the information
      */
     static std::vector<uint8_t> encodeMove(
         uint16_t packetID,
-        uint16_t entityID,
+        uint8_t entityType, uint16_t entityID,
         uint16_t posX, uint16_t posY) {
             return encode(packetID,
                 5,
                 0x1u,
-                0u,
+                entityType,
                 entityID,
                 posX,
                 posY);
