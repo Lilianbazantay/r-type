@@ -26,7 +26,7 @@ class IMediatorEntity
         void AddUndergoerComponent(IComponent component);
 
         // CLONE
-        virtual IMediatorEntity Clone() = 0;
+        virtual IMediatorEntity *Clone() = 0;
 
         // FIND
         IComponent *FindComponent(ComponentType type);
