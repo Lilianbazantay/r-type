@@ -6,6 +6,6 @@
 class MovementSystem : public ISystem {
     private:
         MovementSystem();
-        void executeEntity(IMediatorEntity&) override;
+        void executeEntity(IMediatorEntity&, relevant_data &) override;
     public:
 };
