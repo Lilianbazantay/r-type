@@ -13,7 +13,6 @@ enum class ComponentType {
     CLOCK,
     HITBOX,
     ATTACK,
-    BULLET,
     GRAVITY,
     STRATEGY,
     UNKNOWN
