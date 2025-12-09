@@ -11,7 +11,8 @@
 
 class Asio_network {
     public:
-        using ReceiveCallback = std::function<void(const std::string&, const asio::ip::udp::endpoint&)>;
+        using ReceiveCallback = std::function<void(const uint8_t* data, size_t size, const asio::ip::udp::endpoint&)>;
+
         Asio_network(__uint16_t listen_port, ReceiveCallback on_receive = nullptr);
         ~Asio_network();
 

@@ -47,8 +47,11 @@ void Asio_network::do_receive() {
                 std::cout << "Received message:\n" << std::string(recv_buffer_.data(), bytes_recvd) << std::endl;
                 gotText = true;
                 if (receive_callback_) {
-                    receive_callback_(recv_buffer_.data(),
-                        remote_endpoint_);
+                    receive_callback_(
+                        reinterpret_cast<uint8_t*>(recv_buffer_.data()),
+                        bytes_recvd,
+                        remote_endpoint_
+                    );
                 }
             }
             if (running_)
