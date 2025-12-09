@@ -12,16 +12,15 @@ void Packet::FillReceivedData(std::array<uint8_t, 8> received) {
     FillPacketID(received);
     FillActionType(received);
     FillPayloadSize(received);
-    if (payloadSize == 1)
-        FillActionValue(received);
-    if (payloadSize == 2)
-        FillPort(received, 3);
-    if (payloadSize == 4)
-        FillIP(received);
-    if (payloadSize == 6) {
+    if (actionType == 0b0100 || actionType == 0b1111)
+        return;
+    else if (actionType == 0b0010 || actionType == 0b0110 || actionType == 0b1000) {
         FillIP(received);
         FillPort(received, 7);
-    }
+    } else if (actionType == 0b1100)
+        FillPort(received, 3);
+    else
+        FillActionValue(received);
 }
 
 /**
@@ -75,7 +74,7 @@ void Packet::FillIP(std::array<uint8_t, 8> received) {
     IP =
         (static_cast<uint32_t>(received.at(offset + 0))) |
         (static_cast<uint32_t>(received.at(offset + 1)) << 8u) |
-        (static_cast<uint32_t>(received.at(offset + 2)) << 16u)  |
+        (static_cast<uint32_t>(received.at(offset + 2)) << 16u) |
         (static_cast<uint32_t>(received.at(offset + 3)) << 24u);
 }
 
