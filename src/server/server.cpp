@@ -2,10 +2,12 @@
 #include "protocol.hpp"
 #include "server/encoder.hpp"
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <iostream>
+#include <memory>
 #include <thread>
 #include <vector>
 
@@ -114,6 +116,14 @@ void Server::send(size_t packetId, const std::string& host, __uint16_t port)
 
 std::vector<size_t> Server::addIp() {
     std::vector<size_t> IP;
+    uint32_t binIP = receiver.getIP();
+    IP.at(0) = binIP & 0xFFu;
+    IP.at(1) = (binIP >> 8u)  & 0xFFu;
+    IP.at(2) = (binIP >> 16u) & 0xFFu;
+    IP.at(3) = (binIP >> 24u) & 0xFFu;
+    for (size_t i = 0; i < list_ip.size(); i++)
+        if (list_ip.at(i).empty())
+            list_ip.at(i) = IP;
     return IP;
 }
 
@@ -121,13 +131,12 @@ void Server::addPort(std::vector<size_t> tmpIP) {
     std::string stringIP = "";
     for (size_t i = 0; i < tmpIP.size(); i++)
         stringIP += std::format("{}{}", tmpIP[i], (i + 1 < tmpIP.size() ? "." : ""));
-    if (list_port.empty())
-        send(currentID, stringIP, receiver.getPort());
-    else {
-        for (size_t i = 0; i < list_port.size(); i++)
-            if (list_port.at(i) == 0 || !list_port.at(i))
-                list_port.at(i) = receiver.getPort();
-    }
+    for (size_t i = 0; i < list_port.size(); i++)
+        if (list_port.at(i) == 0 || !list_port.at(i)) {
+            list_port.at(i) = receiver.getPort();
+            return;
+        }
+    send(currentID, stringIP, receiver.getPort());
 }
 
 void Server::packetDispatch() {
