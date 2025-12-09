@@ -8,10 +8,10 @@
 class IMediatorEntity
 {
     private:
-        // Components lists
+        // COMPONENT LIST
         std::vector<IComponent> _undergoerComponents;   // Ex: Healt, Shield, Position ...
         std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
-        // Linked Entities
+        // LINKED ENTITIES
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
     public:
@@ -19,11 +19,15 @@ class IMediatorEntity
 
         virtual void run() = 0;
 
-        // Components management
+        // COMPONENT MANAGER
         std::vector<IComponent> GetActuatorComponents();
         void AddActuatorComponent(IComponent component);
         std::vector<IComponent> GetUnderGoerComponents();
         void AddUndergoerComponent(IComponent component);
 
+        // CLONE
+        virtual IMediatorEntity Clone() = 0;
+
+        // FIND
         IComponent *FindComponent(ComponentType type);
 };
