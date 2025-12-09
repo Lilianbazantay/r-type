@@ -24,7 +24,7 @@ MovementSystem::MovementSystem() {
  * @param entity entity getting checked
  * @param data necessary data for systems. See "../relevant_data.hpp" for more information
 */
-void MovementSystem::executeEntity(IMediatorEntity &entity, relevant_data &data) {
+void MovementSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) {
     Position *playerPos = dynamic_cast<Position*>(entity.FindComponent(ComponentType::POSITION));
     Velocity *playerVelocity = dynamic_cast<Velocity*>(entity.FindComponent(ComponentType::VELOCITY));
     Direction *playerDirection = dynamic_cast<Direction*>(entity.FindComponent(ComponentType::DIRECTION));

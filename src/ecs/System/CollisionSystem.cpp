@@ -55,8 +55,11 @@ bool CollisionSystem::checkCollison(std::pair<float, float> playerPos, std::pair
 
 /**
  * @brief performs a collision and layer check upon every entity. if entites collide and have the same layer, damages colliders based on mask; and if they have HP
+ *
+ * @param entity entity getting checked
+ * @param data necessary data for systems. See "../relevant_data.hpp" for more information
  */
-void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data &data) {
+void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) {
     Hitbox *playerHitbox = dynamic_cast<Hitbox*>(entity.FindComponent(ComponentType::HITBOX));
     Position *playerPosition = dynamic_cast<Position*>(entity.FindComponent(ComponentType::POSITION));
     Hp *playerHp = dynamic_cast<Hp*>(entity.FindComponent(ComponentType::HP));

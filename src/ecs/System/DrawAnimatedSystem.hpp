@@ -6,7 +6,7 @@
 class DrawAnimatedSystem : public ISystem {
     private:
         DrawAnimatedSystem();
-        void executeEntity(IMediatorEntity&) override;
+        void executeEntity(IMediatorEntity&, relevant_data_t &) override;
     public:
 };
 

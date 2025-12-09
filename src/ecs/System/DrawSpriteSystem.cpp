@@ -22,10 +22,10 @@ DrawSpriteSystem::DrawSpriteSystem() {
  * @param entity entity getting checked
  * @param data necessary data for systems. See "../relevant_data.hpp" for more information
  */
-void DrawSpriteSystem::executeEntity(IMediatorEntity &entity, relevant_data &data) {
+void DrawSpriteSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) {
     Position *playerPos = dynamic_cast<Position*>(entity.FindComponent(ComponentType::POSITION));
     Sprite *playerSprite = dynamic_cast<Sprite*>(entity.FindComponent(ComponentType::SPRITE));
-    sf::Sprite spr;
+    sf::Sprite spr = playerSprite->GetSprite();
     auto pos = playerPos->GetPosition();
     spr.setPosition(pos.first, pos.second);
     data.window.draw(spr);

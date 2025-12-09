@@ -67,7 +67,7 @@ void ISystem::addOptionnalComponentType(ComponentType type) {
  * @param entity entity getting checked
  * @param data necessary data for systems. See "../relevant_data.hpp" for more information
 */
-void ISystem::checkEntity(IMediatorEntity& entity, relevant_data& data) {
+void ISystem::checkEntity(IMediatorEntity& entity, relevant_data_t& data) {
     if (checkRequirements(entity) == false)
         return;
     executeEntity(entity, data);

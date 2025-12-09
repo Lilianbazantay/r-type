@@ -7,7 +7,7 @@
 
 class CollisionSystem : public ISystem {
     private:
-        void executeEntity(IMediatorEntity&, relevant_data &) override;
+        void executeEntity(IMediatorEntity&, relevant_data_t &) override;
         bool checkCollison(std::pair<float, float>, std::pair<float, float>, std::pair<float, float>, std::pair<float, float>);
         bool checkLayers(std::vector<int>, std::vector<int>);
     public:
