@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
     if (parser.ParseData(argc, argv) == EXIT_ERROR)
         return EXIT_ERROR;
-    Server test(parser.getPort(), nullptr);
+    Server test(parser.getPort());
     test.start();
     if (argc >= 2) {
         std::cout << "listening on port " << parser.getPort() << std::endl;
