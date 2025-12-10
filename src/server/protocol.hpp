@@ -3,7 +3,21 @@
 #include <array>
 #include <cstdint>
 
-#define ACT_SIZE           (uint64_t)4
+#define ACT_SIZE (uint64_t)4
+
+/**
+ * @brief define all the action types of the protocol
+ *
+ */
+enum ActionType {
+    INPUT_PRESSED = 0b0000,
+    INPUT_RELEASED = 0b0001,
+    PLAYER_CONNECT = 0b0010,
+    START_GAME     = 0b0100,
+    NEW_CONNECTION = 0b1000,
+    NOT_RECEIVED   = 0b1100,
+    OK           = 0b1111
+};
 
 /**
  * @brief store and parse a packet received data

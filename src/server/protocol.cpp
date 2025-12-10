@@ -12,12 +12,12 @@ void Packet::FillReceivedData(std::array<uint8_t, 8> received) {
     FillPacketID(received);
     FillActionType(received);
     FillPayloadSize(received);
-    if (actionType == 0b0100 || actionType == 0b1111)
+    if (actionType == OK || actionType == START_GAME)
         return;
-    else if (actionType == 0b0010 || actionType == 0b0110 || actionType == 0b1000) {
+    else if (actionType == PLAYER_CONNECT || actionType == NEW_CONNECTION) {
         FillIP(received);
         FillPort(received, 7);
-    } else if (actionType == 0b1100)
+    } else if (actionType == NOT_RECEIVED)
         FillPort(received, 3);
     else
         FillActionValue(received);
