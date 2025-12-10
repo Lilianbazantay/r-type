@@ -70,10 +70,10 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
     Hitbox *entityHitbox;
     Position *entityPosition;
     Hp *entityHp;
-    std::vector<IMediatorEntity>& entityList = data.entityList;
+    std::vector<IMediatorEntity*>& entityList = data.entityList;
     for (size_t i = 0; i < entityList.size(); i++) {
-        entityHitbox = dynamic_cast<Hitbox*>(entityList[i].FindComponent(ComponentType::HITBOX));
-        entityPosition = dynamic_cast<Position*>(entityList[i].FindComponent(ComponentType::POSITION));
+        entityHitbox = dynamic_cast<Hitbox*>(entityList[i]->FindComponent(ComponentType::HITBOX));
+        entityPosition = dynamic_cast<Position*>(entityList[i]->FindComponent(ComponentType::POSITION));
         if (entityHitbox == nullptr || entityPosition == nullptr)
             continue;
         if (!checkCollison(playerPosition->GetPosition(), playerHitbox->GetHitboxSize(),
@@ -83,7 +83,7 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
             continue;
         if (playerHp != nullptr && checkLayers(playerHitbox->GetMask(), entityHitbox->GetLayers()))
             playerHp->SubHp(entityHitbox->GetDamage());
-        entityHp = dynamic_cast<Hp*>(entityList[i].FindComponent(ComponentType::HP));
+        entityHp = dynamic_cast<Hp*>(entityList[i]->FindComponent(ComponentType::HP));
         if (entityHp != nullptr && checkLayers(entityHitbox->GetMask(), playerHitbox->GetLayers()))
             entityHp->SubHp(playerHitbox->GetDamage());
     }
