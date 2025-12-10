@@ -33,7 +33,6 @@ int main(int argc, char **argv)
         }
         if (input.rfind("press ", 0) == 0) {
             std::string key = input.substr(6);
-
             uint8_t code;
             if      (key == "fire") code = 0;
             else if (key == "up")   code = 1;
@@ -44,7 +43,6 @@ int main(int argc, char **argv)
                 std::cout << "Unknown key: " << key << "\n";
                 continue;
             }
-
             client.sendInput(true, code);
             continue;
         }
