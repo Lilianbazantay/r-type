@@ -3,6 +3,18 @@
 #include <cstdint>
 #include <vector>
 
+/**
+ * @brief definition of the encoding action type section of the protocol
+ *
+ */
+enum ActionTypeServer {
+    ENTITY_CREATED = 0b0000,
+    ENTITY_MOVED = 0b0001,
+    ENTITY_DELETED = 0b0010,
+    BEGIN_GAME = 0b0100,
+    PACKAGE_NOT_RECEIVED = 0b1100,
+    VALIDATION = 0b1111
+};
 
 /**
  * @brief static class used to encode packets with all sort of informations
@@ -67,7 +79,7 @@ public:
         uint16_t posX, uint16_t posY) {
             return encode(packetID,
                 6,
-                0x0u,
+                ENTITY_CREATED,
                 entityType,
                 entityID,
                 posX,
@@ -89,8 +101,8 @@ public:
         uint8_t entityType, uint16_t entityID,
         uint16_t posX, uint16_t posY) {
             return encode(packetID,
-                5,
-                0x1u,
+                6,
+                ENTITY_MOVED,
                 entityType,
                 entityID,
                 posX,
@@ -109,7 +121,7 @@ public:
         uint16_t entityID) {
             return encode(packetID,
                 2,
-                0x2u, // entity deleted
+                ENTITY_DELETED, // entity deleted
                 0u,
                 entityID,
                 0, 0);
@@ -125,7 +137,7 @@ public:
         uint16_t packetID) {
             return encode(packetID,
             0,
-            0x4u);
+            BEGIN_GAME);
         }
 
     /**
@@ -138,7 +150,7 @@ public:
         uint16_t packetID){
             return encode(packetID,
             0,
-            0x12u);
+            PACKAGE_NOT_RECEIVED);
         }
 
     /**
@@ -151,6 +163,6 @@ public:
         uint16_t packetID){
             return encode(packetID,
             0,
-            0x15u);
+            VALIDATION);
         }
 };
