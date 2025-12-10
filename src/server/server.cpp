@@ -3,6 +3,7 @@
 #include "encoder.hpp"
 #include "utils.hpp"
 
+#include <asio/steady_timer.hpp>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
@@ -17,10 +18,9 @@
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
-Server::Server(__uint16_t listen_port, ReceiveCallback on_receive)
+Server::Server(__uint16_t listen_port)
     : socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
 {
-    this->receive_callback_ = on_receive;
 }
 
 /**
@@ -51,6 +51,8 @@ void Server::start() {
     if (running_)
         return;
     running_ = true;
+    timer.expires_after(interval);
+    StartTimer();
     do_receive();
     io_thread_ = std::jthread(&Server::run, this);
 }
@@ -166,4 +168,27 @@ void Server::packetDispatch() {
                 return;
         }
     }
+}
+
+void Server::RoutineSender() {
+    for (size_t i = 0; i < list_ip.size(); i++) {
+        if (list_ip.at(i).empty() || list_port.at(i) == 0)
+            continue;
+        send(currentID, ipToString(list_ip.at(i)), list_port.at(i));
+    }
+    currentID++;
+}
+
+void Server::StartTimer() {
+    timer.async_wait([this](std::error_code ec) {
+        if (!ec && running_) {
+            RoutineSender();
+            OnTimer();
+        }
+    });
+}
+
+void Server::OnTimer() {
+    timer.expires_after(interval);
+    StartTimer();
 }

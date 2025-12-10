@@ -4,6 +4,8 @@
 
 #include "server/protocol.hpp"
 #include <array>
+#include <asio/steady_timer.hpp>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -12,7 +14,6 @@
 #include <asio.hpp>
 #include <thread>
 #include <atomic>
-#include <functional>
 #include <string>
 
 /**
@@ -21,8 +22,7 @@
  */
 class Server {
     public:
-        using ReceiveCallback = std::function<void(const std::string&, const asio::ip::udp::endpoint&)>;
-        Server(__uint16_t listen_port, ReceiveCallback on_receive = nullptr);
+        Server(__uint16_t listen_port);
         ~Server();
 
         void start();
@@ -36,8 +36,11 @@ class Server {
     private:
         void do_receive();
         void run();
+        void RoutineSender();
 
         void packetDispatch();
+        void StartTimer();
+        void OnTimer();
 
         std::vector<size_t> addIp();
         void addPort(std::vector <size_t> IP);
@@ -46,16 +49,19 @@ class Server {
         asio::io_context io_ctx_;
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;
+        asio::steady_timer timer{io_ctx_};
 
         std::array<char, 2048> recv_buffer_{};
-        Packet receiver;
         std::array<std::vector<size_t>, 4> list_ip;
         std::array<size_t, 4> list_port;
+        std::chrono::milliseconds interval{10};
 
         std::jthread io_thread_;
+        std::jthread sender_thread;
         std::atomic<bool> running_{false};
 
-        ReceiveCallback receive_callback_;
+        Packet receiver;
+
 };
 
 #endif
