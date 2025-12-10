@@ -9,9 +9,9 @@
 
 class ISystem {
     private:
-        virtual void executeEntity(IMediatorEntity&, relevant_data_t&) = 0;
         bool checkRequirements(IMediatorEntity&);
     protected:
+        virtual void executeEntity(IMediatorEntity&, relevant_data_t&) = 0;
         std::vector<ComponentType> requiedComponents;
         std::vector<ComponentType> optionnalComponents;
     public:
