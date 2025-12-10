@@ -7,7 +7,7 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  clang-tidy:
+  Windows-build:
     runs-on: windows-latest
 
     steps:
@@ -16,23 +16,31 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0
-        submodules-depth: 0
 
-    # Disable vcpkg telemetry
-    - name: Disable vcpkg telemetry
-      run: echo "VCPKG_DISABLE_METRICS=1" >> $env:GITHUB_ENV
-
-    # List vcpkg packages
-    - name: List vcpkg packages
+    # Install winget CMake and configure system vcpkg
+    - name: Configure system vcpkg
       run: |
-        if (Test-Path "external/vcpkg/vcpkg.exe") {
-          external/vcpkg/vcpkg.exe list
-        } else {
-          echo "vcpkg.exe not found yet"
-        }
+        echo "VCPKG_ROOT=C:/vcpkg" >> $GITHUB_ENV
+        echo "VCPKG_EXE=C:/vcpkg/vcpkg.exe" >> $GITHUB_ENV
 
-    # Build project
-    - name: Build project
-      shell: bash
+    # Checkout full vcpkg clone for CI (needed for baselines)
+    - name: Checkout vcpkg for CI
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git external/vcpkg
+        cd external/vcpkg
+        ./bootstrap-vcpkg.bat
+
+    # Patch installer.sh for CI
+    - name: Patch installer.sh for CI
+      shell: pwsh
+      run: |
+        $installer = Get-Content "installer.sh" -Raw
+        # Remove any git pull / vcpkg update lines
+        $installer = $installer -replace ".*vcpkg\.exe update.*", ""
+        Set-Content "installer.sh" $installer
+        # Set CI flag for installer
+        $env:USE_CI_VCPKG = "1"
+
+    # Run the installer
+    - name: Run installer.sh
       run: ./installer.sh
-

@@ -1,3 +1,3 @@
-int test(int argc, char **argv) {
-    return 82;
+int test(int /*argc*/, char **/*argv*/) {
+    return 84;
 }
