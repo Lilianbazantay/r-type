@@ -7,6 +7,10 @@
 
 /**
  * @brief Main function that launches the program
+ *
+ * @param argc number of arguments.
+ * @param argv Argument vector.
+ * @return 0 if parsing succeeded, 84 otherwise.
  */
 int main(int argc, char **argv)
 {
@@ -46,7 +50,6 @@ int main(int argc, char **argv)
         }
         if (input.rfind("release ", 0) == 0) {
             std::string key = input.substr(8);
-
             uint8_t code;
             if      (key == "fire") code = 0;
             else if (key == "up")   code = 1;
@@ -57,7 +60,6 @@ int main(int argc, char **argv)
                 std::cout << "Unknown key: " << key << "\n";
                 continue;
             }
-
             client.sendInput(false, code);
             continue;
         }
