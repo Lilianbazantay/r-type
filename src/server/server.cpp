@@ -20,8 +20,7 @@
  */
 Server::Server(__uint16_t listen_port)
     : socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
-{
-}
+{}
 
 /**
  * @brief Destroy the Server:: Server object
@@ -94,7 +93,6 @@ void Server::do_receive() {
     );
 }
 
-
 /**
  * @brief server's sender function. It will send the msg contained to the host at a certain port
  *
@@ -102,8 +100,7 @@ void Server::do_receive() {
  * @param host host's IP
  * @param port host's port
  */
-void Server::send(size_t packetId, const std::string& host, __uint16_t port)
-{
+void Server::send(size_t packetId, const std::string& host, __uint16_t port) {
     asio::ip::udp::endpoint endpoint(
         asio::ip::address::from_string(host),
         port
@@ -115,6 +112,7 @@ void Server::send(size_t packetId, const std::string& host, __uint16_t port)
         [](std::error_code, std::size_t) {}
     );
 }
+
 /**
  * @brief add the ip stored inside the receiver to the list of connected ips
  *
@@ -132,6 +130,7 @@ std::vector<size_t> Server::addIp() {
             list_ip.at(i) = IP;
     return IP;
 }
+
 /**
  * @brief add the port stored inside the receiver to the list of ports
  *
@@ -145,6 +144,7 @@ void Server::addPort(std::vector<size_t> tmpIP) {
         }
     send(currentID, ipToString(tmpIP), receiver.getPort());
 }
+
 /**
  * @brief dispatch the content of the receiver based on the payload (the amount of content inside of it)
  *
@@ -170,6 +170,10 @@ void Server::packetDispatch() {
     }
 }
 
+/**
+ * @brief automatically send packets to all the clients in the list
+ *
+ */
 void Server::RoutineSender() {
     for (size_t i = 0; i < list_ip.size(); i++) {
         if (list_ip.at(i).empty() || list_port.at(i) == 0)
@@ -179,6 +183,10 @@ void Server::RoutineSender() {
     currentID++;
 }
 
+/**
+ * @brief start the timer for the packets to be sent
+ *
+ */
 void Server::StartTimer() {
     timer.async_wait([this](std::error_code ec) {
         if (!ec && running_) {
@@ -188,6 +196,10 @@ void Server::StartTimer() {
     });
 }
 
+/**
+ * @brief helper function to restart the timer
+ *
+ */
 void Server::OnTimer() {
     timer.expires_after(interval);
     StartTimer();
