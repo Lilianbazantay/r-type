@@ -4,6 +4,13 @@
 
 static uint16_t GLOBAL_PACKET_ID = 0;
 
+/**
+ * @brief Callback triggered when a packet is received from the server.
+ *
+ * @param data Pointer to received data
+ * @param size Size of packet in bytes
+ * @param sender UDP endpoint of the server
+ */
 static void on_receive_callback(const uint8_t *data,
                                 size_t size,
                                 const asio::ip::udp::endpoint &)
@@ -18,6 +25,12 @@ static void on_receive_callback(const uint8_t *data,
     std::cout << "pos      = (" << pkt.posX << ", " << pkt.posY << ")\n";
 }
 
+/**
+ * @brief Construct a client instance.
+ *
+ * @param ip Server IP
+ * @param port Server port
+ */
 Client::Client(const std::string &ip, int port)
     : ip_(ip),
       port_(port),
@@ -25,12 +38,20 @@ Client::Client(const std::string &ip, int port)
 {
 }
 
+/**
+ * @brief Start the client network system.
+ */
 void Client::start()
 {
     std::cout << "Starting client...\n";
     network_.start();
 }
 
+/**
+ * @brief Send encoded packet to the server.
+ *
+ * @param p Packet structure
+ */
 void Client::sendPacket(const Packet &p)
 {
     network_.send(std::string((char*)p.bytes.data(), p.size), ip_, port_);
@@ -38,6 +59,12 @@ void Client::sendPacket(const Packet &p)
     std::cout << "[CLIENT] Sent packet (" << p.size << " bytes)\n";
 }
 
+/**
+ * @brief Send an input event to the server.
+ *
+ * @param pressed True if input is pressed, false if released
+ * @param inputCode Input identifier (FIRE, UP, etc.)
+ */
 void Client::sendInput(bool pressed, uint8_t inputCode)
 {
     uint8_t action =
@@ -55,6 +82,9 @@ void Client::sendInput(bool pressed, uint8_t inputCode)
     sendPacket(p);
 }
 
+/**
+ * @brief Send a start game request to the server.
+ */
 void Client::sendStartGame()
 {
     Packet p = encodeClientPacket(
@@ -67,6 +97,12 @@ void Client::sendStartGame()
     sendPacket(p);
 }
 
+/**
+ * @brief Send a connection request packet to the server.
+ *
+ * @param ipValue IPv4 address encoded as a 32-bit integer
+ * @param portValue Client port number
+ */
 void Client::sendConnectionRequest(uint32_t ipValue, uint16_t portValue)
 {
     uint8_t payload[6] = {
