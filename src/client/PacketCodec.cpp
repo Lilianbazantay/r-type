@@ -1,6 +1,22 @@
 #include "PacketCodec.hpp"
 #include <cstring>
 
+/**
+ * @brief Encode a client-to-server network packet
+ *
+ * Packet layout:
+ * - 2 bytes : packet ID
+ * - 1 byte  : action type | payload size
+ * - N bytes : payload data
+ *
+ * @param packetId Unique identifier of the packet
+ * @param actionType Type of action encoded in the packet
+ * @param payloadSize Size of the payload in bytes
+ * @param payload Pointer to the payload data
+ *
+ * @return Packet encoded, ready to be sent to network
+ */
+
 Packet encodeClientPacket(
     uint16_t packetId,
     uint8_t actionType,
@@ -19,6 +35,21 @@ Packet encodeClientPacket(
     return p;
 }
 
+/**
+ * @brief Decode a server-to-client packet.
+ *
+ * Parse and extract from server:
+ * - packet ID
+ * - action type
+ * - payload size
+ * - entity type
+ * - entity ID
+ * - position (X, Y)
+ *
+ * @param b Pointer to the received bytes from server.
+ * @param size Number of bytes received.
+ * @return ServerPacket Decoded packet structure.
+ */
 ServerPacket decodeServerPacket(const uint8_t* b, size_t size) {
     ServerPacket p {};
 
