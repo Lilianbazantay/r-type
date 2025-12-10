@@ -2,8 +2,10 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include <stdexcept>
 
+/**
+ * @brief Display the help message.
+ */
 void Parser::show_help()
 {
     std::cout << "USAGE:\n"
@@ -14,6 +16,16 @@ void Parser::show_help()
               << "\t-p --port\tserver port (1024-65535)\n";
 }
 
+/**
+ * @brief Parse the IP argument.
+ *
+ * @param arg Current argument being processed.
+ * @param argv Argument vector.
+ * @param i Current index in argv.
+ * @param argc number of arguments.
+ * @return true if parsing succeeded.
+ * @return false if the IP argument is missing or invalid.
+ */
 bool Parser::parse_ip(const std::string &arg, char **argv, int &i, int argc)
 {
     if (arg == "-i" || arg == "--ip") {
@@ -28,6 +40,16 @@ bool Parser::parse_ip(const std::string &arg, char **argv, int &i, int argc)
     return true;
 }
 
+/**
+ * @brief Parse the port argument.
+ *
+ * @param arg Current argument being processed.
+ * @param argv Argument vector.
+ * @param i Current index in argv.
+ * @param argc number of arguments.
+ * @return true if parsing succeeded.
+ * @return false if the port is missing, invalid, or out of range.
+ */
 bool Parser::parse_port(const std::string &arg, char **argv, int &i, int argc)
 {
     if (arg == "-p" || arg == "--port") {
@@ -51,7 +73,13 @@ bool Parser::parse_port(const std::string &arg, char **argv, int &i, int argc)
     }
     return true;
 }
-
+/**
+ * @brief Parse command-line arguments.
+ *
+ * @param argc number of arguments.
+ * @param argv Argument vector.
+ * @return int EXIT_SUCCESS if parsing succeeded, EXIT_FAILURE otherwise.
+ */
 int Parser::parse(int argc, char **argv)
 {
     if (argc == 2 && std::string(argv[1]) == "-h") {
