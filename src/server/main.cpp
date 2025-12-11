@@ -27,7 +27,6 @@ int main(int argc, char **argv) {
         return EXIT_DESIRED;
     }
     std::cout << "sending message" << std::endl;
-    test.send(0, "127.0.0.1", 8081);
     test.stop();
     return EXIT_DESIRED;
 }
