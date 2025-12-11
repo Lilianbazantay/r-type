@@ -87,8 +87,8 @@ void Server::do_receive() {
         asio::buffer(recv_buffer_),
         remote_endpoint_,
         [this](std::error_code error_code, std::size_t bytes_recvd) {
-            std::cout << "receiving\n";
-            if (!error_code && bytes_recvd >= 8) {
+            std::cout << "receiving bytes: "<< bytes_recvd <<"\n";
+            if (!error_code && bytes_recvd >= 3) {
 
                 std::array<uint8_t, 8> arr;
                 std::memcpy(arr.data(), recv_buffer_.data(), 8);
