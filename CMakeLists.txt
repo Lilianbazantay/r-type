@@ -15,6 +15,7 @@ endif()
 # Add dependencies
 find_package(SFML 2.6 COMPONENTS graphics network window audio system REQUIRED)
 find_package(asio CONFIG REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 # Set the compiler optimization flags
 if (MSVC)
@@ -70,6 +71,7 @@ foreach(target r-type_client r-type_server)
         sfml-audio
         sfml-system
         asio::asio
+        nlohmann_json::nlohmann_json
     )
 
     # Define compilation target
