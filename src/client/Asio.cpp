@@ -4,17 +4,28 @@
 #include <ostream>
 #include <thread>
 
+/**
+ * @brief Construct a UDP network handler.
+ *
+ * @param listen_port UDP port to bind the socket to
+ * @param on_receive Callback function
+ */
 Asio_network::Asio_network(__uint16_t listen_port, ReceiveCallback on_receive)
     : socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
 {
     this->receive_callback_ = on_receive;
 }
 
-
+/**
+ * @brief Destroy the network handler.
+ */
 Asio_network::~Asio_network() {
     stop();
 }
 
+/**
+ * @brief Run the ASIO I/O context loop.
+ */
 void Asio_network::run() {
     try {
         io_ctx_.run();
@@ -23,6 +34,9 @@ void Asio_network::run() {
     }
 }
 
+/**
+ * @brief Start the network system.
+ */
 void Asio_network::start() {
     if (running_)
         return;
@@ -31,6 +45,9 @@ void Asio_network::start() {
     io_thread_ = std::jthread(&Asio_network::run, this);
 }
 
+/**
+ * @brief Stop the network system.
+ */
 void Asio_network::stop() {
     if (!running_)
         return;
@@ -39,6 +56,9 @@ void Asio_network::stop() {
     socket_.close();
 }
 
+/**
+ * @brief receive UDP packets.
+ */
 void Asio_network::do_receive() {
     socket_.async_receive_from(asio::buffer(recv_buffer_),
         remote_endpoint_,
@@ -60,6 +80,13 @@ void Asio_network::do_receive() {
     );
 }
 
+/**
+ * @brief Send a UDP message to a remote host.
+ *
+ * @param msg Data to send
+ * @param host Destination ip
+ * @param port Destination port
+ */
 void Asio_network::send(const std::string& msg, const std::string& host, __uint16_t port)
 {
     asio::ip::udp::endpoint endpoint(
