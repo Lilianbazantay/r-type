@@ -22,8 +22,7 @@ int main(int argc, char **argv) {
     test.start();
     if (argc >= 2) {
         std::cout << "listening on port " << parser.getPort() << std::endl;
-        while (!test.gotText)
-        test.stop();
+        while (1);
         return EXIT_DESIRED;
     }
     std::cout << "sending message" << std::endl;
