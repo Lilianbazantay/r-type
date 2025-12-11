@@ -19,8 +19,17 @@
  * @param on_receive callback function used when receiving data
  */
 Server::Server(__uint16_t listen_port)
-    : socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
+: io_ctx_(),
+  socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
+  work_guard_(asio::make_work_guard(io_ctx_)),
+  timer(io_ctx_),
+  recv_buffer_{},
+  list_ip{},
+  list_port{},
+  interval(std::chrono::milliseconds(10))
 {}
+
+
 
 /**
  * @brief Destroy the Server:: Server object
@@ -50,10 +59,10 @@ void Server::start() {
     if (running_)
         return;
     running_ = true;
+    io_thread_ = std::jthread(&Server::run, this);
     timer.expires_after(interval);
     StartTimer();
     do_receive();
-    io_thread_ = std::jthread(&Server::run, this);
 }
 
 /**
@@ -64,6 +73,7 @@ void Server::stop() {
     if (!running_)
         return;
     running_ = false;
+    work_guard_.reset();
     io_ctx_.stop();
     socket_.close();
 }
@@ -77,6 +87,7 @@ void Server::do_receive() {
         asio::buffer(recv_buffer_),
         remote_endpoint_,
         [this](std::error_code error_code, std::size_t bytes_recvd) {
+            std::cout << "receiving\n";
             if (!error_code && bytes_recvd >= 8) {
 
                 std::array<uint8_t, 8> arr;
@@ -84,6 +95,7 @@ void Server::do_receive() {
                 std::cout << arr.data();
 
                 receiver.FillReceivedData(arr);
+                std::cout << "received :" << receiver.getActionvalue() << "\n";
                 packetDispatch();
             }
 
@@ -101,6 +113,7 @@ void Server::do_receive() {
  * @param port host's port
  */
 void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
+    std::cout << "sending to" << host << "at port" << port << "\n";
     asio::ip::udp::endpoint endpoint(
         asio::ip::address::from_string(host),
         port
@@ -132,17 +145,20 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
  * @return std::vector<size_t> ip received by the receiver
  */
 std::vector<size_t> Server::addIp() {
-    std::vector<size_t> IP;
+    std::vector<size_t> IP(4); // allocate 4 elements
     uint32_t binIP = receiver.getIP();
-    IP.at(0) = binIP & 0xFFu;
-    IP.at(1) = (binIP >> 8u)  & 0xFFu;
-    IP.at(2) = (binIP >> 16u) & 0xFFu;
-    IP.at(3) = (binIP >> 24u) & 0xFFu;
-    for (size_t i = 0; i < list_ip.size(); i++)
-        if (list_ip.at(i).empty())
+    IP[0] = binIP & 0xFFu;
+    IP[1] = (binIP >> 8u)  & 0xFFu;
+    IP[2] = (binIP >> 16u) & 0xFFu;
+    IP[3] = (binIP >> 24u) & 0xFFu;
+    for (size_t i = 0; i < list_ip.size(); ++i)
+        if (list_ip.at(i).empty()) {
             list_ip.at(i) = IP;
+            break;
+        }
     return IP;
 }
+
 
 /**
  * @brief add the port stored inside the receiver to the list of ports
