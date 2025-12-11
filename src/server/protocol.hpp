@@ -37,13 +37,13 @@ class Packet {
         ~Packet() = default;
 
 
-        void FillPacketID(std::array<uint8_t, 8>);
-        void FillActionType(std::array<uint8_t, 8>);
-        void FillPayloadSize(std::array<uint8_t, 8>);
-        void FillActionValue(std::array<uint8_t, 8>);
-        void FillIP(std::array<uint8_t, 8>);
-        void FillPort(std::array<uint8_t, 8>, uint8_t offset);
-        void FillReceivedData(std::array<uint8_t, 8>);
+        void FillPacketID(std::array<uint8_t, 9>);
+        void FillActionType(std::array<uint8_t, 9>);
+        void FillPayloadSize(std::array<uint8_t, 9>);
+        void FillActionValue(std::array<uint8_t, 9>);
+        void FillIP(std::array<uint8_t, 9>);
+        void FillPort(std::array<uint8_t, 9>, uint8_t offset);
+        void FillReceivedData(std::array<uint8_t, 9>);
 
         inline uint16_t getID(void) { return packetID; };
         inline uint8_t getActionType(void) { return actionType; };
