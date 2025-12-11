@@ -87,15 +87,13 @@ void Server::do_receive() {
         asio::buffer(recv_buffer_),
         remote_endpoint_,
         [this](std::error_code error_code, std::size_t bytes_recvd) {
-            std::cout << "receiving bytes: "<< bytes_recvd <<"\n";
             if (!error_code && bytes_recvd >= 3) {
 
-                std::array<uint8_t, 8> arr;
+                std::array<uint8_t, 9> arr;
                 std::memcpy(arr.data(), recv_buffer_.data(), 8);
                 std::cout << arr.data();
 
                 receiver.FillReceivedData(arr);
-                std::cout << "received :" << receiver.getActionvalue() << "\n";
                 packetDispatch();
             }
 
@@ -113,7 +111,6 @@ void Server::do_receive() {
  * @param port host's port
  */
 void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
-    std::cout << "sending to" << host << "at port" << port << "\n";
     asio::ip::udp::endpoint endpoint(
         asio::ip::address::from_string(host),
         port
@@ -145,7 +142,7 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
  * @return std::vector<size_t> ip received by the receiver
  */
 std::vector<size_t> Server::addIp() {
-    std::vector<size_t> IP(4); // allocate 4 elements
+    std::vector<size_t> IP(4);
     uint32_t binIP = receiver.getIP();
     IP[0] = binIP & 0xFFu;
     IP[1] = (binIP >> 8u)  & 0xFFu;
@@ -179,8 +176,10 @@ void Server::addPort(std::vector<size_t> tmpIP) {
  *
  */
 void Server::packetDispatch() {
-    if (receiver.getPayload() == 6)
+    if (receiver.getPayload() == 6) {
         addPort(addIp());
+        send(15, remote_endpoint_.address().to_string(), remote_endpoint_.port());
+    }
     else if (receiver.getPayload() == 1) {
         if (receiver.getActionType() == 0)
             input_pressed(receiver.getActionvalue());
