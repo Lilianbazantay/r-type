@@ -27,9 +27,9 @@ class Server {
 
         void start();
         void stop();
-        void send(size_t packetId, const std::string& host, __uint16_t port);
+        void send(size_t actVal, const std::string& host, __uint16_t port);
         bool gotText = false;
-        size_t currentID;
+        size_t currentID = 0;
         void input_pressed(uint8_t action);
         void input_released(uint8_t action);
 

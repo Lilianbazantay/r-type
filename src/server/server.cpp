@@ -100,12 +100,25 @@ void Server::do_receive() {
  * @param host host's IP
  * @param port host's port
  */
-void Server::send(size_t packetId, const std::string& host, __uint16_t port) {
+void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
     asio::ip::udp::endpoint endpoint(
         asio::ip::address::from_string(host),
         port
     );
-    std::vector<uint8_t> buffer = PacketEncoder::encodeStart(packetId);
+    std::vector<uint8_t> buffer;
+    if (actVal == BEGIN_GAME)
+        buffer = PacketEncoder::encodeStart(currentID);
+    if (actVal == ENTITY_CREATED)
+        buffer = PacketEncoder::encodeCreate(currentID, 0, 0, 0, 0);
+    if (actVal == ENTITY_MOVED)
+        buffer = PacketEncoder::encodeMove(currentID, 0, 0, 0, 0);
+    if (actVal == ENTITY_DELETED)
+        buffer = PacketEncoder::encodeDelete(currentID, 0);
+    if (actVal == PACKAGE_NOT_RECEIVED)
+        buffer = PacketEncoder::encodeNotReceived(currentID);
+    if (actVal == VALIDATION)
+        buffer = PacketEncoder::encodeOK(currentID);
+    currentID++;
     socket_.async_send_to(
         asio::buffer(buffer),
         endpoint,
@@ -142,7 +155,7 @@ void Server::addPort(std::vector<size_t> tmpIP) {
             list_port.at(i) = receiver.getPort();
             return;
         }
-    send(currentID, ipToString(tmpIP), receiver.getPort());
+    send(0, ipToString(tmpIP), receiver.getPort());
 }
 
 /**
@@ -152,14 +165,13 @@ void Server::addPort(std::vector<size_t> tmpIP) {
 void Server::packetDispatch() {
     if (receiver.getPayload() == 6)
         addPort(addIp());
-    else if (receiver.getPayload() == 1)
-        switch (receiver.getActionType()) {
-            case (0):
-                input_pressed(receiver.getActionvalue());
-            case (1):
-                input_released(receiver.getActionvalue());
-            default:
-                send(currentID, ipToString(list_ip.at(0)), list_port.at(0));
+    else if (receiver.getPayload() == 1) {
+        if (receiver.getActionType() == 0)
+            input_pressed(receiver.getActionvalue());
+        else if (receiver.getActionType() == 1)
+            input_released(receiver.getActionvalue());
+        else
+            send(0, ipToString(list_ip.at(0)), list_port.at(0));
     } else if (receiver.getPayload() == 0) {
         switch (receiver.getActionType()) {
             case (4):
@@ -178,7 +190,7 @@ void Server::RoutineSender() {
     for (size_t i = 0; i < list_ip.size(); i++) {
         if (list_ip.at(i).empty() || list_port.at(i) == 0)
             continue;
-        send(currentID, ipToString(list_ip.at(i)), list_port.at(i));
+        send(0, ipToString(list_ip.at(i)), list_port.at(i));
     }
     currentID++;
 }
@@ -203,4 +215,18 @@ void Server::StartTimer() {
 void Server::OnTimer() {
     timer.expires_after(interval);
     StartTimer();
+}
+
+/**
+ * @brief function that will send an "input pressed" to the ECS
+ *
+ */
+void Server::input_pressed(uint8_t /*action*/) {
+}
+
+/**
+ * @brief function that will send an "input released" to the ECS
+ *
+ */
+void Server::input_released(uint8_t /*action*/) {
 }
