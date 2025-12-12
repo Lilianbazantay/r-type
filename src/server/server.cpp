@@ -89,10 +89,8 @@ void Server::do_receive() {
         [this](std::error_code error_code, std::size_t bytes_recvd) {
             if (!error_code && bytes_recvd >= 3) {
 
-                std::array<uint8_t, 9> arr;
-                std::memcpy(arr.data(), recv_buffer_.data(), 8);
-                std::cout << arr.data();
-
+                std::vector<uint8_t> arr(recv_buffer_.data(),
+                    recv_buffer_.data() + bytes_recvd);
                 receiver.FillReceivedData(arr);
                 packetDispatch();
             }
@@ -151,7 +149,7 @@ std::vector<size_t> Server::addIp() {
     for (size_t i = 0; i < list_ip.size(); ++i)
         if (list_ip.at(i).empty()) {
             list_ip.at(i) = IP;
-            break;
+            return std::vector<size_t>(0);
         }
     return IP;
 }
@@ -190,7 +188,7 @@ void Server::packetDispatch() {
     } else if (receiver.getPayload() == 0) {
         switch (receiver.getActionType()) {
             case (4):
-                return;
+                send(0, remote_endpoint_.address().to_string(), remote_endpoint_.port());
             case (15):
                 return;
         }
