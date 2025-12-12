@@ -7,7 +7,7 @@ A System represents a processing unit that applies logic to entities containing 
 All systems **must** inherit from the base class `ISystem` and override its core processing method.
 
 ### ISystem class
-The `ISystem` abstract class provides:
+The `ISystem` interface class provides:
 - A mechanism to declare required and optional component types.
 - A method to check whether an entity meets the System’s requirements.
 - A callback method (`executeEntity`) that derived Systems must implement.
@@ -108,7 +108,7 @@ For example, a collision system might implement:
 bool checkCollison(...);
 bool checkLayers(...);
 ```
-These functions are fully custom and **not managed** by the ECS—they only support your internal logic during `executeEntity`.
+These functions are fully custom and **not managed** by the ECS; they only support your internal logic during `executeEntity`.
 
 ## Example: Creating a custom system
 Below is a minimal example showing how to implement a real System:
