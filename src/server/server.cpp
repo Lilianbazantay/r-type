@@ -1,14 +1,16 @@
 #include "server.hpp"
 #include "protocol.hpp"
 #include "encoder.hpp"
-#include "utils.hpp"
 
+#include <asio/ip/udp.hpp>
 #include <asio/steady_timer.hpp>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <exception>
 #include <iostream>
+#include <memory>
 #include <thread>
 #include <vector>
 
@@ -26,7 +28,7 @@ Server::Server(__uint16_t listen_port)
   recv_buffer_{},
   list_ip{},
   list_port{},
-  interval(std::chrono::milliseconds(10))
+  interval(std::chrono::milliseconds(20))
 {}
 
 
@@ -87,8 +89,7 @@ void Server::do_receive() {
         asio::buffer(recv_buffer_),
         remote_endpoint_,
         [this](std::error_code error_code, std::size_t bytes_recvd) {
-            if (!error_code && bytes_recvd >= 3) {
-
+            if (!error_code && bytes_recvd > 0) {
                 std::vector<uint8_t> arr(recv_buffer_.data(),
                     recv_buffer_.data() + bytes_recvd);
                 receiver.FillReceivedData(arr);
@@ -109,29 +110,31 @@ void Server::do_receive() {
  * @param port host's port
  */
 void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
-    asio::ip::udp::endpoint endpoint(
-        asio::ip::address::from_string(host),
-        port
-    );
-    std::vector<uint8_t> buffer;
+    std::shared_ptr<asio::ip::udp::endpoint> endpoint =
+        std::make_shared<asio::ip::udp::endpoint>(asio::ip::address::from_string(host), port);
+    std::shared_ptr<std::vector<uint8_t>> buffer = std::make_shared<std::vector<uint8_t>>();
     if (actVal == BEGIN_GAME)
-        buffer = PacketEncoder::encodeStart(currentID);
+        *buffer = PacketEncoder::encodeStart(currentID);
     if (actVal == ENTITY_CREATED)
-        buffer = PacketEncoder::encodeCreate(currentID, 0, 0, 0, 0);
+        *buffer = PacketEncoder::encodeCreate(currentID, 0, 0, 0, 0);
     if (actVal == ENTITY_MOVED)
-        buffer = PacketEncoder::encodeMove(currentID, 0, 0, 0, 0);
+        *buffer = PacketEncoder::encodeMove(currentID, 0, 0, 0, 0);
     if (actVal == ENTITY_DELETED)
-        buffer = PacketEncoder::encodeDelete(currentID, 0);
+        *buffer = PacketEncoder::encodeDelete(currentID, 0);
     if (actVal == PACKAGE_NOT_RECEIVED)
-        buffer = PacketEncoder::encodeNotReceived(currentID);
+        *buffer = PacketEncoder::encodeNotReceived(currentID);
     if (actVal == VALIDATION)
-        buffer = PacketEncoder::encodeOK(currentID);
+        *buffer = PacketEncoder::encodeOK(currentID);
     currentID++;
-    socket_.async_send_to(
-        asio::buffer(buffer),
-        endpoint,
-        [](std::error_code, std::size_t) {}
-    );
+    try {
+        socket_.async_send_to(
+            asio::buffer(*buffer),
+            *endpoint,
+            [](std::error_code, std::size_t) {}
+        );
+    } catch(std::exception &e) {
+        std::cout << e.what() << "\n";
+    }
 }
 
 /**
@@ -139,7 +142,7 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
  *
  * @return std::vector<size_t> ip received by the receiver
  */
-std::vector<size_t> Server::addIp() {
+std::string Server::addIp() {
     std::vector<size_t> IP(4);
     uint32_t binIP = receiver.getIP();
     IP[0] = binIP & 0xFFu;
@@ -148,10 +151,10 @@ std::vector<size_t> Server::addIp() {
     IP[3] = (binIP >> 24u) & 0xFFu;
     for (size_t i = 0; i < list_ip.size(); ++i)
         if (list_ip.at(i).empty()) {
-            list_ip.at(i) = IP;
-            return std::vector<size_t>(0);
+            list_ip.at(i) = remote_endpoint_.address().to_string();
+            return "";
         }
-    return IP;
+    return remote_endpoint_.address().to_string();
 }
 
 
@@ -160,13 +163,13 @@ std::vector<size_t> Server::addIp() {
  *
  * @param tmpIP IP of the client linked to the port
  */
-void Server::addPort(std::vector<size_t> tmpIP) {
+void Server::addPort(std::string tmpIP) {
     for (size_t i = 0; i < list_port.size(); i++)
         if (list_port.at(i) == 0 || !list_port.at(i)) {
-            list_port.at(i) = receiver.getPort();
+            list_port.at(i) = remote_endpoint_.port();
             return;
         }
-    send(0, ipToString(tmpIP), receiver.getPort());
+    send(0, tmpIP, receiver.getPort());
 }
 
 /**
@@ -184,7 +187,7 @@ void Server::packetDispatch() {
         else if (receiver.getActionType() == 1)
             input_released(receiver.getActionvalue());
         else
-            send(0, ipToString(list_ip.at(0)), list_port.at(0));
+            send(0, list_ip.at(0), list_port.at(0));
     } else if (receiver.getPayload() == 0) {
         switch (receiver.getActionType()) {
             case (4):
@@ -203,7 +206,7 @@ void Server::RoutineSender() {
     for (size_t i = 0; i < list_ip.size(); i++) {
         if (list_ip.at(i).empty() || list_port.at(i) == 0)
             continue;
-        send(0, ipToString(list_ip.at(i)), list_port.at(i));
+        send(0, list_ip.at(i), list_port.at(i));
     }
     currentID++;
 }

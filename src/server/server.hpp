@@ -8,7 +8,6 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
-#include <vector>
 #pragma once
 
 #include <asio.hpp>
@@ -41,8 +40,8 @@ class Server {
         void StartTimer();
         void OnTimer();
 
-        std::vector<size_t> addIp();
-        void addPort(std::vector <size_t> IP);
+        std::string addIp();
+        void addPort(std::string IP);
 
     private:
         asio::io_context io_ctx_;
@@ -53,9 +52,9 @@ class Server {
 
 
         std::array<char, 2048> recv_buffer_{};
-        std::array<std::vector<size_t>, 4> list_ip;
+        std::array<std::string, 4> list_ip;
         std::array<size_t, 4> list_port;
-        std::chrono::milliseconds interval{10};
+        std::chrono::milliseconds interval{20};
 
         std::jthread io_thread_;
         std::jthread sender_thread;
