@@ -1,12 +1,13 @@
 
 #include "ShootSystem.hpp"
-#include "ecs/Entity/IMediatorEntity.hpp"
-#include "ecs/IComponent.hpp"
+#include "../Entity/IMediatorEntity.hpp"
+#include "../IComponent.hpp"
 
 #include "../Component/Position.hpp"
 #include "../Component/Velocity.hpp"
 #include "../Component/EntitySpawner.hpp"
 #include <cerrno>
+#include <memory>
 
 /**
  * @brief constructor of DrawAnimatedSprite
@@ -33,5 +34,5 @@ void ShootSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) 
         return;
     newEntityData->Spawn();
     IMediatorEntity *newEntity = newEntityData->GetEntity();
-    data.entityList.push_back(newEntity);
+    data.entityList.push_back(std::unique_ptr<IMediatorEntity>(newEntity));
 }

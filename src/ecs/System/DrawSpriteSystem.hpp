@@ -5,8 +5,8 @@
 
 class DrawSpriteSystem : public ISystem {
     private:
-        DrawSpriteSystem();
         void executeEntity(IMediatorEntity&, relevant_data_t &) override;
     public:
+        DrawSpriteSystem();
 };
 

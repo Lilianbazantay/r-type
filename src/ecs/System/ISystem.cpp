@@ -1,7 +1,8 @@
 
 #include "ISystem.hpp"
-#include "ecs/Entity/IMediatorEntity.hpp"
-#include "ecs/IComponent.hpp"
+#include "../Entity/IMediatorEntity.hpp"
+#include "../IComponent.hpp"
+#include <iostream>
 #include <vector>
 
 /**
@@ -13,14 +14,14 @@
  * @return false if not every requirement is met
 */
 bool ISystem::checkRequirements(IMediatorEntity& entity) {
-    std::vector<IComponent> entityComponents = entity.GetActuatorComponents();
+    std::vector<ComponentType> entityComponents = entity.GetActuatorComponents();
     int requirements = this->requiedComponents.size();
     ComponentType rType;
 
     for (size_t i = 0; i < this->requiedComponents.size(); i++) {
         rType = this->requiedComponents[i];
         for (size_t j = 0; j < entityComponents.size(); j++)
-            if (entityComponents[j].GetType() == rType) {
+            if (entityComponents[j] == rType) {
                 requirements--;
                 j = entityComponents.size();
             }
@@ -68,6 +69,7 @@ void ISystem::addOptionnalComponentType(ComponentType type) {
  * @param data necessary data for systems. See "../relevant_data.hpp" for more information
 */
 void ISystem::checkEntity(IMediatorEntity& entity, relevant_data_t& data) {
+    std::cout << "Checkin" << std::endl;
     if (checkRequirements(entity) == false)
         return;
     executeEntity(entity, data);

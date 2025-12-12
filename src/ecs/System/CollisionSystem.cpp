@@ -5,9 +5,10 @@
 #include "../Component/Position.hpp"
 #include "../Component/Hp.hpp"
 
-#include "ecs/Entity/IMediatorEntity.hpp"
-#include "ecs/IComponent.hpp"
+#include "../Entity/IMediatorEntity.hpp"
+#include "../IComponent.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <memory>
 #include <vector>
 
 /**
@@ -70,7 +71,7 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
     Hitbox *entityHitbox;
     Position *entityPosition;
     Hp *entityHp;
-    std::vector<IMediatorEntity*>& entityList = data.entityList;
+    std::vector<std::unique_ptr<IMediatorEntity>>& entityList = data.entityList;
     for (size_t i = 0; i < entityList.size(); i++) {
         entityHitbox = dynamic_cast<Hitbox*>(entityList[i]->FindComponent(ComponentType::HITBOX));
         entityPosition = dynamic_cast<Position*>(entityList[i]->FindComponent(ComponentType::POSITION));

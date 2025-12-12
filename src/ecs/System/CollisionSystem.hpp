@@ -2,7 +2,7 @@
 #pragma once
 
 #include "ISystem.hpp"
-#include "ecs/Entity/IMediatorEntity.hpp"
+#include "../Entity/IMediatorEntity.hpp"
 #include <vector>
 
 class CollisionSystem : public ISystem {

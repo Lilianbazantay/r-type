@@ -2,7 +2,7 @@
 #pragma once
 
 #include "../relevant_data.hpp"
-#include "ecs/IComponent.hpp"
+#include "../IComponent.hpp"
 #include <memory>
 #include <vector>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -15,7 +15,7 @@ class ISystem {
         std::vector<ComponentType> requiedComponents;
         std::vector<ComponentType> optionnalComponents;
     public:
-        ~ISystem() = default;
+        virtual ~ISystem() = default;
 
         void addRequiredComponentType(std::shared_ptr<IComponent>);
         void addRequiredComponentType(ComponentType);

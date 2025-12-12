@@ -4,7 +4,7 @@
 #include "../Component/Velocity.hpp"
 #include "../Component/Direction.hpp"
 #include "../Component/Gravity.hpp"
-#include "ecs/IComponent.hpp"
+#include "../IComponent.hpp"
 #include <utility>
 
 /**
