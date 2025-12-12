@@ -1,8 +1,6 @@
 #include "parser.hpp"
 #include <iostream>
 #include <string>
-#include <stdexcept>
-#include <stdexcept>
 
 void Parser::show_help()
 {
