@@ -13,8 +13,15 @@ Sprite::Sprite(const std::string& file_path, float size_x, float size_y)
     if (!_texture.loadFromFile(file_path))
         throw std::runtime_error("Failed to load texture: " + file_path);
 
+    sf::Vector2u texSize = _texture.getSize();
+    if (texSize.x == 0 || texSize.y == 0)
+        throw std::runtime_error("Texture size is zero");
+
     _sprite.setTexture(_texture);
-    _sprite.setScale(size_x / _texture.getSize().x, size_y / _texture.getSize().y);
+    _sprite.setScale(size_x / static_cast<float>(texSize.x), size_y / static_cast<float>(texSize.y));
+
+//    _sprite.setTexture(_texture);
+//    _sprite.setScale(size_x / _texture.getSize().x, size_y / _texture.getSize().y);
     _type = ComponentType::SPRITE;
 }
 
@@ -23,7 +30,7 @@ Sprite::Sprite(const std::string& file_path, float size_x, float size_y)
  *
  * @return sf::Sprite& Reference to the sprite
  */
-sf::Sprite& Sprite::GetSprite()
+sf::Sprite Sprite::GetSprite()
 {
     return _sprite;
 }
