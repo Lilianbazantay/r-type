@@ -1,0 +1,92 @@
+config.json (JSON prototype)
+{
+  "Player": {
+    "Position": [10, 20],
+    "Hp": 100,
+    "Velocity": 5.0,
+    "Attack": { "damage": 10, "fireRate": 0.5 },
+    "Hitbox": { "size": [32, 32], "layers": [1], "masks": [0] }
+  }
+}
+      │
+      ▼
+(1) ConfigParser::loadFile("config.json")
+    - Lit le fichier JSON
+    - Crée un Prototype pour chaque clé
+      │
+      ▼
+unordered_map<string, Prototype>
+"Player" → Prototype {
+    name = "Player",
+    data = {
+        "Position": [10,20],
+        "Hp": 100,
+        "Velocity": 5.0,
+        "Attack": {...},
+        "Hitbox": {...}
+    }
+}
+      │
+      ▼
+(2) EntityFactory.registerPrototypes()
+    - Stocke les prototypes dans EntityFactory::prototypes
+    - La factory est prête à créer des entités
+      │
+      ▼
+EntityFactory
+------------------------------------------
+prototypes:
+    "Player" → Prototype{...}
+constructors (flyweight):
+    POSITION → lambda(json) → shared_ptr<Position>
+    HP       → lambda(json) → shared_ptr<Hp>
+    VELOCITY → lambda(json) → shared_ptr<Velocity>
+    ATTACK   → lambda(json) → shared_ptr<Attack>
+    HITBOX   → lambda(json) → shared_ptr<Hitbox>
+------------------------------------------
+      │
+      ▼
+(3) EntityFactory.createEntityFromPrototype("Player", DummyMediator)
+    - Cherche prototype "Player"
+    - Appelle mediator.createEntity("Player") → ID = 0
+      │
+      ▼
+Pour chaque clé connue du JSON dans Prototype.data:
+
+┌──────────────────────────────────────────────────────────────────┐
+│ "Position" → ComponentType::POSITION (0)                         │
+│   λ constructor → shared_ptr<Position>(10,20)                    │
+│   mediator.AddActuatorComponent(Position)                        │
+├──────────────────────────────────────────────────────────────────┤
+│ "Hp"       → ComponentType::HP (1)                               │
+│   λ constructor → shared_ptr<Hp>(100)                            │
+│   mediator.AddActuatorComponent(Hp)                              │
+├──────────────────────────────────────────────────────────────────┤
+│ "Velocity" → ComponentType::VELOCITY (2)                         │
+│   λ constructor → shared_ptr<Velocity>(5.0)                      │
+│   mediator.AddActuatorComponent(Velocity)                        │
+├──────────────────────────────────────────────────────────────────┤
+│ "Attack"   → ComponentType::ATTACK (3)                           │
+│   λ constructor → shared_ptr<Attack>(10,0.5)                     │
+│   mediator.AddActuatorComponent(Attack)                          │
+├──────────────────────────────────────────────────────────────────┤
+│ "Hitbox"   → ComponentType::HITBOX (4)                           │
+│   λ constructor → shared_ptr<Hitbox>(32,32,layers=[1],masks=[0]) │
+│   mediator.AddActuatorComponent(Hitbox)                          │
+└──────────────────────────────────────────────────────────────────┘
+      │
+      ▼
+(4) DummyMediator.actuators (vector<shared_ptr<IComponent>>)
+    - Contient tous les composants créés :
+      [Position, Hp, Velocity, Attack, Hitbox]
+      │
+      ▼
+(5) Affichage dans FactoryInitExample.cpp
+Console output:
+    DummyMediator::createEntity -> type: Player
+      Added actuator component type: 0  (Position)
+      Added actuator component type: 1  (Hp)
+      Added actuator component type: 2  (Velocity)
+      Added actuator component type: 3  (Attack)
+      Added actuator component type: 4  (Hitbox)
+    Created entity id: 0, components = 5
