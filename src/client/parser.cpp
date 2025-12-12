@@ -1,7 +1,6 @@
 #include "parser.hpp"
 #include <iostream>
 #include <string>
-#include <stdexcept>
 
 /**
  * @brief Display the help message.
