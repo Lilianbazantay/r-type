@@ -1,14 +1,15 @@
 #include "IMediatorEntity.hpp"
-#include "ecs/IComponent.hpp"
+#include "../IComponent.hpp"
+#include <iostream>
 
 /**
  * @brief returns the actuators components of the entity
  *
  * @return std::vector<IComponent> The list of components
  */
-std::vector<IComponent> IMediatorEntity::GetActuatorComponents()
+std::vector<ComponentType> IMediatorEntity::GetActuatorComponents()
 {
-    return _actuatorComponents;
+    return _actuatorTypeList;
 };
 
 /**
@@ -16,9 +17,10 @@ std::vector<IComponent> IMediatorEntity::GetActuatorComponents()
  *
  * @param component The actuator component to add
  */
-void IMediatorEntity::AddActuatorComponent(IComponent component)
+void IMediatorEntity::AddActuatorComponent(std::unique_ptr<IComponent> component)
 {
-    _actuatorComponents.push_back(component);
+    _actuatorTypeList.push_back(component->GetType());
+    _actuatorComponents.push_back(std::move(component));
 };
 
 /**
@@ -26,9 +28,9 @@ void IMediatorEntity::AddActuatorComponent(IComponent component)
  *
  * @return std::vector<IComponent> The list of components
  */
-std::vector<IComponent> IMediatorEntity::GetUnderGoerComponents()
+std::vector<ComponentType> IMediatorEntity::GetUnderGoerComponents()
 {
-    return _undergoerComponents;
+    return _undergoerTypeList;
 };
 
 /**
@@ -36,9 +38,10 @@ std::vector<IComponent> IMediatorEntity::GetUnderGoerComponents()
  *
  * @param component The undergoer component to add
  */
-void IMediatorEntity::AddUndergoerComponent(IComponent component)
+void IMediatorEntity::AddUndergoerComponent(std::unique_ptr<IComponent> component)
 {
-    _undergoerComponents.push_back(component);
+    _undergoerTypeList.push_back(component->GetType());
+    _undergoerComponents.push_back(std::move(component));
 };
 
 /**
@@ -50,12 +53,13 @@ void IMediatorEntity::AddUndergoerComponent(IComponent component)
 IComponent *IMediatorEntity::FindComponent(ComponentType type)
 {
     for (size_t i = 0; i < _actuatorComponents.size(); i++) {
-        if (_actuatorComponents[i].GetType() == type)
-            return &_actuatorComponents[i];
+        if (_actuatorComponents[i]->GetType() == type)
+            return _actuatorComponents[i].get();
     }
     for (size_t i = 0; i < _undergoerComponents.size(); i++) {
-        if (_undergoerComponents[i].GetType() == type)
-            return &_undergoerComponents[i];
+        if (_undergoerComponents[i]->GetType() == type)
+            return _undergoerComponents[i].get();
     }
+    std::cout << "unfound" << std::endl;
     return nullptr;
 }

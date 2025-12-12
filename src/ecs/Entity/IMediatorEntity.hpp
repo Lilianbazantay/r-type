@@ -1,5 +1,6 @@
 #pragma once
 #include "../IComponent.hpp"
+#include <memory>
 #include <vector>
 
 /**
@@ -7,10 +8,12 @@
  */
 class IMediatorEntity
 {
-    private:
+    protected:
         // COMPONENT LIST
-        std::vector<IComponent> _undergoerComponents;   // Ex: Healt, Shield, Position ...
-        std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
+        std::vector<std::unique_ptr<IComponent>> _undergoerComponents;   // Ex: Healt, Shield, Position ...
+        std::vector<std::unique_ptr<IComponent>> _actuatorComponents;    // Ex: Input Catcher, Button, ...
+        std::vector<ComponentType> _actuatorTypeList;
+        std::vector<ComponentType> _undergoerTypeList;
         // LINKED ENTITIES
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
@@ -20,10 +23,10 @@ class IMediatorEntity
         virtual void run() = 0;
 
         // COMPONENT MANAGER
-        std::vector<IComponent> GetActuatorComponents();
-        void AddActuatorComponent(IComponent component);
-        std::vector<IComponent> GetUnderGoerComponents();
-        void AddUndergoerComponent(IComponent component);
+        std::vector<ComponentType> GetActuatorComponents();
+        void AddActuatorComponent(std::unique_ptr<IComponent> component);
+        std::vector<ComponentType> GetUnderGoerComponents();
+        void AddUndergoerComponent(std::unique_ptr<IComponent> component);
 
         // CLONE
         virtual IMediatorEntity *Clone() = 0;
