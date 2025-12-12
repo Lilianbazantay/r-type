@@ -1,61 +1,27 @@
+#pragma once
 #include "IMediatorEntity.hpp"
-#include "ecs/IComponent.hpp"
 
-/**
- * @brief returns the actuators components of the entity
- *
- * @return std::vector<IComponent> The list of components
- */
-std::vector<IComponent> IMediatorEntity::GetActuatorComponents()
-{
-    return _actuatorComponents;
-};
-
-/**
- * @brief adds a actuator component to the entity
- *
- * @param component The actuator component to add
- */
-void IMediatorEntity::AddActuatorComponent(IComponent component)
-{
-    _actuatorComponents.push_back(component);
-};
-
-/**
- * @brief returns the undergoers components of the entity
- *
- * @return std::vector<IComponent> The list of components
- */
-std::vector<IComponent> IMediatorEntity::GetUnderGoerComponents()
-{
-    return _undergoerComponents;
-};
-
-/**
- * @brief adds a undergoer component to the entity
- *
- * @param component The undergoer component to add
- */
-void IMediatorEntity::AddUndergoerComponent(IComponent component)
-{
-    _undergoerComponents.push_back(component);
-};
-
-/**
- * @brief Return the adresse of the Component with the type given in parametter
- *
- * @param type Component searched
- * @return IComponent* Return the addre of the component searcher or nullptr if there is no component
- */
-IComponent *IMediatorEntity::FindComponent(ComponentType type)
-{
-    for (size_t i = 0; i < _actuatorComponents.size(); i++) {
-        if (_actuatorComponents[i].GetType() == type)
-            return &_actuatorComponents[i];
+class MediatorEntity : public IMediatorEntity {
+public:
+    int createEntity(const std::string &type) override {
+        return nextId++;
     }
-    for (size_t i = 0; i < _undergoerComponents.size(); i++) {
-        if (_undergoerComponents[i].GetType() == type)
-            return &_undergoerComponents[i];
+
+    std::vector<ComponentPtr> GetActuatorComponents() override { return actuatorComponents; }
+    void AddActuatorComponent(ComponentPtr component) override { actuatorComponents.push_back(component); }
+
+    std::vector<ComponentPtr> GetUnderGoerComponents() override { return undergoerComponents; }
+    void AddUndergoerComponent(ComponentPtr component) override { undergoerComponents.push_back(component); }
+
+    std::vector<MediatorPtr> GetAttachedEntities() override { return attachedEntities; }
+    void AttachEntity(MediatorPtr ent) override { attachedEntities.push_back(ent); }
+
+    void run() override {
     }
-    return nullptr;
-}
+
+private:
+    int nextId = 0;
+    std::vector<ComponentPtr> actuatorComponents;
+    std::vector<ComponentPtr> undergoerComponents;
+    std::vector<MediatorPtr> attachedEntities;
+};

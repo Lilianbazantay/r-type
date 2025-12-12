@@ -1,33 +1,28 @@
 #pragma once
 #include "../IComponent.hpp"
 #include <vector>
+#include <memory>
+#include <string>
 
-/**
- * @brief Interface for Mediator Entity
- */
-class IMediatorEntity
-{
-    private:
-        // COMPONENT LIST
-        std::vector<IComponent> _undergoerComponents;   // Ex: Healt, Shield, Position ...
-        std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
-        // LINKED ENTITIES
-        std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
+class IMediatorEntity;
+using IMediatorEntityPtr = std::shared_ptr<IMediatorEntity>;
 
-    public:
-        ~IMediatorEntity() = default;
+class IMediatorEntity {
+public:
+    using ComponentPtr = std::shared_ptr<IComponent>;
+    using MediatorPtr  = IMediatorEntityPtr;
 
-        virtual void run() = 0;
+    virtual ~IMediatorEntity() = default;
 
-        // COMPONENT MANAGER
-        std::vector<IComponent> GetActuatorComponents();
-        void AddActuatorComponent(IComponent component);
-        std::vector<IComponent> GetUnderGoerComponents();
-        void AddUndergoerComponent(IComponent component);
+    virtual void run() = 0;
+    virtual int createEntity(const std::string &type) = 0;
 
-        // CLONE
-        virtual IMediatorEntity *Clone() = 0;
+    virtual std::vector<ComponentPtr> GetActuatorComponents() = 0;
+    virtual void AddActuatorComponent(ComponentPtr component) = 0;
 
-        // FIND
-        IComponent *FindComponent(ComponentType type);
+    virtual std::vector<ComponentPtr> GetUnderGoerComponents() = 0;
+    virtual void AddUndergoerComponent(ComponentPtr component) = 0;
+
+    virtual std::vector<MediatorPtr> GetAttachedEntities() = 0;
+    virtual void AttachEntity(MediatorPtr ent) = 0;
 };
