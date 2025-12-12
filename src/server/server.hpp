@@ -2,7 +2,7 @@
 #define SERVER_HPP
 
 
-#include "server/protocol.hpp"
+#include "protocol.hpp"
 #include <array>
 #include <asio/steady_timer.hpp>
 #include <chrono>

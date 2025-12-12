@@ -1,7 +1,8 @@
 #pragma once
 
-#include <array>
+#include <cstddef>
 #include <cstdint>
+#include <vector>
 
 #define ACT_SIZE (uint64_t)4
 
@@ -37,13 +38,13 @@ class Packet {
         ~Packet() = default;
 
 
-        void FillPacketID(std::array<uint8_t, 9>);
-        void FillActionType(std::array<uint8_t, 9>);
-        void FillPayloadSize(std::array<uint8_t, 9>);
-        void FillActionValue(std::array<uint8_t, 9>);
-        void FillIP(std::array<uint8_t, 9>);
-        void FillPort(std::array<uint8_t, 9>, uint8_t offset);
-        void FillReceivedData(std::array<uint8_t, 9>);
+        void FillPacketID(std::vector<uint8_t>);
+        void FillActionType(std::vector<uint8_t>);
+        void FillPayloadSize(std::vector<uint8_t>);
+        void FillActionValue(std::vector<uint8_t>);
+        void FillIP(std::vector<uint8_t>);
+        void FillPort(std::vector<uint8_t>, size_t offset);
+        void FillReceivedData(std::vector<uint8_t>);
 
         inline uint16_t getID(void) { return packetID; };
         inline uint8_t getActionType(void) { return actionType; };
