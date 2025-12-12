@@ -1,0 +1,67 @@
+#ifndef SERVER_HPP
+#define SERVER_HPP
+
+
+#include "protocol.hpp"
+#include <array>
+#include <asio/steady_timer.hpp>
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#pragma once
+
+#include <asio.hpp>
+#include <thread>
+#include <atomic>
+#include <string>
+
+/**
+ * @brief server class, is the one communicating and parsing data with game and ECS
+ *
+ */
+class Server {
+    public:
+        Server(__uint16_t listen_port);
+        ~Server();
+
+        void start();
+        void stop();
+        void send(size_t actVal, const std::string& host, __uint16_t port);
+        size_t currentID = 0;
+        void input_pressed(uint8_t action);
+        void input_released(uint8_t action);
+
+    private:
+        void do_receive();
+        void run();
+        void RoutineSender();
+
+        void packetDispatch();
+        void StartTimer();
+        void OnTimer();
+
+        std::string addIp();
+        void addPort(std::string IP);
+
+    private:
+        asio::io_context io_ctx_;
+        asio::ip::udp::socket socket_;
+        asio::ip::udp::endpoint remote_endpoint_;
+        asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
+        asio::steady_timer timer{io_ctx_};
+
+
+        std::array<char, 2048> recv_buffer_{};
+        std::array<std::string, 4> list_ip;
+        std::array<size_t, 4> list_port;
+        std::chrono::milliseconds interval{20};
+
+        std::jthread io_thread_;
+        std::jthread sender_thread;
+        std::atomic<bool> running_{false};
+
+        Packet receiver;
+
+};
+
+#endif

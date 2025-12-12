@@ -2,6 +2,8 @@
 #define ASIO_NETWORK_HPP
 
 
+#include <cstdint>
+#include <vector>
 #pragma once
 #include <asio.hpp>
 #include <thread>
@@ -11,7 +13,8 @@
 
 class Asio_network {
     public:
-        using ReceiveCallback = std::function<void(const std::string&, const asio::ip::udp::endpoint&)>;
+        using ReceiveCallback = std::function<void(std::vector<uint8_t> data, size_t size, const asio::ip::udp::endpoint&)>;
+
         Asio_network(__uint16_t listen_port, ReceiveCallback on_receive = nullptr);
         ~Asio_network();
 

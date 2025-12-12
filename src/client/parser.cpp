@@ -1,64 +1,99 @@
 #include "parser.hpp"
-#include "../utils.hpp"
-
 #include <iostream>
 #include <string>
 
 /**
- * @brief Display the usage into the terminal
+ * @brief Display the help message.
  */
-void Parser::descripton()
+void Parser::show_help()
 {
     std::cout << "USAGE:\n"
               << "\t./client -h -i ip_address -p port\n"
               << "OPTIONS:\n"
               << "\t-h\t\tprint the help\n"
-              << "\t-i or --ip\t\tspecify the ip address of the server\n"
-              << "\t-p or --port\t\tspecify the port of the server\n";
+              << "\t-i --ip\t\tserver ip address\n"
+              << "\t-p --port\tserver port (1024-65535)\n";
 }
 
 /**
- * @brief Parse all data given as argument and store the into the 'Parser' class
+ * @brief Parse the IP argument.
  *
- * @param argc number of argument
- * @param argv list of argument
- * @return int 'EXIT_ERROR' if argument format are invalid else return 'EXIT_SUCCESS'
+ * @param arg Current argument being processed.
+ * @param argv Argument vector.
+ * @param i Current index in argv.
+ * @param argc number of arguments.
+ * @return true if parsing succeeded.
+ * @return false if the IP argument is missing or invalid.
  */
-int Parser::ParseData(int argc, char **argv)
+bool Parser::parse_ip(const std::string &arg, char **argv, int &i, int argc)
 {
-    if (argc < 3) {
-        descripton();
-        return EXIT_ERROR;
-    }
-    for (int i = 0; i < argc; i++) {
-        std::string arg = argv[i];
-        if (arg == "-h")
-            descripton();
-        if (arg == "-i" || arg == "--ip") {
-            if (i + 1 <= argc)
-                this->ip = argv[i + 1];
-            else
-                return EXIT_ERROR;
+    if (arg == "-i" || arg == "--ip") {
+        if (i + 1 < argc) {
+            ip = argv[i + 1];
+            i++;
+            return true;
         }
-        if (arg == "-p" || arg == "--port") {
-            if (i + 1 <= argc)
-                try {
-                    int tmpPort = std::stoi(argv[i + 1]);
-                    if (tmpPort < 1024 || tmpPort > 65535) {
-                        std::cerr << "Invalid port value" << argv[i + 1]
-                        << "\nUse \"./client -h\" to get help\n";
-                        return EXIT_FAILURE;
-                    } else {
-                        this->port = tmpPort;
-                    }
-                } catch (const std::exception &e) {
-                    std::cerr << "Invalid port value: " << argv[i + 1]
-                    << "\nUse \"./client -h\" to get help\n";
-                    return EXIT_ERROR;
+        std::cerr << "Missing IP after " << arg << "\n";
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @brief Parse the port argument.
+ *
+ * @param arg Current argument being processed.
+ * @param argv Argument vector.
+ * @param i Current index in argv.
+ * @param argc number of arguments.
+ * @return true if parsing succeeded.
+ * @return false if the port is missing, invalid, or out of range.
+ */
+bool Parser::parse_port(const std::string &arg, char **argv, int &i, int argc)
+{
+    if (arg == "-p" || arg == "--port") {
+        if (i + 1 < argc) {
+            try {
+                int p = std::stoi(argv[i + 1]);
+                if (p < 1024 || p > 65535) {
+                    std::cerr << "Invalid port: " << p << "\n";
+                    return false;
                 }
-            else
-                return EXIT_ERROR;
+                port = p;
+                i++;
+                return true;
+            } catch (...) {
+                std::cerr << "Invalid port format\n";
+                return false;
+            }
         }
+        std::cerr << "Missing port after " << arg << "\n";
+        return false;
     }
-    return EXIT_DESIRED;
+    return true;
+}
+/**
+ * @brief Parse command-line arguments.
+ *
+ * @param argc number of arguments.
+ * @param argv Argument vector.
+ * @return int EXIT_SUCCESS if parsing succeeded, EXIT_FAILURE otherwise.
+ */
+int Parser::parse(int argc, char **argv)
+{
+    if (argc == 2 && std::string(argv[1]) == "-h") {
+        show_help();
+        return EXIT_FAILURE;
+    }
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (!parse_ip(arg, argv, i, argc)) return EXIT_FAILURE;
+        if (!parse_port(arg, argv, i, argc)) return EXIT_FAILURE;
+    }
+    if (ip.empty() || port == -1) {
+        std::cerr << "Missing required arguments.\n";
+        show_help();
+        return EXIT_FAILURE;
+    }
+    return 0;
 }
