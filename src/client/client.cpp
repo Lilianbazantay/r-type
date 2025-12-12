@@ -1,5 +1,9 @@
 #include "client.hpp"
+#include <array>
+#include <cstdint>
 #include <iostream>
+#include <sys/types.h>
+#include <vector>
 #include "PacketCodec.hpp"
 
 static uint16_t GLOBAL_PACKET_ID = 0;
@@ -11,7 +15,7 @@ static uint16_t GLOBAL_PACKET_ID = 0;
  * @param size Size of packet in bytes
  * @param sender UDP endpoint of the server
  */
-static void on_receive_callback(const uint8_t *data,
+static void on_receive_callback(const std::vector<uint8_t>data,
                                 size_t size,
                                 const asio::ip::udp::endpoint &)
 {
@@ -67,14 +71,11 @@ void Client::sendPacket(const Packet &p)
  */
 void Client::sendInput(bool pressed, uint8_t inputCode)
 {
-    uint8_t action =
-        pressed ? INPUT_PRESSED : INPUT_RELEASED;
-
-    uint8_t payload[1] = { inputCode };
+    std::vector<uint8_t> payload = {inputCode};
 
     Packet p = encodeClientPacket(
         GLOBAL_PACKET_ID++,
-        action,
+        pressed,
         1,
         payload
     );
@@ -91,7 +92,7 @@ void Client::sendStartGame()
         GLOBAL_PACKET_ID++,
         START_GAME,
         0,
-        nullptr
+        {}
     );
 
     sendPacket(p);
@@ -105,15 +106,13 @@ void Client::sendStartGame()
  */
 void Client::sendConnectionRequest(uint32_t ipValue, uint16_t portValue)
 {
-    uint8_t payload[6] = {
-        (uint8_t)((ipValue >> 24) & 0xFF),
-        (uint8_t)((ipValue >> 16) & 0xFF),
-        (uint8_t)((ipValue >> 8) & 0xFF),
-        (uint8_t)( ipValue       & 0xFF),
+    std::vector<uint8_t> payload{(uint8_t)((ipValue >> 24u) & 0xFFu),
+        (uint8_t)((ipValue >> 16u) & 0xFFu),
+        (uint8_t)((ipValue >> 8u) & 0xFFu),
+        (uint8_t)( ipValue       & 0xFFu),
 
-        (uint8_t)((portValue >> 8) & 0xFF),
-        (uint8_t)( portValue       & 0xFF)
-    };
+        (uint8_t)((static_cast<uint32_t>(portValue) >> 8u) & 0xFFu),
+        (uint8_t)( portValue       & 0xFFu)};
 
     Packet p = encodeClientPacket(
         GLOBAL_PACKET_ID++,

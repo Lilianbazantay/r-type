@@ -1,6 +1,7 @@
 #pragma once
 #include "Packet.hpp"
-#include <string>
+#include <cstdint>
+#include <vector>
 
 enum ActionTypeClient {
     INPUT_PRESSED = 0b0000,
@@ -16,7 +17,7 @@ Packet encodeClientPacket(
     uint16_t packetId,
     uint8_t actionType,
     uint8_t payloadSize,
-    const uint8_t* payload
+    std::vector<uint8_t> payload
 );
 
-ServerPacket decodeServerPacket(const uint8_t* bytes, size_t size);
+ServerPacket decodeServerPacket(std::vector<uint8_t>bytes, size_t size);

@@ -1,8 +1,6 @@
-#include "../utils.hpp"
 #include "parser.hpp"
 #include "client.hpp"
 #include <iostream>
-#include <thread>
 #include <sstream>
 
 /**
@@ -73,7 +71,7 @@ int main(int argc, char **argv)
             uint32_t ipValue = 0;
             unsigned a, b, c, d;
             if (sscanf(ipStr.c_str(), "%u.%u.%u.%u", &a, &b, &c, &d) == 4) {
-                ipValue = (a << 24) | (b << 16) | (c << 8) | d;
+                ipValue = (a << 24u) | (b << 16u) | (c << 8u) | d;
             } else {
                 std::cout << "Invalid IP format\n";
                 continue;
