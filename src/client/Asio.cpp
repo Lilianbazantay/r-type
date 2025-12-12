@@ -63,12 +63,15 @@ void Asio_network::do_receive() {
     socket_.async_receive_from(asio::buffer(recv_buffer_),
         remote_endpoint_,
         [this](std::error_code error_code, std::size_t bytes_recvd) {
+            std::cout << "listening\n";
             if (!error_code && bytes_recvd > 0) {
                 std::cout << "Received message:\n" << std::string(recv_buffer_.data(), bytes_recvd) << std::endl;
                 gotText = true;
+                std::vector<uint8_t> arr(recv_buffer_.data(),
+                    recv_buffer_.data() + bytes_recvd);
                 if (receive_callback_) {
                     receive_callback_(
-                        reinterpret_cast<uint8_t*>(recv_buffer_.data()),
+                        arr,
                         bytes_recvd,
                         remote_endpoint_
                     );
