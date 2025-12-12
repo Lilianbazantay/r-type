@@ -1,0 +1,2 @@
+g++ main.cpp Application.cpp InputManager.cpp Window.cpp -o sfml_app -std=c++17 -lsfml-graphics -lsfml-window -lsfml-system;
+./sfml_app
