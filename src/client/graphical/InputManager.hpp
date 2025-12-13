@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <unordered_set>
 #include <string>
 #include <cstdint>
@@ -7,14 +8,25 @@
 #include <SFML/Window/Keyboard.hpp>
 #include "../client.hpp"
 
+enum class Action : uint8_t {
+    Up,
+    Down,
+    Left,
+    Right,
+    Fire,
+    Unknown
+};
+
 class InputManager
 {
 private:
-    std::unordered_set<int> keysPressed;
+    std::unordered_map<Action, sf::Keyboard::Key> _keyBindings;
+    std::unordered_set<sf::Keyboard::Key> keysPressed;
+
     std::string textBuffer;
     Client* _client = nullptr;
 
-    uint8_t mapKeyToNetwork(sf::Keyboard::Key key);
+    Action keyToAction(sf::Keyboard::Key key) const;
 
 public:
     InputManager();
@@ -22,9 +34,12 @@ public:
 
     void setClient(Client* client);
 
-    void processEvent(const sf::Event& event);
+    void bindKey(Action action, sf::Keyboard::Key key);
+    sf::Keyboard::Key getKey(Action action) const;
 
-    bool isKeyPressed(sf::Keyboard::Key key) const;
+    bool isActionPressed(Action action) const;
+
+    void processEvent(const sf::Event& event);
 
     std::string consumeTextBuffer();
 };

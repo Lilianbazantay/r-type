@@ -17,7 +17,9 @@
  * @brief Constructor for ClientGame. Init the window with a nice starfield
  *
  */
-ClientGame::ClientGame() {
+ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): client(ip, port, netBuffer)
+{
+    _netBuffer = netBuffer;
     data.window.create(sf::VideoMode({1920, 1080}), "RTYPE");
     data.window.clear(sf::Color::Black);
     data.window.setActive(true);
@@ -55,15 +57,15 @@ void ClientGame::getInputs(sf::Event evt) {
     }
     bool shooting = false;
     std::pair<float, float> movement = {0, 0};
-    if (sf::Keyboard::isKeyPressed(clientInputs.getUp()))
+    if (_inputManager.isActionPressed(Action::Up))
         movement.second += -1;
-    if (sf::Keyboard::isKeyPressed(clientInputs.getLeft()))
+    if (_inputManager.isActionPressed(Action::Left))
         movement.first += -1;
-    if (sf::Keyboard::isKeyPressed(clientInputs.getDown()))
+    if (_inputManager.isActionPressed(Action::Down))
         movement.second += 1;
-    if (sf::Keyboard::isKeyPressed(clientInputs.getRight()))
+    if (_inputManager.isActionPressed(Action::Right))
         movement.first += 1;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+    if (_inputManager.isActionPressed(Action::Fire))
         shooting = true;
     // SEND INPUT TO SERVER HERE
 };
@@ -72,17 +74,19 @@ void ClientGame::getInputs(sf::Event evt) {
  * @brief main loop for ClientGame. clear window, display, and retrieves events. Does not update/draw the entities if paused
  *
  */
-
 void ClientGame::Loop() {
     sf::Event evt;
     while(data.window.isOpen()) {
         if (Stopping)
             return;
         data.window.clear(sf::Color::Black);
-        if (!Paused)
+        if (!Paused) {
             Update();
+            processNetworkPackets();
+        }
         data.window.display();
         data.window.pollEvent(evt);
+        _inputManager.processEvent(evt);
         getInputs(evt);
     }
 }
@@ -192,6 +196,18 @@ void ClientGame::setStop(bool value) {
     pause_mutex.unlock();
 }
 
+void ClientGame::processNetworkPackets()
+{
+    auto packets = _netBuffer->popAllPackets();
+    for (const auto& pkt : packets) {
+        // PUT ENDPOINT ECS
+        std::cout << "[GAME] Received packet id=" << pkt.packetId
+                  << " action=" << (int)pkt.actionType
+                  << " entity=" << (int)pkt.entityType
+                  << " entityId=" << pkt.entityId
+                  << " pos=(" << pkt.posX << "," << pkt.posY << ")\n";
+    }
+}
 
 //int main(void) {
 //    try {

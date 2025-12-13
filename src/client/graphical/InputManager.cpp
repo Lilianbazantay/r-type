@@ -1,9 +1,37 @@
 #include "InputManager.hpp"
 
-InputManager::InputManager() : textBuffer("") {}
+InputManager::InputManager() : textBuffer("")
+{
+    _keyBindings[Action::Up]    = sf::Keyboard::Z;
+    _keyBindings[Action::Down]  = sf::Keyboard::S;
+    _keyBindings[Action::Left]  = sf::Keyboard::Q;
+    _keyBindings[Action::Right] = sf::Keyboard::D;
+    _keyBindings[Action::Fire]  = sf::Keyboard::Space;
+}
 
-void InputManager::setClient(Client* client) {
+void InputManager::setClient(Client* client)
+{
     _client = client;
+}
+
+void InputManager::bindKey(Action action, sf::Keyboard::Key key)
+{
+    _keyBindings[action] = key;
+}
+
+sf::Keyboard::Key InputManager::getKey(Action action) const
+{
+    auto it = _keyBindings.find(action);
+    if (it != _keyBindings.end())
+        return it->second;
+    return sf::Keyboard::Unknown;
+}
+
+bool InputManager::isActionPressed(Action action) const
+{
+    auto it = _keyBindings.find(action);
+    if (it == _keyBindings.end()) return false;
+    return keysPressed.find(it->second) != keysPressed.end();
 }
 
 void InputManager::processEvent(const sf::Event& event)
@@ -13,11 +41,12 @@ void InputManager::processEvent(const sf::Event& event)
             if (keysPressed.find(event.key.code) == keysPressed.end()) {
                 keysPressed.insert(event.key.code);
 
-                if (_client) {
-                    uint8_t code = mapKeyToNetwork(event.key.code);
-                    if (code != 255)
-                        _client->sendInput(true, code);
-                }
+                Action act = keyToAction(event.key.code);
+                if (_client && act != Action::Unknown)
+                    _client->sendInput(true, static_cast<uint8_t>(act));
+
+                if (event.key.code == sf::Keyboard::X && _client)
+                    _client->sendStartGame();
             }
             break;
         }
@@ -25,11 +54,10 @@ void InputManager::processEvent(const sf::Event& event)
         case sf::Event::KeyReleased: {
             keysPressed.erase(event.key.code);
 
-            if (_client) {
-                uint8_t code = mapKeyToNetwork(event.key.code);
-                if (code != 255)
-                    _client->sendInput(false, code);
-            }
+            Action act = keyToAction(event.key.code);
+            if (_client && act != Action::Unknown)
+                _client->sendInput(false, static_cast<uint8_t>(act));
+
             break;
         }
 
@@ -44,11 +72,6 @@ void InputManager::processEvent(const sf::Event& event)
     }
 }
 
-bool InputManager::isKeyPressed(sf::Keyboard::Key key) const
-{
-    return keysPressed.find(key) != keysPressed.end();
-}
-
 std::string InputManager::consumeTextBuffer()
 {
     std::string out = textBuffer;
@@ -56,22 +79,11 @@ std::string InputManager::consumeTextBuffer()
     return out;
 }
 
-uint8_t InputManager::mapKeyToNetwork(sf::Keyboard::Key key)
+Action InputManager::keyToAction(sf::Keyboard::Key key) const
 {
-    switch (key) {
-        case sf::Keyboard::Space:
-            return 0;
-        case sf::Keyboard::Up:
-            return 1;
-        case sf::Keyboard::Down:
-            return 2;
-        case sf::Keyboard::Left:
-            return 3;
-        case sf::Keyboard::Right:
-            return 4;
-        case sf::Keyboard::X:
-            _client->sendStartGame();
-        default:
-            return 255;
+    for (const auto& [act, k] : _keyBindings) {
+        if (k == key)
+            return act;
     }
+    return Action::Unknown;
 }

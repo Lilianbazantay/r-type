@@ -19,7 +19,6 @@ IMediatorEntity *Background::Clone() {
     return nullptr;
 }
 
-
 Player::Player() {
     this->AddActuatorComponent(std::make_unique<Sprite>("../../../assets/dialogus.png", 64, 64));
     this->AddActuatorComponent(std::make_unique<Direction>());

@@ -1,9 +1,8 @@
-#include "./graphical/Game.hpp"
+#include "./ClientGame.hpp"
 #include "parser.hpp"
 #include "client.hpp"
 #include <iostream>
 #include <sstream>
-
 
 void clientConsoleThread()
 {
@@ -90,11 +89,15 @@ int main()
 {
     std::thread consoleThread(clientConsoleThread);
 
+    std::string ip = "127.0.0.1";
+    int port = 4242;
+    NetworkBuffer *netBuffer;
+
     try {
-        Game app;
-        app.run();
+        ClientGame rtype(ip, port, netBuffer);
+        rtype.Loop();
     } catch (const std::exception& e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+        std::cerr << "Error: " << e.what() << std::endl;
     }
 
     if (consoleThread.joinable())
