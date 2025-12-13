@@ -90,12 +90,12 @@ int main(int argc, char **argv)
 {
     std::thread consoleThread(clientConsoleThread, argc, argv);
 
-    std::string ip = "127.0.0.1";
-    int port = 4242;
+    Parser parser;
+    parser.parse(argc, argv);
     NetworkBuffer netBuffer;
 
     try {
-        ClientGame rtype(ip, port, &netBuffer);
+        ClientGame rtype(parser.ip, parser.port, &netBuffer);
         rtype.Loop();
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;

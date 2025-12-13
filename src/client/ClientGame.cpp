@@ -24,6 +24,7 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     data.window.clear(sf::Color::Black);
     data.window.setActive(true);
     clock.restart();
+    _inputManager.setClient(&client);
     Prevtime = clock.getElapsedTime();
     systemList.push_back(std::make_unique<DrawSpriteSystem>());
     createEntity(ENTITY_BACKGROUND, 0, {0, 0});
