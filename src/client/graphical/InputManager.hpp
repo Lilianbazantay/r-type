@@ -8,6 +8,10 @@
 #include <SFML/Window/Keyboard.hpp>
 #include "../client.hpp"
 
+/**
+ * @brief action type enum
+ *
+ */
 enum class Action : uint8_t {
     Up,
     Down,
@@ -17,6 +21,10 @@ enum class Action : uint8_t {
     Unknown
 };
 
+/**
+ * @brief class that handles input
+ *
+ */
 class InputManager
 {
 private:

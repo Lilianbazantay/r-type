@@ -4,6 +4,12 @@
 #include <iostream>
 #include <sstream>
 
+/**
+ * @brief threads for console debug
+ *
+ * @param argc number of args from main
+ * @param argv args from main
+ */
 void clientConsoleThread(int argc, char **argv)
 {
     Parser parser;

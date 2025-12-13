@@ -3,6 +3,10 @@
 #include <vector>
 #include <mutex>
 
+/**
+ * @brief buffer network
+ * 
+ */
 class NetworkBuffer {
 private:
     std::vector<ServerPacket> packets;

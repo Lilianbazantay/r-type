@@ -4,6 +4,10 @@
 #include <SFML/Window.hpp>
 #include <string>
 
+/**
+ * @brief class that handle the main window of the client
+ *
+ */
 class WindowManager
 {
 private:
