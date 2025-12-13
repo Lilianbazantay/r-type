@@ -62,23 +62,23 @@ void InputManager::processEvent(const sf::Event& event)
     if (event.type == sf::Event::KeyReleased) {
         if (event.key.code == getKey(Action::Up)) {
             std::cout << "KEY RELEASE UP\n";
-            _client->sendInput(true, static_cast<uint8_t>(Action::Up));
+            _client->sendInput(false, static_cast<uint8_t>(Action::Up));
         }
         if (event.key.code == getKey(Action::Down))
         {
-            _client->sendInput(true, static_cast<uint8_t>(Action::Down));
+            _client->sendInput(false, static_cast<uint8_t>(Action::Down));
         }
         if (event.key.code == getKey(Action::Left))
         {
-            _client->sendInput(true, static_cast<uint8_t>(Action::Left));
+            _client->sendInput(false, static_cast<uint8_t>(Action::Left));
         }
         if (event.key.code == getKey(Action::Right))
         {
-            _client->sendInput(true, static_cast<uint8_t>(Action::Right));
+            _client->sendInput(false, static_cast<uint8_t>(Action::Right));
         }
         if (event.key.code == getKey(Action::Fire))
         {
-            _client->sendInput(true, static_cast<uint8_t>(Action::Fire));
+            _client->sendInput(false, static_cast<uint8_t>(Action::Fire));
         }
     }
 //    switch (event.type) {
