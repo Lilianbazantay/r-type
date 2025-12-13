@@ -96,8 +96,11 @@ void ClientGame::Loop() {
             processNetworkPackets();
         }
         data.window.display();
-        while(data.window.pollEvent(evt))
+        while(data.window.pollEvent(evt)) {
+            if (evt.type == sf::Event::Closed)
+                data.window.close();
             _inputManager.processEvent(evt);
+        }
         //getInputs(evt);
     }
 }

@@ -38,6 +38,13 @@ void Client::start()
  */
 void Client::sendPacket(const Packet &p)
 {
+    std::cout << "HERE 1\n";
+    std::cout << std::string((char*)p.bytes.data()) << std::endl;
+    std::cout << "HERE 2\n";
+    std::cout << ip_ << std::endl;
+    std::cout << "HERE 3\n";
+    std::cout << port_ << std::endl;
+
     network_.send(std::string((char*)p.bytes.data(), p.size), ip_, port_);
 
     std::cout << "[CLIENT] Sent packet (" << p.size << " bytes)\n";
@@ -59,7 +66,6 @@ void Client::sendInput(bool pressed, uint8_t inputCode)
         1,
         payload
     );
-
     sendPacket(p);
 }
 

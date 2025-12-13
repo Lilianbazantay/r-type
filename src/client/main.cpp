@@ -4,13 +4,14 @@
 #include <iostream>
 #include <sstream>
 
-void clientConsoleThread()
+void clientConsoleThread(int argc, char **argv)
 {
     Parser parser;
+    std::cout << argc << std::endl;
 
-    const char* argv_fake[] = {"prog", "127.0.0.1", "4242"};
-    parser.parse(3, const_cast<char**>(argv_fake));
+    parser.parse(argc, argv);
 
+    std::cout << parser.ip << " " << parser.port << "\n";
     Client client(parser.ip, parser.port);
     client.start();
     std::cout << "Connected to " << parser.ip << ":" << parser.port << "\n";
@@ -85,9 +86,9 @@ void clientConsoleThread()
  * @param argv Argument vector.
  * @return 0 if parsing succeeded, 84 otherwise.
  */
-int main()
+int main(int argc, char **argv)
 {
-    std::thread consoleThread(clientConsoleThread);
+    std::thread consoleThread(clientConsoleThread, argc, argv);
 
     std::string ip = "127.0.0.1";
     int port = 4242;
