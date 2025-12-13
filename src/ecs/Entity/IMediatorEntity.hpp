@@ -17,6 +17,8 @@ class IMediatorEntity
         // LINKED ENTITIES
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
+        int id;
+
     public:
         ~IMediatorEntity() = default;
 
@@ -28,6 +30,8 @@ class IMediatorEntity
         std::vector<ComponentType> GetUnderGoerComponents();
         void AddUndergoerComponent(std::unique_ptr<IComponent> component);
 
+        void setId(int);
+        int getId();
         // CLONE
         virtual IMediatorEntity *Clone() = 0;
 

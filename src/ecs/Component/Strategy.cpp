@@ -1,5 +1,5 @@
 #include "Strategy.hpp"
-#include "ecs/IComponent.hpp"
+#include "../IComponent.hpp"
 #include <cstdlib>
 
 /**

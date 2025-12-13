@@ -20,8 +20,6 @@ Sprite::Sprite(const std::string& file_path, float size_x, float size_y)
     _sprite.setTexture(_texture);
     _sprite.setScale(size_x / static_cast<float>(texSize.x), size_y / static_cast<float>(texSize.y));
 
-//    _sprite.setTexture(_texture);
-//    _sprite.setScale(size_x / _texture.getSize().x, size_y / _texture.getSize().y);
     _type = ComponentType::SPRITE;
 }
 

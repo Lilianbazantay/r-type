@@ -63,3 +63,11 @@ IComponent *IMediatorEntity::FindComponent(ComponentType type)
     std::cout << "unfound" << std::endl;
     return nullptr;
 }
+
+void IMediatorEntity::setId(int newId) {
+    id = newId;
+}
+
+int IMediatorEntity::getId() {
+    return id;
+}
