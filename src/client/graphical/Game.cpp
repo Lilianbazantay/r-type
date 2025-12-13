@@ -2,7 +2,8 @@
 #include <iostream>
 
 Game::Game()
-: window("SFML - Fenetre encapsulée", 800, 600)
+: window("SFML - Fenetre encapsulée", 800, 600),
+  client("127.0.0.1", 4242, &netBuffer)
 {
     player.setRadius(30.f);
     player.setFillColor(sf::Color::Green);
@@ -19,6 +20,9 @@ Game::Game()
         info.setFillColor(sf::Color::White);
         info.setPosition(5.f, 5.f);
     }
+
+    client.start();
+    input.setClient(&client);
 }
 
 void Game::run()
@@ -27,21 +31,22 @@ void Game::run()
     while (window.isOpen()) {
         sf::Event event;
         while (window.get().pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+            if (event.type == sf::Event::Closed)
                 window.close();
-            } else if (event.type == sf::Event::Resized) {
+            else if (event.type == sf::Event::Resized)
                 window.handleResize(event.size.width, event.size.height);
-            }
+
             input.processEvent(event);
         }
 
         float time = clock.restart().asSeconds();
         update(time);
+        processNetworkPackets();
+
         window.get().clear(sf::Color(50, 50, 50));
         window.get().draw(player);
-        if (useText) {
+        if (useText)
             window.get().draw(info);
-        }
         window.get().display();
     }
 }
@@ -51,7 +56,6 @@ void Game::update(float time)
     const float speed = 200.f;
     sf::Vector2f move{0.f, 0.f};
 
-
     if (input.isKeyPressed(sf::Keyboard::Left) || input.isKeyPressed(sf::Keyboard::Q))
         move.x -= speed * time;
     if (input.isKeyPressed(sf::Keyboard::Right) || input.isKeyPressed(sf::Keyboard::D))
@@ -60,6 +64,7 @@ void Game::update(float time)
         move.y -= speed * time;
     if (input.isKeyPressed(sf::Keyboard::Down) || input.isKeyPressed(sf::Keyboard::S))
         move.y += speed * time;
+
     player.move(move);
 
     std::string typed = input.consumeTextBuffer();
@@ -68,12 +73,27 @@ void Game::update(float time)
         if (typedText.size() > 128)
             typedText.erase(0, typedText.size() - 128);
     }
+
     if (useText) {
         info.setString(
-        "Position: (" + std::to_string((int)player.getPosition().x) + ", " + std::to_string((int)player.getPosition().y) + ")\n" +
-        "Texte enter: " + typedText + "\n" +
-        "Touch pressed: " + pressedKeysToString() + "\n"
+            "Position: (" + std::to_string((int)player.getPosition().x) + ", " +
+            std::to_string((int)player.getPosition().y) + ")\n" +
+            "Texte enter: " + typedText + "\n" +
+            "Touch pressed: " + pressedKeysToString() + "\n"
         );
+    }
+}
+
+void Game::processNetworkPackets()
+{
+    auto packets = netBuffer.popAllPackets();
+    for (const auto& pkt : packets) {
+        // PUT ENDPOINT ECS
+        std::cout << "[GAME] Received packet id=" << pkt.packetId
+                  << " action=" << (int)pkt.actionType
+                  << " entity=" << (int)pkt.entityType
+                  << " entityId=" << pkt.entityId
+                  << " pos=(" << pkt.posX << "," << pkt.posY << ")\n";
     }
 }
 

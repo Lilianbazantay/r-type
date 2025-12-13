@@ -2,22 +2,25 @@
 
 #include <unordered_set>
 #include <string>
+#include <cstdint>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
-#include <SFML/Window/Mouse.hpp>
-#include <SFML/System/Vector2.hpp>
-
+#include "../client.hpp"
 
 class InputManager
 {
 private:
     std::unordered_set<int> keysPressed;
     std::string textBuffer;
+    Client* _client = nullptr;
 
+    uint8_t mapKeyToNetwork(sf::Keyboard::Key key);
 
 public:
     InputManager();
     ~InputManager() = default;
+
+    void setClient(Client* client);
 
     void processEvent(const sf::Event& event);
 

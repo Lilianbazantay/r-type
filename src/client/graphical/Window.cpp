@@ -20,7 +20,7 @@ sf::RenderWindow& WindowManager::get()
 
 sf::Vector2u WindowManager::getSize()
 {
-    _window.getSize()
+    return _window.getSize();
 }
 
 void WindowManager::handleResize(unsigned int width, unsigned int height)
