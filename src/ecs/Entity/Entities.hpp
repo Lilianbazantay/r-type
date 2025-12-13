@@ -4,7 +4,6 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Keyboard.hpp>
-#include <memory>
 #include <mutex>
 #include <vector>
 
@@ -20,7 +19,7 @@ class Background: public IMediatorEntity {
         std::mutex _mutex;
         public:
         Background();
-        ~Background() = default;
+        ~Background() override = default;
         void run() override;
         IMediatorEntity *Clone() override;
 };
@@ -35,7 +34,7 @@ class Player: public IMediatorEntity {
         std::mutex _mutex;
     public:
         Player();
-        ~Player() = default;
+        ~Player() override = default;
         void run() override;
         IMediatorEntity *Clone() override;
 };
@@ -50,7 +49,7 @@ class Enemy: public IMediatorEntity {
         std::mutex _mutex;
     public:
         Enemy();
-        ~Enemy() = default;
+        ~Enemy() override = default;
         void run() override;
         IMediatorEntity *Clone() override;
 };
@@ -66,7 +65,7 @@ class PlayerBullet: public IMediatorEntity {
         std::mutex _mutex;
     public:
         PlayerBullet();
-        ~PlayerBullet() = default;
+        ~PlayerBullet() override = default;
         void run() override;
         IMediatorEntity *Clone() override;
 };

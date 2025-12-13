@@ -6,7 +6,6 @@
 
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-#include <iostream>
 
 
 /**

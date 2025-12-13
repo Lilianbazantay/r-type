@@ -28,6 +28,7 @@ class IMediatorEntity
         int Entitytype;
         std::mutex _mutex;
     public:
+        virtual ~IMediatorEntity() = 0;
         virtual void run() = 0;
 
         // COMPONENT MANAGER
