@@ -11,10 +11,6 @@
 #include "../ecs/System/ISystem.hpp"
 #include "../ecs/relevant_data.hpp"
 
-#include "../ecs/Entity/Entities.hpp"
-#include "ecs/Component/Strategy.hpp"
-#include "ecs/Entity/IMediatorEntity.hpp"
-
 #include "./client.hpp"
 #include "./NetworkBuffer.hpp"
 #include "./graphical/InputManager.hpp"
@@ -29,7 +25,6 @@ class ClientGame {
         bool Stopping = false;
         bool Paused = false;
         std::mutex pause_mutex;
-        void getInputs(sf::Event);
 
         NetworkBuffer *_netBuffer;
         Client client;

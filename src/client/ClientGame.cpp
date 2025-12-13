@@ -1,6 +1,5 @@
 #include "ClientGame.hpp"
 #include "../src/ecs/relevant_data.hpp"
-#include "../src/ecs/System/SystemList.hpp"
 #include "ecs/Component/Position.hpp"
 #include "ecs/Entity/Entities.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
@@ -48,41 +47,6 @@ void ClientGame::Update() {
 }
 
 /**
- * @brief retrieves the inputs from players, and sends them to server
- *
- * @param evt SFML events from window
- */
-void ClientGame::getInputs(sf::Event evt) {
-    if (evt.type == sf::Event::Closed) {
-        Stopping = true;
-        return;
-    }
-    bool shooting = false;
-    std::pair<float, float> movement = {0, 0};
-    if (_inputManager.isActionPressed(Action::Up)) {
-        std::cout << "UP";
-        movement.second += -1;
-    }
-    if (_inputManager.isActionPressed(Action::Left)) {
-        std::cout << "LEFT";
-        movement.first += -1;
-    }
-    if (_inputManager.isActionPressed(Action::Down)) {
-        std::cout << "DOWN";
-        movement.second += 1;
-    }
-    if (_inputManager.isActionPressed(Action::Right)) {
-        std::cout << "RIGHT";
-        movement.first += 1;
-    }
-    if (_inputManager.isActionPressed(Action::Fire)) {
-        std::cout << "FIRE";
-        shooting = true;
-    }
-    // SEND INPUT TO SERVER HERE
-};
-
-/**
  * @brief main loop for ClientGame. clear window, display, and retrieves events. Does not update/draw the entities if paused
  *
  */
@@ -102,7 +66,6 @@ void ClientGame::Loop() {
                 data.window.close();
             _inputManager.processEvent(evt);
         }
-        //getInputs(evt);
     }
 }
 
@@ -223,14 +186,3 @@ void ClientGame::processNetworkPackets()
                   << " pos=(" << pkt.posX << "," << pkt.posY << ")\n";
     }
 }
-
-//int main(void) {
-//    try {
-//        ClientGame rtype;
-//        rtype.Loop();
-//        return 0;
-//    } catch (const std::exception &e) {
-//        std::cerr << "Truc qui fail: " << e.what() << std::endl;
-//    }
-//    return 0;
-//}

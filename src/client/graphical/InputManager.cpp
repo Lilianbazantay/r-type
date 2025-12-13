@@ -81,44 +81,6 @@ void InputManager::processEvent(const sf::Event& event)
             _client->sendInput(false, static_cast<uint8_t>(Action::Fire));
         }
     }
-//    switch (event.type) {
-//        case sf::Event::KeyPressed: {
-//            if (keysPressed.find(event.key.code) == keysPressed.end()) {
-//                keysPressed.insert(event.key.code);
-//
-//                Action act = keyToAction(event.key.code);
-//                std::cout << "Key PRESSED\n";
-//                if (act != Action::Unknown) {
-//                    _client->sendInput(true, static_cast<uint8_t>(act));
-//                }
-//                if (event.key.code == sf::Keyboard::X && _client) {
-//                    _client->sendStartGame();
-//                    std::cout << "START\n";
-//                }
-//            }
-//            break;
-//        }
-//
-//        case sf::Event::KeyReleased: {
-//            keysPressed.erase(event.key.code);
-//
-//            Action act = keyToAction(event.key.code);
-//            std::cout << "Key RELEASE\n";
-//            if (act != Action::Unknown) {
-//                _client->sendInput(false, static_cast<uint8_t>(act));
-//            }
-//            break;
-//        }
-//
-//        case sf::Event::TextEntered:
-//            if (event.text.unicode >= 32u) {
-//                textBuffer.push_back(static_cast<char>(event.text.unicode));
-//            }
-//            break;
-//
-//        default:
-//            break;
-//    }
 }
 
 std::string InputManager::consumeTextBuffer()
