@@ -71,3 +71,25 @@ void IMediatorEntity::setId(int newId) {
 int IMediatorEntity::getId() {
     return id;
 }
+
+void IMediatorEntity::setType(int newType) {
+    type = newType;
+}
+
+int IMediatorEntity::getType() {
+    return type;
+}
+
+bool IMediatorEntity::is_wanted_entity(int _id, int _type) {
+    if (_id == id && _type == type)
+        return true;
+    return false;
+}
+
+void IMediatorEntity::lock() {
+    _mutex.lock();
+}
+
+void IMediatorEntity::unlock() {
+    _mutex.unlock();
+}

@@ -1,7 +1,14 @@
 #pragma once
 #include "../IComponent.hpp"
 #include <memory>
+#include <mutex>
 #include <vector>
+
+constexpr int ENTITY_BACKGROUND = -1;
+constexpr int ENTITY_PLAYER = 0;
+constexpr int ENTITY_ENEMY = 1;
+constexpr int ENTITY_BULLET = 2;
+
 
 /**
  * @brief Interface for Mediator Entity
@@ -18,7 +25,8 @@ class IMediatorEntity
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
         int id;
-
+        int type;
+        std::mutex _mutex;
     public:
         ~IMediatorEntity() = default;
 
@@ -32,6 +40,12 @@ class IMediatorEntity
 
         void setId(int);
         int getId();
+        void setType(int);
+        int getType();
+        bool is_wanted_entity(int, int);
+
+        void lock();
+        void unlock();
         // CLONE
         virtual IMediatorEntity *Clone() = 0;
 
