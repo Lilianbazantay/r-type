@@ -25,11 +25,9 @@ class IMediatorEntity
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
         int id;
-        int type;
+        int Entitytype;
         std::mutex _mutex;
     public:
-        ~IMediatorEntity() = default;
-
         virtual void run() = 0;
 
         // COMPONENT MANAGER

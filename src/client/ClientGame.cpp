@@ -77,6 +77,7 @@ void ClientGame::Loop() {
  * @param position position of the entity. Does nothing if the entity does not have the component POSITION
  */
 void ClientGame::createEntity(int entity_id, int personnal_id, std::pair<float, float> position) {
+    int prevSize = data.entityList.size();
     switch (entity_id) {
         case ENTITY_BACKGROUND:
             data.entityList.push_back(std::make_unique<Background>());
@@ -89,8 +90,8 @@ void ClientGame::createEntity(int entity_id, int personnal_id, std::pair<float, 
         default:
             return;
     }
-    data.entityList[data.entityList.size() -1]->setId(personnal_id);
-    Position *playerPosition = dynamic_cast<Position*>(data.entityList[data.entityList.size() -1]->FindComponent(ComponentType::POSITION));
+    data.entityList[prevSize]->setId(personnal_id);
+    Position *playerPosition = dynamic_cast<Position*>(data.entityList[prevSize]->FindComponent(ComponentType::POSITION));
     if (playerPosition != nullptr)
         playerPosition->SetPosition(position);
 }

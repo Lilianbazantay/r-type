@@ -73,15 +73,15 @@ int IMediatorEntity::getId() {
 }
 
 void IMediatorEntity::setType(int newType) {
-    type = newType;
+    Entitytype = newType;
 }
 
 int IMediatorEntity::getType() {
-    return type;
+    return Entitytype;
 }
 
 bool IMediatorEntity::is_wanted_entity(int _id, int _type) {
-    if (_id == id && _type == type)
+    if (_id == id && _type == Entitytype)
         return true;
     return false;
 }
