@@ -70,7 +70,9 @@ void ISystem::addOptionnalComponentType(ComponentType type) {
 */
 void ISystem::checkEntity(IMediatorEntity& entity, relevant_data_t& data) {
     std::cout << "Checkin" << std::endl;
-    if (checkRequirements(entity) == false)
-        return;
-    executeEntity(entity, data);
+
+    entity.lock();
+    if (checkRequirements(entity) == true)
+        executeEntity(entity, data);
+    entity.unlock();
 }
