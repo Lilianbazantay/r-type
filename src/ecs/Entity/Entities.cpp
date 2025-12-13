@@ -10,7 +10,7 @@
 
 Background::Background() {
     this->AddActuatorComponent(std::make_unique<Position>(0, 0));
-    this->AddActuatorComponent(std::make_unique<Sprite>("../../../assets/stellar_background.jpg", 1920, 1080));
+    this->AddActuatorComponent(std::make_unique<Sprite>("./assets/stellar_background.jpg", 1920, 1080));
 }
 
 void Background::run() {}
@@ -20,7 +20,7 @@ IMediatorEntity *Background::Clone() {
 }
 
 Player::Player() {
-    this->AddActuatorComponent(std::make_unique<Sprite>("../../../assets/dialogus.png", 64, 64));
+    this->AddActuatorComponent(std::make_unique<Sprite>("./assets/dialogus.png", 64, 64));
     this->AddActuatorComponent(std::make_unique<Direction>());
     this->AddActuatorComponent(std::make_unique<Hp>(3));
     this->AddActuatorComponent(std::make_unique<Velocity>(1));
@@ -37,7 +37,7 @@ IMediatorEntity *Player::Clone() {
 
 
 Enemy::Enemy() {
-    this->AddActuatorComponent(std::make_unique<Sprite>("../../../assets/dialogus.png", 64, 64));
+    this->AddActuatorComponent(std::make_unique<Sprite>("./assets/catachan.png", 64, 64));
     this->AddActuatorComponent(std::make_unique<Direction>());
     this->AddActuatorComponent(std::make_unique<Hp>(1));
     this->AddActuatorComponent(std::make_unique<Velocity>(1));
@@ -54,7 +54,7 @@ IMediatorEntity *Enemy::Clone() {
 
 
 PlayerBullet::PlayerBullet() {
-    this->AddActuatorComponent(std::make_unique<Sprite>("../../../assets/dialogus.png", 8, 8));
+    this->AddActuatorComponent(std::make_unique<Sprite>("./assets/dialogus.png", 8, 8));
     this->AddActuatorComponent(std::make_unique<Direction>(0, 2));
     this->AddActuatorComponent(std::make_unique<Hp>(1));
     this->AddActuatorComponent(std::make_unique<Velocity>(350));

@@ -57,16 +57,26 @@ void ClientGame::getInputs(sf::Event evt) {
     }
     bool shooting = false;
     std::pair<float, float> movement = {0, 0};
-    if (_inputManager.isActionPressed(Action::Up))
+    if (_inputManager.isActionPressed(Action::Up)) {
         movement.second += -1;
-    if (_inputManager.isActionPressed(Action::Left))
+        _inputManager.processEvent(evt);
+    }
+    if (_inputManager.isActionPressed(Action::Left)) {
         movement.first += -1;
-    if (_inputManager.isActionPressed(Action::Down))
+        _inputManager.processEvent(evt);
+    }
+    if (_inputManager.isActionPressed(Action::Down)) {
         movement.second += 1;
-    if (_inputManager.isActionPressed(Action::Right))
+        _inputManager.processEvent(evt);
+    }
+    if (_inputManager.isActionPressed(Action::Right)) {
         movement.first += 1;
-    if (_inputManager.isActionPressed(Action::Fire))
+        _inputManager.processEvent(evt);
+    }
+    if (_inputManager.isActionPressed(Action::Fire)) {
         shooting = true;
+        _inputManager.processEvent(evt);
+    }
     // SEND INPUT TO SERVER HERE
 };
 

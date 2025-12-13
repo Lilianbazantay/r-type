@@ -91,10 +91,10 @@ int main()
 
     std::string ip = "127.0.0.1";
     int port = 4242;
-    NetworkBuffer *netBuffer;
+    NetworkBuffer netBuffer;
 
     try {
-        ClientGame rtype(ip, port, netBuffer);
+        ClientGame rtype(ip, port, &netBuffer);
         rtype.Loop();
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;

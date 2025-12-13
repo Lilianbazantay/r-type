@@ -24,7 +24,7 @@ DrawSpriteSystem::DrawSpriteSystem() {
  * @param data necessary data for systems. See "../relevant_data.hpp" for more information
  */
 void DrawSpriteSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) {
-    std::cout << "Drawing" << std::endl;
+    //std::cout << "Drawing" << std::endl;
     Position *playerPos = dynamic_cast<Position*>(entity.FindComponent(ComponentType::POSITION));
     Sprite *playerSprite = dynamic_cast<Sprite*>(entity.FindComponent(ComponentType::SPRITE));
     if (playerSprite == nullptr) {
@@ -35,7 +35,7 @@ void DrawSpriteSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &d
     }
     sf::Sprite spr = playerSprite->GetSprite();
     auto pos = playerPos->GetPosition();
-    std::cout << pos.first << ", " << pos.second << std::endl;
+    //std::cout << pos.first << ", " << pos.second << std::endl;
     spr.setPosition(pos.first, pos.second);
     data.window.draw(spr);
 }

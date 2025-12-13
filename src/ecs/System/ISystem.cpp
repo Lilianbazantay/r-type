@@ -69,7 +69,7 @@ void ISystem::addOptionnalComponentType(ComponentType type) {
  * @param data necessary data for systems. See "../relevant_data.hpp" for more information
 */
 void ISystem::checkEntity(IMediatorEntity& entity, relevant_data_t& data) {
-    std::cout << "Checkin" << std::endl;
+    //std::cout << "Checkin" << std::endl;
 
     entity.lock();
     if (checkRequirements(entity) == true)
