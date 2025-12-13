@@ -27,12 +27,8 @@ void DrawSpriteSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &d
     //std::cout << "Drawing" << std::endl;
     Position *playerPos = dynamic_cast<Position*>(entity.FindComponent(ComponentType::POSITION));
     Sprite *playerSprite = dynamic_cast<Sprite*>(entity.FindComponent(ComponentType::SPRITE));
-    if (playerSprite == nullptr) {
-        std::cout << "NULL" << std::endl;
-        if (entity.FindComponent(ComponentType::SPRITE) != nullptr)
-            std::cout << "Find succeeded" << std::endl;
+    if (playerSprite == nullptr)
         return;
-    }
     sf::Sprite spr = playerSprite->GetSprite();
     auto pos = playerPos->GetPosition();
     //std::cout << pos.first << ", " << pos.second << std::endl;
