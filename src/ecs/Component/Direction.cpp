@@ -12,7 +12,7 @@ constexpr float RAD_TO_DEG = 180.f / 3.14159265f;
  * Initializes the angle in degrees based on the vector.
  */
 Direction::Direction(float x, float y)
-    : x(x), y(y)
+    : _x(x), _y(y)
 {
     _type = ComponentType::DIRECTION;
     updateAngleFromVector();
@@ -24,7 +24,7 @@ Direction::Direction(float x, float y)
  *
  * Initializes the vector based on the angle.
  */
-Direction::Direction(float angleDeg) : angle(angleDeg)
+Direction::Direction(float angleDeg) : _angle(angleDeg)
 {
     _type = ComponentType::DIRECTION;
     updateVectorFromAngle();
@@ -36,7 +36,7 @@ Direction::Direction(float angleDeg) : angle(angleDeg)
  */
 std::pair<float, float> Direction::GetDirection() const
 {
-    return {x, y};
+    return {_x, _y};
 }
 
 /**
@@ -48,8 +48,8 @@ std::pair<float, float> Direction::GetDirection() const
  */
 void Direction::SetDirection(float newX, float newY)
 {
-    x = newX;
-    y = newY;
+    _x = newX;
+    _y = newY;
     updateAngleFromVector();
 }
 
@@ -61,8 +61,8 @@ void Direction::SetDirection(float newX, float newY)
  */
 void Direction::SetDirection(const std::pair<float, float>& vec)
 {
-    x = vec.first;
-    y = vec.second;
+    _x = vec.first;
+    _y = vec.second;
     updateAngleFromVector();
 }
 
@@ -72,7 +72,7 @@ void Direction::SetDirection(const std::pair<float, float>& vec)
  */
 float Direction::getAngle() const
 {
-    return angle;
+    return _angle;
 }
 
 /**
@@ -83,7 +83,7 @@ float Direction::getAngle() const
  */
 void Direction::setAngleDegrees(float deg)
 {
-    angle = deg;
+    _angle = deg;
     updateVectorFromAngle();
 }
 
@@ -95,11 +95,11 @@ void Direction::setAngleDegrees(float deg)
  */
 void Direction::normalize()
 {
-    float norm = std::sqrt(x * x + y * y);
+    float norm = std::sqrt(_x * _x + _y * _y);
     if (norm != 0.f)
     {
-        x /= norm;
-        y /= norm;
+        _x /= norm;
+        _y /= norm;
         updateAngleFromVector();
     }
 }
@@ -112,7 +112,7 @@ void Direction::normalize()
  */
 void Direction::rotateDegrees(float angleDeg)
 {
-    angle += angleDeg;
+    _angle += angleDeg;
     updateVectorFromAngle();
 }
 
@@ -123,9 +123,9 @@ void Direction::rotateDegrees(float angleDeg)
  */
 void Direction::updateVectorFromAngle()
 {
-    float rad = angle * DEG_TO_RAD;
-    x = std::cos(rad);
-    y = std::sin(rad);
+    float rad = _angle * DEG_TO_RAD;
+    _x = std::cos(rad);
+    _y = std::sin(rad);
 }
 
 /**
@@ -135,5 +135,5 @@ void Direction::updateVectorFromAngle()
  */
 void Direction::updateAngleFromVector()
 {
-    angle = std::atan2(y, x) * RAD_TO_DEG;
+    _angle = std::atan2(_y, _x) * RAD_TO_DEG;
 }

@@ -13,9 +13,9 @@
 class Direction : public IComponent
 {
 private:
-    float x;
-    float y;
-    float angle;
+    float _x;
+    float _y;
+    float _angle;
 
     void updateVectorFromAngle();
     void updateAngleFromVector();

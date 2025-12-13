@@ -8,39 +8,19 @@
 
 static uint16_t GLOBAL_PACKET_ID = 0;
 
-/**
- * @brief Callback triggered when a packet is received from the server.
- *
- * @param data Pointer to received data
- * @param size Size of packet in bytes
- * @param sender UDP endpoint of the server
- */
-static void on_receive_callback(const std::vector<uint8_t>data,
-                                size_t size,
-                                const asio::ip::udp::endpoint &)
-{
-    ServerPacket pkt = decodeServerPacket(data, size);
+Client::Client(const std::string &ip, int port, NetworkBuffer* buffer)
+    : ip_(ip), port_(port), buffer_(buffer),
+      network_(0, [this](const std::vector<uint8_t> data, size_t size, const asio::ip::udp::endpoint&) {
+          ServerPacket pkt = decodeServerPacket(data, size);
 
-    std::cout << "\n--- SERVER PACKET ---\n";
-    std::cout << "packetId = " << pkt.packetId << "\n";
-    std::cout << "action   = " << (int)pkt.actionType << "\n";
-    std::cout << "entity   = " << (int)pkt.entityType << "\n";
-    std::cout << "entityId = " << pkt.entityId << "\n";
-    std::cout << "pos      = (" << pkt.posX << ", " << pkt.posY << ")\n";
-}
+          std::cout << "[CLIENT] Packet received id=" << pkt.packetId << "\n";
 
-/**
- * @brief Construct a client instance.
- *
- * @param ip Server IP
- * @param port Server port
- */
-Client::Client(const std::string &ip, int port)
-    : ip_(ip),
-      port_(port),
-      network_(0, on_receive_callback)
+          if (buffer_)
+              buffer_->pushPacket(pkt);
+      })
 {
 }
+
 
 /**
  * @brief Start the client network system.

@@ -1,21 +1,17 @@
+#include "./graphical/Game.hpp"
 #include "parser.hpp"
 #include "client.hpp"
 #include <iostream>
 #include <sstream>
 
-/**
- * @brief Main function that launches the program
- *
- * @param argc number of arguments.
- * @param argv Argument vector.
- * @return 0 if parsing succeeded, 84 otherwise.
- */
-int main(int argc, char **argv)
+
+void clientConsoleThread()
 {
     Parser parser;
 
-    if (parser.parse(argc, argv) != EXIT_SUCCESS)
-        return 84;
+    const char* argv_fake[] = {"prog", "127.0.0.1", "4242"};
+    parser.parse(3, const_cast<char**>(argv_fake));
+
     Client client(parser.ip, parser.port);
     client.start();
     std::cout << "Connected to " << parser.ip << ":" << parser.port << "\n";
@@ -81,5 +77,28 @@ int main(int argc, char **argv)
         }
         std::cout << "Unknown command. Type 'help'.\n";
     }
+}
+
+/**
+ * @brief Main function that launches the program
+ *
+ * @param argc number of arguments.
+ * @param argv Argument vector.
+ * @return 0 if parsing succeeded, 84 otherwise.
+ */
+int main()
+{
+    std::thread consoleThread(clientConsoleThread);
+
+    try {
+        Game app;
+        app.run();
+    } catch (const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+
+    if (consoleThread.joinable())
+        consoleThread.join();
+
     return 0;
 }
