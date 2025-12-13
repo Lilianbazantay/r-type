@@ -81,12 +81,16 @@ void ClientGame::createEntity(int entity_id, int personnal_id, std::pair<float, 
     switch (entity_id) {
         case ENTITY_BACKGROUND: {
             data.entityList.push_back(std::make_unique<Background>());
+            break;
         } case ENTITY_PLAYER: {
             data.entityList.push_back(std::make_unique<Player>());
+            break;
         } case ENTITY_ENEMY: {
             data.entityList.push_back(std::make_unique<Enemy>());
+            break;
         } case ENTITY_BULLET: {
             data.entityList.push_back(std::make_unique<PlayerBullet>());
+            break;
         } default:
             return;
     }
