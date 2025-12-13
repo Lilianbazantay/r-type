@@ -27,6 +27,7 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     Prevtime = clock.getElapsedTime();
     systemList.push_back(std::make_unique<DrawSpriteSystem>());
     createEntity(ENTITY_BACKGROUND, 0, {0, 0});
+    data.window.setKeyRepeatEnabled(false);
 }
 
 /**
@@ -58,24 +59,24 @@ void ClientGame::getInputs(sf::Event evt) {
     bool shooting = false;
     std::pair<float, float> movement = {0, 0};
     if (_inputManager.isActionPressed(Action::Up)) {
+        std::cout << "UP";
         movement.second += -1;
-        _inputManager.processEvent(evt);
     }
     if (_inputManager.isActionPressed(Action::Left)) {
+        std::cout << "LEFT";
         movement.first += -1;
-        _inputManager.processEvent(evt);
     }
     if (_inputManager.isActionPressed(Action::Down)) {
+        std::cout << "DOWN";
         movement.second += 1;
-        _inputManager.processEvent(evt);
     }
     if (_inputManager.isActionPressed(Action::Right)) {
+        std::cout << "RIGHT";
         movement.first += 1;
-        _inputManager.processEvent(evt);
     }
     if (_inputManager.isActionPressed(Action::Fire)) {
+        std::cout << "FIRE";
         shooting = true;
-        _inputManager.processEvent(evt);
     }
     // SEND INPUT TO SERVER HERE
 };
@@ -85,8 +86,8 @@ void ClientGame::getInputs(sf::Event evt) {
  *
  */
 void ClientGame::Loop() {
-    sf::Event evt;
     while(data.window.isOpen()) {
+        sf::Event evt;
         if (Stopping)
             return;
         data.window.clear(sf::Color::Black);
@@ -95,9 +96,9 @@ void ClientGame::Loop() {
             processNetworkPackets();
         }
         data.window.display();
-        data.window.pollEvent(evt);
-        _inputManager.processEvent(evt);
-        getInputs(evt);
+        while(data.window.pollEvent(evt))
+            _inputManager.processEvent(evt);
+        //getInputs(evt);
     }
 }
 

@@ -1,4 +1,5 @@
 #include "InputManager.hpp"
+#include <iostream>
 
 InputManager::InputManager() : textBuffer("")
 {
@@ -36,40 +37,88 @@ bool InputManager::isActionPressed(Action action) const
 
 void InputManager::processEvent(const sf::Event& event)
 {
-    switch (event.type) {
-        case sf::Event::KeyPressed: {
-            if (keysPressed.find(event.key.code) == keysPressed.end()) {
-                keysPressed.insert(event.key.code);
-
-                Action act = keyToAction(event.key.code);
-                if (_client && act != Action::Unknown)
-                    _client->sendInput(true, static_cast<uint8_t>(act));
-
-                if (event.key.code == sf::Keyboard::X && _client)
-                    _client->sendStartGame();
-            }
-            break;
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == getKey(Action::Up)) {
+            std::cout << "KEY PRESSER UP\n";
+            _client->sendInput(true, static_cast<uint8_t>(Action::Up));
         }
-
-        case sf::Event::KeyReleased: {
-            keysPressed.erase(event.key.code);
-
-            Action act = keyToAction(event.key.code);
-            if (_client && act != Action::Unknown)
-                _client->sendInput(false, static_cast<uint8_t>(act));
-
-            break;
+        if (event.key.code == getKey(Action::Down))
+        {
+            _client->sendInput(true, static_cast<uint8_t>(Action::Down));
         }
-
-        case sf::Event::TextEntered:
-            if (event.text.unicode >= 32u) {
-                textBuffer.push_back(static_cast<char>(event.text.unicode));
-            }
-            break;
-
-        default:
-            break;
+        if (event.key.code == getKey(Action::Left))
+        {
+            _client->sendInput(true, static_cast<uint8_t>(Action::Left));
+        }
+        if (event.key.code == getKey(Action::Right))
+        {
+            _client->sendInput(true, static_cast<uint8_t>(Action::Right));
+        }
+        if (event.key.code == getKey(Action::Fire))
+        {
+            _client->sendInput(true, static_cast<uint8_t>(Action::Fire));
+        }
     }
+    if (event.type == sf::Event::KeyReleased) {
+        if (event.key.code == getKey(Action::Up)) {
+            std::cout << "KEY RELEASE UP\n";
+            _client->sendInput(true, static_cast<uint8_t>(Action::Up));
+        }
+        if (event.key.code == getKey(Action::Down))
+        {
+            _client->sendInput(true, static_cast<uint8_t>(Action::Down));
+        }
+        if (event.key.code == getKey(Action::Left))
+        {
+            _client->sendInput(true, static_cast<uint8_t>(Action::Left));
+        }
+        if (event.key.code == getKey(Action::Right))
+        {
+            _client->sendInput(true, static_cast<uint8_t>(Action::Right));
+        }
+        if (event.key.code == getKey(Action::Fire))
+        {
+            _client->sendInput(true, static_cast<uint8_t>(Action::Fire));
+        }
+    }
+//    switch (event.type) {
+//        case sf::Event::KeyPressed: {
+//            if (keysPressed.find(event.key.code) == keysPressed.end()) {
+//                keysPressed.insert(event.key.code);
+//
+//                Action act = keyToAction(event.key.code);
+//                std::cout << "Key PRESSED\n";
+//                if (act != Action::Unknown) {
+//                    _client->sendInput(true, static_cast<uint8_t>(act));
+//                }
+//                if (event.key.code == sf::Keyboard::X && _client) {
+//                    _client->sendStartGame();
+//                    std::cout << "START\n";
+//                }
+//            }
+//            break;
+//        }
+//
+//        case sf::Event::KeyReleased: {
+//            keysPressed.erase(event.key.code);
+//
+//            Action act = keyToAction(event.key.code);
+//            std::cout << "Key RELEASE\n";
+//            if (act != Action::Unknown) {
+//                _client->sendInput(false, static_cast<uint8_t>(act));
+//            }
+//            break;
+//        }
+//
+//        case sf::Event::TextEntered:
+//            if (event.text.unicode >= 32u) {
+//                textBuffer.push_back(static_cast<char>(event.text.unicode));
+//            }
+//            break;
+//
+//        default:
+//            break;
+//    }
 }
 
 std::string InputManager::consumeTextBuffer()
