@@ -112,10 +112,10 @@ void ClientGame::moveEntity(int entity_id, int personnal_id, std::pair<float, fl
     for (size_t i = 0; i < data.entityList.size(); i++) {
         if (!data.entityList[i]->is_wanted_entity(entity_id, personnal_id))
             continue;
+        Position *playerPosition = dynamic_cast<Position*>(data.entityList[i]->FindComponent(ComponentType::POSITION));
+        if (playerPosition != nullptr)
+            playerPosition->SetPosition(new_position);
         return;
-    Position *playerPosition = dynamic_cast<Position*>(data.entityList[i]->FindComponent(ComponentType::POSITION));
-    if (playerPosition != nullptr)
-        playerPosition->SetPosition(new_position);
     }
 }
 

@@ -7,7 +7,7 @@
  * @brief All action possible for the strategy
  */
 
-#define NUMBER_STRATEGY_POSSIBILITY 6
+constexpr int NUMBER_STRATEGY_POSSIBILITY = 6;
 
 enum StrategyType {
     UP,

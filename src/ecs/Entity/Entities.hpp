@@ -15,9 +15,8 @@ class Background: public IMediatorEntity {
         std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
-        int id;
         std::mutex _mutex;
-        public:
+    public:
         Background();
         ~Background() override = default;
         void run() override;
@@ -30,7 +29,6 @@ class Player: public IMediatorEntity {
         std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
-        int id;
         std::mutex _mutex;
     public:
         Player();
@@ -45,7 +43,6 @@ class Enemy: public IMediatorEntity {
         std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a Enemy, ...
 
-        int id;
         std::mutex _mutex;
     public:
         Enemy();
@@ -61,7 +58,6 @@ class PlayerBullet: public IMediatorEntity {
         std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
-        int id;
         std::mutex _mutex;
     public:
         PlayerBullet();
