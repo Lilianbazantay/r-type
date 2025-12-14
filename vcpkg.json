@@ -7,7 +7,9 @@
       "name": "sfml",
       "version>=": "2.6.2"
     },
-    "asio"
+    "asio",
+    "fmt",
+    "nlohmann-json"
   ],
   "overrides": [
     {

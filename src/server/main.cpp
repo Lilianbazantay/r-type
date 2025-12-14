@@ -1,4 +1,5 @@
-#include "../utils.hpp"
+#include "server/ServerGame.hpp"
+#include "utils.hpp"
 #include "parser.hpp"
 
 /**
@@ -12,7 +13,17 @@
 int main(int argc, char **argv) {
     Parser parser;
 
+    NetworkServerBuffer netReceiveBuffer;
+    NetworkClientBuffer netSendBuffer;
+    NetworkClientBuffer netContinuousBuffer;
     if (parser.ParseData(argc, argv) == EXIT_ERROR)
         return EXIT_ERROR;
+    ServerGame test(parser.getPort(), &netReceiveBuffer, &netSendBuffer, &netContinuousBuffer);
+    test.Loop();
+    //if (argc >= 2) {
+    //    std::cout << "listening on port " << parser.getPort() << std::endl;
+    //    while (1);
+    //    return EXIT_DESIRED;
+    //}
     return EXIT_DESIRED;
 }

@@ -1,0 +1,62 @@
+#pragma once
+#include "../IComponent.hpp"
+#include <memory>
+#include <mutex>
+#include <vector>
+
+constexpr int ENTITY_BACKGROUND = 0;
+constexpr int ENTITY_PLAYER = 1;
+constexpr int ENTITY_ENEMY = 2;
+constexpr int ENTITY_BULLET = 3;
+
+
+/**
+ * @brief Interface for Mediator Entity
+ */
+class IMediatorEntity
+{
+    protected:
+        // COMPONENT LIST
+        std::vector<std::unique_ptr<IComponent>> _undergoerComponents;   // Ex: Healt, Shield, Position ...
+        std::vector<std::unique_ptr<IComponent>> _actuatorComponents;    // Ex: Input Catcher, Button, ...
+        std::vector<ComponentType> _actuatorTypeList;
+        std::vector<ComponentType> _undergoerTypeList;
+        // LINKED ENTITIES
+        std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
+
+        int id;
+        int Entitytype;
+        std::mutex _mutex;
+        bool entity_created = true;
+        bool entity_changed = false;
+        bool entity_live = true;
+    public:
+        virtual ~IMediatorEntity() = default;
+        virtual void run() = 0;
+
+        // COMPONENT MANAGER
+        std::vector<ComponentType> GetActuatorComponents();
+        void AddActuatorComponent(std::unique_ptr<IComponent> component);
+        std::vector<ComponentType> GetUnderGoerComponents();
+        void AddUndergoerComponent(std::unique_ptr<IComponent> component);
+
+        void setId(int);
+        int getId();
+        void setType(int);
+        int getType();
+        bool is_wanted_entity(int, int);
+
+        void lock();
+        void unlock();
+        bool justCreated();
+        bool hasChanged();
+        void hasChanged(bool);
+        void Alive(bool);
+        bool is_Alive();
+
+        // CLONE
+        virtual IMediatorEntity *Clone() = 0;
+
+        // FIND
+        IComponent *FindComponent(ComponentType type);
+};

@@ -1,0 +1,36 @@
+{
+  "entity": {
+    "type": "enemy",
+    "name": "ennemy_basic"
+  },
+
+  "components": {
+    "hp": 40,
+    "velocity": 3,
+    "position": [600, 100],
+    "hitbox": {
+      "size": [64, 64],
+      "layer": [2],
+      "mask": [1]
+    },
+    "attack": {
+      "damage": 10,
+      "fireRate": 1.2
+    }
+  },
+
+  "data": {
+    "sprite": {
+      "idle": "assets/sprites/enemy_idle.png",
+      "death": ["assets/sprites/enemy_death.png"]
+    },
+
+    "strategy": {
+      "patterns": [
+        "../pattern/straight_line.json",
+        "../pattern/zigzag.json"
+      ],
+      "phase_change_hp": [75, 50]
+    }
+  }
+}
