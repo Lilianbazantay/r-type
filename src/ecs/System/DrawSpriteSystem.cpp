@@ -30,7 +30,6 @@ void DrawSpriteSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &d
         return;
     sf::Sprite spr = playerSprite->GetSprite();
     auto pos = playerPos->GetPosition();
-    //std::cout << pos.first << ", " << pos.second << std::endl;
     spr.setPosition(pos.first, pos.second);
     data.window.draw(spr);
 }

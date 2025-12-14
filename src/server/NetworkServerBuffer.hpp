@@ -28,6 +28,7 @@ class NetworkClientBuffer {
 
     public:
         void pushPacket(std::vector<uint8_t>& pkt);
+        void pushWholePacket(std::vector<std::vector<uint8_t>>& pkt);
         std::vector<uint8_t> popPacket();
         std::vector<std::vector<uint8_t>> popAllPackets();
         bool empty();

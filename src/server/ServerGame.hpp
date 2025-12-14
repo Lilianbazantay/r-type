@@ -29,11 +29,12 @@ class ServerGame {
         PacketEncoder encoder;
 
     public:
-        ServerGame(int, NetworkServerBuffer *, NetworkClientBuffer *);
+        ServerGame(int, NetworkServerBuffer *, NetworkClientBuffer *, NetworkClientBuffer *);
         ~ServerGame() = default;
         bool createEntity(int, int);
         void changePlayerDirection(int, std::pair<int, int>);
         void parseNetworkPackets();
+        void requestGameData();
         void Update();
         void Loop();
 };

@@ -1,6 +1,5 @@
 #include "IMediatorEntity.hpp"
 #include "../IComponent.hpp"
-#include <iostream>
 
 /**
  * @brief returns the actuators components of the entity

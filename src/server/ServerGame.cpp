@@ -15,17 +15,17 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
-#include <iostream>
 #include <memory>
 
 #include "ServerGame.hpp"
 
 
-ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer):
+ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkClientBuffer *newCBuffer):
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
+    continuousBuffer(newCBuffer),
     networkServer(port,
-    newRBuffer, newSBuffer)
+    newRBuffer, newSBuffer, newCBuffer)
 {
     clock.restart();
     Prevtime = clock.getElapsedTime();
@@ -78,6 +78,7 @@ void ServerGame::Update() {
 }
 
 void ServerGame::Loop() {
+    Running = true;
     Cooldown cooldown(1.0);
     while(1) {
         if (Running) {
@@ -177,7 +178,6 @@ void ServerGame::parseNetworkPackets() {
             createEntity(ENTITY_PLAYER, pkt.getID());
             continue;
         }
-        std::cout << "entering direction process\n";
         switch (pkt.getActionType()) {
             case ActionType::INPUT_PRESSED: {
                 changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_PRESSED, pkt.getActionvalue()});

@@ -2,7 +2,6 @@
 #include "ISystem.hpp"
 #include "../Entity/IMediatorEntity.hpp"
 #include "../IComponent.hpp"
-#include <iostream>
 #include <vector>
 
 /**

@@ -1,4 +1,5 @@
 #include "NetworkServerBuffer.hpp"
+#include <cstddef>
 
 /**
  * @brief add a packet to the buffer
@@ -61,6 +62,20 @@ void NetworkClientBuffer::pushPacket(std::vector<uint8_t>& pkt)
     std::lock_guard<std::mutex> lock(mtx);
     packets.push_back(pkt);
 }
+
+/**
+ * @brief add multiple packets to the buffer
+ *
+ * @param pkt packet to be added
+ */
+void NetworkClientBuffer::pushWholePacket(std::vector<std::vector<uint8_t>>& vect_pkt)
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    for (size_t i = 0; i < vect_pkt.size(); i++) {
+        packets.push_back(vect_pkt[i]);
+    }
+}
+
 
 /**
  * @brief remove a packet from a buffer

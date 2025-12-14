@@ -24,7 +24,7 @@
  */
 class Server {
     public:
-        Server(__uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *);
+        Server(__uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *, NetworkClientBuffer *);
         ~Server();
 
         void start();
@@ -52,6 +52,7 @@ class Server {
     private:
         NetworkServerBuffer *receivedBuffer;
         NetworkClientBuffer *sendBuffer;
+        NetworkClientBuffer *continuousBuffer;
         asio::io_context io_ctx_;
         asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::ip::udp::socket socket_;

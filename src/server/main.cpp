@@ -15,9 +15,10 @@ int main(int argc, char **argv) {
 
     NetworkServerBuffer netReceiveBuffer;
     NetworkClientBuffer netSendBuffer;
+    NetworkClientBuffer netContinuousBuffer;
     if (parser.ParseData(argc, argv) == EXIT_ERROR)
         return EXIT_ERROR;
-    ServerGame test(parser.getPort(), &netReceiveBuffer, &netSendBuffer);
+    ServerGame test(parser.getPort(), &netReceiveBuffer, &netSendBuffer, &netContinuousBuffer);
     test.Loop();
     //if (argc >= 2) {
     //    std::cout << "listening on port " << parser.getPort() << std::endl;

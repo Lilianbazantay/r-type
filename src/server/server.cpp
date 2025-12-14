@@ -21,9 +21,10 @@
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
-Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer)
+Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkClientBuffer *newCBuffer)
 : receivedBuffer(newRBuffer),
   sendBuffer(newSBuffer),
+  continuousBuffer(newCBuffer),
   io_ctx_(),
   work_guard_(asio::make_work_guard(io_ctx_)),
   socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
@@ -208,14 +209,17 @@ void Server::packetDispatch() {
                 addStart(receiver.getPlayerId());
                 send(4, remote_endpoint_.address().to_string(), remote_endpoint_.port());
                 receivedBuffer->pushPacket(receiver);
+                break;
             case (8):
                 addStart(receiver.getPlayerId());
                 send(4, remote_endpoint_.address().to_string(), remote_endpoint_.port());
                 receivedBuffer->pushPacket(receiver);
+                break;
             case (2):
                 addStart(receiver.getPlayerId());
                 send(4, remote_endpoint_.address().to_string(), remote_endpoint_.port());
                 receivedBuffer->pushPacket(receiver);
+                break;
             case (15):
                 return;
         }
