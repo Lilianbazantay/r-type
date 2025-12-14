@@ -3,7 +3,11 @@ project(r-type LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-stdlib=libc++)
+    add_link_options(-stdlib=libc++)
+endif()
 
 # Enable multithreading for all builds
 if(NOT DEFINED CMAKE_BUILD_PARALLEL_LEVEL)
@@ -16,6 +20,7 @@ endif()
 find_package(SFML 2.6 COMPONENTS graphics network window audio system REQUIRED)
 find_package(asio CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 
 # Set the compiler optimization flags
@@ -74,6 +79,7 @@ foreach(target r-type_client r-type_server)
         asio::asio
         OpenAL::OpenAL
         fmt::fmt
+        nlohmann_json::nlohmann_json
     )
 
     # Define compilation target

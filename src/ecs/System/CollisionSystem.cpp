@@ -82,10 +82,16 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
             || !checkCollison(entityPosition->GetPosition(), entityHitbox->GetHitboxSize(),
             playerPosition->GetPosition(), playerHitbox->GetHitboxSize()))
             continue;
-        if (playerHp != nullptr && checkLayers(playerHitbox->GetMask(), entityHitbox->GetLayers()))
+        if (playerHp != nullptr && checkLayers(playerHitbox->GetMask(), entityHitbox->GetLayers())) {
             playerHp->SubHp(entityHitbox->GetDamage());
+            if (playerHp->GetHp() <= 0)
+                entity.Alive(false);
+        }
         entityHp = dynamic_cast<Hp*>(entityList[i]->FindComponent(ComponentType::HP));
-        if (entityHp != nullptr && checkLayers(entityHitbox->GetMask(), playerHitbox->GetLayers()))
+        if (entityHp != nullptr && checkLayers(entityHitbox->GetMask(), playerHitbox->GetLayers())) {
             entityHp->SubHp(playerHitbox->GetDamage());
+            if (entityHp->GetHp() <= 0)
+                entityList[i]->Alive(false);
+        }
     }
 }

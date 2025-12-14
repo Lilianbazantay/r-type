@@ -11,6 +11,7 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <iostream>
 #include <memory>
+#include <string>
 
 /**
  * @brief Constructor for ClientGame. Init the window with a nice starfield
@@ -28,6 +29,16 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     systemList.push_back(std::make_unique<DrawSpriteSystem>());
     createEntity(ENTITY_BACKGROUND, 0, {0, 0});
     data.window.setKeyRepeatEnabled(false);
+    client.start();
+    std::string IP = client.getServerIP();
+    uint32_t ipValue = 0;
+    unsigned a, b, c, d;
+    if (sscanf(IP.c_str(), "%u.%u.%u.%u", &a, &b, &c, &d) == 4)
+        ipValue = (a << 24u) | (b << 16u) | (c << 8u) | d;
+    else
+        std::cout << "Invalid IP format\n";
+    client.sendConnectionRequest(ipValue, client.getServerPort());
+    client.sendStartGame();
 }
 
 /**
@@ -72,13 +83,13 @@ void ClientGame::Loop() {
 /**
  * @brief creates an entity based on its entity type, and assigns it an ID and a position
  *
- * @param entity_d the entity type to create. If not found, does not creates and entity
- * @param personnal_id id allocated by the server for the entity
+ * @param entity_type the entity type to create. If not found, does not creates and entity
+ * @param entity_id id allocated by the server for the entity
  * @param position position of the entity. Does nothing if the entity does not have the component POSITION
  */
-void ClientGame::createEntity(int entity_id, int personnal_id, std::pair<float, float> position) {
+void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, float> position) {
     int prevSize = data.entityList.size();
-    switch (entity_id) {
+    switch (entity_type) {
         case ENTITY_BACKGROUND: {
             data.entityList.push_back(std::make_unique<Background>());
             break;
@@ -94,7 +105,7 @@ void ClientGame::createEntity(int entity_id, int personnal_id, std::pair<float, 
         } default:
             return;
     }
-    data.entityList[prevSize]->setId(personnal_id);
+    data.entityList[prevSize]->setId(entity_id);
     Position *playerPosition = dynamic_cast<Position*>(data.entityList[prevSize]->FindComponent(ComponentType::POSITION));
     if (playerPosition != nullptr)
         playerPosition->SetPosition(position);
@@ -103,14 +114,14 @@ void ClientGame::createEntity(int entity_id, int personnal_id, std::pair<float, 
 /**
  * @brief changes the entity position
  *
- * @param entity_id entity type
- * @param personnal_id id allocated by the server for the entity
+ * @param entity_type entity type
+ * @param entity_id id allocated by the server for the entity
  * @param new_position new position of the entity. Does nothing if the entity does not have the component POSITION
  */
 
-void ClientGame::moveEntity(int entity_id, int personnal_id, std::pair<float, float> new_position) {
+void ClientGame::moveEntity(int entity_type, int entity_id, std::pair<float, float> new_position) {
     for (size_t i = 0; i < data.entityList.size(); i++) {
-        if (!data.entityList[i]->is_wanted_entity(entity_id, personnal_id))
+        if (!data.entityList[i]->is_wanted_entity(entity_type, entity_id))
             continue;
         Position *playerPosition = dynamic_cast<Position*>(data.entityList[i]->FindComponent(ComponentType::POSITION));
         if (playerPosition != nullptr)
@@ -122,12 +133,12 @@ void ClientGame::moveEntity(int entity_id, int personnal_id, std::pair<float, fl
 /**
  * @brief deletes the specified entity
  *
- * @param entity_id entity type
- * @param personnal_id id allocated by the server for the entity
+ * @param entity_type entity type
+ * @param entity_id id allocated by the server for the entity
  */
-void ClientGame::deleteEntity(int entity_id, int personnal_id) {
+void ClientGame::deleteEntity(int entity_type, int entity_id) {
     for (size_t i = 0; i < data.entityList.size(); i++) {
-        if (data.entityList[i]->is_wanted_entity(entity_id, personnal_id))
+        if (data.entityList[i]->is_wanted_entity(entity_type, entity_id))
             data.entityList.erase(data.entityList.begin() + i);
     }
 
@@ -183,11 +194,22 @@ void ClientGame::processNetworkPackets()
 {
     auto packets = _netBuffer->popAllPackets();
     for (const auto& pkt : packets) {
-        // PUT ENDPOINT ECS
-        std::cout << "[GAME] Received packet id=" << pkt.packetId
-                  << " action=" << (int)pkt.actionType
-                  << " entity=" << (int)pkt.entityType
-                  << " entityId=" << pkt.entityId
-                  << " pos=(" << pkt.posX << "," << pkt.posY << ")\n";
+        switch (pkt.actionType)
+        {
+        case 0:
+            std::cout << "ENTITY CREATED\n";
+            createEntity(pkt.entityType, pkt.entityId, {pkt.posX, pkt.posY});
+            break;
+        case 1:
+            std::cout << "ENTITY MOVED\n";
+            moveEntity(pkt.entityType, pkt.entityId, {pkt.posX, pkt.posY});
+            break;
+        case 2:
+            std::cout << "ENTITY DELETED\n";
+            deleteEntity(pkt.entityType, pkt.entityId);
+            break;
+        default:
+            break;
+        }
     }
 }

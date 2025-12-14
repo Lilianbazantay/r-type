@@ -1,0 +1,36 @@
+{
+  "entity": {
+    "type": "boss",
+    "name": "boss_alpha"
+  },
+
+  "components": {
+    "hp": 500,
+    "velocity": 2,
+    "position": [1800, 300],
+    "hitbox": {
+      "size": [128, 128],
+      "layer": [2],
+      "mask": [1]
+    },
+    "attack": {
+      "damage": 30,
+      "fireRate": 0.8
+    }
+  },
+
+  "data": {
+    "sprite": {
+      "idle": "assets/sprites/boss_idle.png",
+      "death": ["assets/sprites/boss_death.png"]
+    },
+
+    "strategy": {
+      "patterns": [
+        "../pattern/boss_phase1.json",
+        "../pattern/boss_phase2.json"
+      ],
+      "phase_change_hp": [75]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "map": {
+    "meta": {},
+    "world": {},
+    "parallax": {},
+    "players": {},
+    "spawns": {},
+    "obstacles": {},
+    "boss": {}
+  }
+}

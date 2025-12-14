@@ -1,4 +1,5 @@
 #include "PacketCodec.hpp"
+#include "client/Packet.hpp"
 #include <cstdint>
 #include <cstring>
 #include <vector>
@@ -25,13 +26,13 @@ Packet encodeClientPacket(
     uint8_t payloadSize,
     std::vector<uint8_t> payload
 ) {
-    Packet p;
+    Packet p{};
 
     p.bytes[0] = (static_cast<uint32_t>(packetId) >> 8u) & 0xFFu;
     p.bytes[1] = packetId & 0xFFu;
     p.bytes[2] = ((actionType & 0x0Fu) << 4u) | (payloadSize & 0x0Fu);
     for (int i = 0; i < payloadSize; ++i) {
-        p.bytes.at(3 + 1) = payload[i];
+        p.bytes.at(3 + i) = payload[i];
     }
     p.size = 3 + payloadSize;
     return p;
@@ -52,8 +53,8 @@ Packet encodeClientPacket(
  * @param size Number of bytes received.
  * @return ServerPacket Decoded packet structure.
  */
-ServerPacket decodeServerPacket(std::vector<uint8_t>b, size_t size) {
-    ServerPacket p {};
+NetworkPacket decodeNetworkPacket(std::vector<uint8_t>b, size_t size) {
+    NetworkPacket p {};
 
     p.packetId = (static_cast<uint32_t>(b.at(0)) << 8u) | b[1];
     p.payloadSize = (static_cast<uint32_t>(b.at(2)) >> 4u) & 0x0Fu;

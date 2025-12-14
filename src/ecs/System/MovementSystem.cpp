@@ -42,4 +42,5 @@ void MovementSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &dat
     newpos.first += dir.first * force.first * data.runtime;
     newpos.second += dir.second * force.second * data.runtime;
     playerPos->SetPosition(newpos);
+    entity.hasChanged(true);
 }

@@ -97,7 +97,7 @@ void Asio_network::send(const std::string& msg, const std::string& host, __uint1
         port
     );
     socket_.async_send_to(
-        asio::buffer(msg),
+        asio::buffer(msg, msg.size()),
         endpoint,
         [](std::error_code, std::size_t) {}
     );
