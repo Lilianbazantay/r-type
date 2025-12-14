@@ -10,8 +10,6 @@
 #include "../ecs/System/ISystem.hpp"
 #include "../ecs/relevant_data.hpp"
 
-#include "../ecs/Entity/Entities.hpp"
-#include "ecs/Entity/IMediatorEntity.hpp"
 #include "server.hpp"
 
 class ServerGame {

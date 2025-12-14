@@ -32,6 +32,7 @@ class ServerPacket {
         uint8_t actionValue;
         uint32_t IP;
         uint16_t port;
+        size_t player_id = 0;
 
     public:
         ServerPacket() = default;
@@ -45,6 +46,7 @@ class ServerPacket {
         void FillIP(std::vector<uint8_t>);
         void FillPort(std::vector<uint8_t>, size_t offset);
         void FillReceivedData(std::vector<uint8_t>);
+        void FillPlayerId(size_t);
 
         inline uint16_t getID(void) { return packetID; };
         inline uint8_t getActionType(void) { return actionType; };
@@ -52,4 +54,5 @@ class ServerPacket {
         inline uint8_t getActionvalue(void) { return  actionValue; };
         inline uint32_t getIP(void) { return IP; };
         inline uint16_t getPort(void) { return port; };
+        inline uint16_t getPlayerId(void) { return player_id; };
 };

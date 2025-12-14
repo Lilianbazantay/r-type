@@ -5,6 +5,7 @@
 #include "ecs/Entity/IMediatorEntity.hpp"
 #include "ecs/System/CollisionSystem.hpp"
 #include "ecs/System/ShootSystem.hpp"
+#include "server/protocol.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
@@ -132,6 +133,30 @@ bool ServerGame::createEntity(int entity_type, int personnal_id) {
 
 void ServerGame::parseNetworkPackets() {
     auto packets = networkReceiveBuffer->popAllPackets();
-    for (const auto& pkt : packets) {
+    for (auto& pkt : packets) {
+        switch (pkt.getActionType()) {
+            case ActionType::INPUT_PRESSED: {
+                changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_PRESSED, pkt.getActionvalue()});
+                break;
+            }
+            case ActionType::INPUT_RELEASED: {
+                changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_RELEASED, pkt.getActionvalue()});
+                break;
+            }
+            case ActionType::NEW_CONNECTION: {
+                createEntity(ENTITY_PLAYER, pkt.getPlayerId());
+                break;
+            }
+            case ActionType::PLAYER_CONNECT: {
+                createEntity(ENTITY_PLAYER, pkt.getPlayerId());
+                break;
+            }
+            case ActionType::START_GAME: {
+                Running = true;
+                break;
+            }
+            default:
+                continue;
+        }
     }
 }

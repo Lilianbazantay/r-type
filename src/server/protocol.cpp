@@ -87,3 +87,7 @@ void ServerPacket::FillPort(std::vector<uint8_t> received, size_t offset) {
     port = (static_cast<uint32_t>(received.at(offset)) << 8u) |
         received.at(offset + 1);
 }
+
+void ServerPacket::FillPlayerId(size_t newId) {
+    player_id = newId;
+}
