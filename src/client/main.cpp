@@ -78,6 +78,7 @@ void clientConsoleThread(int argc, char **argv)
                 std::cout << "Invalid IP format\n";
                 continue;
             }
+            std::cout << "sending request\n";
             client.sendConnectionRequest(ipValue, port);
             continue;
         }

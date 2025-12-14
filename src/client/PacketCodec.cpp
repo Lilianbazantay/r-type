@@ -26,13 +26,13 @@ Packet encodeClientPacket(
     uint8_t payloadSize,
     std::vector<uint8_t> payload
 ) {
-    Packet p;
+    Packet p{};
 
     p.bytes[0] = (static_cast<uint32_t>(packetId) >> 8u) & 0xFFu;
     p.bytes[1] = packetId & 0xFFu;
     p.bytes[2] = ((actionType & 0x0Fu) << 4u) | (payloadSize & 0x0Fu);
     for (int i = 0; i < payloadSize; ++i) {
-        p.bytes.at(3 + 1) = payload[i];
+        p.bytes.at(3 + i) = payload[i];
     }
     p.size = 3 + payloadSize;
     return p;

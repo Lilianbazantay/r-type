@@ -3,6 +3,7 @@
 #include "encoder.hpp"
 
 #include <asio/ip/udp.hpp>
+#include <asio/registered_buffer.hpp>
 #include <asio/steady_timer.hpp>
 #include <atomic>
 #include <cstddef>
@@ -24,14 +25,15 @@ Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkC
 : receivedBuffer(newRBuffer),
   sendBuffer(newSBuffer),
   io_ctx_(),
-  socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
   work_guard_(asio::make_work_guard(io_ctx_)),
+  socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
   timer(io_ctx_),
   recv_buffer_{},
   list_ip{},
   list_port{},
-  interval(std::chrono::milliseconds(20))
-{}
+  interval(std::chrono::milliseconds(500))
+{
+}
 
 
 
@@ -95,6 +97,9 @@ void Server::do_receive() {
                 std::vector<uint8_t> arr(recv_buffer_.data(),
                     recv_buffer_.data() + bytes_recvd);
                 receiver.FillReceivedData(arr);
+                for (size_t i = 0; i < 4; i++)
+                    if (list_ip.at(i).empty() != false && list_ip.at(i) == remote_endpoint_.address().to_string())
+                        receiver.FillPlayerId(i);
                 packetDispatch();
             }
 
@@ -131,6 +136,20 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
     try {
         socket_.async_send_to(
             asio::buffer(*buffer),
+            *endpoint,
+            [](std::error_code, std::size_t) {}
+        );
+    } catch(std::exception &e) {
+        std::cout << e.what() << "\n";
+    }
+}
+
+void Server::send(const std::string& host, __uint16_t port, std::vector<uint8_t> packet) {
+    std::shared_ptr<asio::ip::udp::endpoint> endpoint =
+        std::make_shared<asio::ip::udp::endpoint>(asio::ip::address::from_string(host), port);
+    try {
+        socket_.async_send_to(
+            asio::buffer(packet),
             *endpoint,
             [](std::error_code, std::size_t) {}
         );
@@ -183,17 +202,12 @@ void Server::packetDispatch() {
         addPort(addIp());
         send(15, remote_endpoint_.address().to_string(), remote_endpoint_.port());
     }
-    else if (receiver.getPayload() == 1) {
-        if (receiver.getActionType() == 0)
-            input_pressed(receiver.getActionvalue());
-        else if (receiver.getActionType() == 1)
-            input_released(receiver.getActionvalue());
-        else
-            send(0, list_ip.at(0), list_port.at(0));
+    if (receiver.getPayload() == 1) {
+        receivedBuffer->pushPacket(receiver);
     } else if (receiver.getPayload() == 0) {
         switch (receiver.getActionType()) {
             case (4):
-                send(0, remote_endpoint_.address().to_string(), remote_endpoint_.port());
+                send(4, remote_endpoint_.address().to_string(), remote_endpoint_.port());
             case (15):
                 return;
         }
@@ -205,12 +219,19 @@ void Server::packetDispatch() {
  *
  */
 void Server::RoutineSender() {
-    for (size_t i = 0; i < list_ip.size(); i++) {
-        if (list_ip.at(i).empty() || list_port.at(i) == 0)
-            continue;
-        send(0, list_ip.at(i), list_port.at(i));
+    std::string ip;
+    size_t port;
+    for (size_t i = 0; i < sendBuffer->popAllPackets().size(); i++) {
+        std::string x = std::format("test with i = {}\n", i);
+        std::cout << x;
+        for (size_t j = 0; j < list_ip.size(); j++) {
+            ip = list_ip.at(j);
+            port = list_port.at(j);
+            if (ip.empty() || port == 0)
+                continue;
+            send(ip, port, sendBuffer->popPacket());
+        }
     }
-    currentID++;
 }
 
 /**
@@ -233,18 +254,4 @@ void Server::StartTimer() {
 void Server::OnTimer() {
     timer.expires_after(interval);
     StartTimer();
-}
-
-/**
- * @brief function that will send an "input pressed" to the ECS
- *
- */
-void Server::input_pressed(uint8_t /*action*/) {
-}
-
-/**
- * @brief function that will send an "input released" to the ECS
- *
- */
-void Server::input_released(uint8_t /*action*/) {
 }

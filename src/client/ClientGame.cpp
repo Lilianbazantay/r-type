@@ -28,6 +28,7 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     systemList.push_back(std::make_unique<DrawSpriteSystem>());
     createEntity(ENTITY_BACKGROUND, 0, {0, 0});
     data.window.setKeyRepeatEnabled(false);
+    client.start();
 }
 
 /**

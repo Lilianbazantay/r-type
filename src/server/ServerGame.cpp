@@ -14,6 +14,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
+#include <iostream>
 #include <memory>
 
 #include "ServerGame.hpp"
@@ -31,6 +32,7 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
     systemList.push_back(std::make_unique<CollisionSystem>());
     systemList.push_back(std::make_unique<MovementSystem>());
     createEntity(ENTITY_BACKGROUND, 0);
+    networkServer.start();
 }
 
 
@@ -61,6 +63,7 @@ void ServerGame::Update() {
            continue;
         }
         if (data.entityList[j]->hasChanged()) {
+            std::cout << "has changed\n";
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
@@ -168,6 +171,7 @@ bool ServerGame::createEntity(int entity_type, int personnal_id) {
 void ServerGame::parseNetworkPackets() {
     auto packets = networkReceiveBuffer->popAllPackets();
     for (auto& pkt : packets) {
+        std::cout << "entering direction process\n";
         switch (pkt.getActionType()) {
             case ActionType::INPUT_PRESSED: {
                 changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_PRESSED, pkt.getActionvalue()});

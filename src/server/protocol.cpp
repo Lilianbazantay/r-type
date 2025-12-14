@@ -61,7 +61,7 @@ void ServerPacket::FillPayloadSize(std::vector<uint8_t> received) {
  */
 void ServerPacket::FillActionValue(std::vector<uint8_t> received) {
     uint32_t act = received[3];
-    payloadSize = act & 0x0Fu;
+    actionValue = act & 0x0Fu;
 }
 
 /**

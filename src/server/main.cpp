@@ -1,8 +1,6 @@
+#include "server/ServerGame.hpp"
 #include "utils.hpp"
 #include "parser.hpp"
-#include "server.hpp"
-
-#include <iostream>
 
 /**
  * @brief Main function that launch the programe
@@ -19,14 +17,12 @@ int main(int argc, char **argv) {
     NetworkClientBuffer netSendBuffer;
     if (parser.ParseData(argc, argv) == EXIT_ERROR)
         return EXIT_ERROR;
-    Server test(parser.getPort(), &netReceiveBuffer, &netSendBuffer);
-    test.start();
-    if (argc >= 2) {
-        std::cout << "listening on port " << parser.getPort() << std::endl;
-        while (1);
-        return EXIT_DESIRED;
-    }
-    std::cout << "sending message" << std::endl;
-    test.stop();
+    ServerGame test(parser.getPort(), &netReceiveBuffer, &netSendBuffer);
+    test.Loop();
+    //if (argc >= 2) {
+    //    std::cout << "listening on port " << parser.getPort() << std::endl;
+    //    while (1);
+    //    return EXIT_DESIRED;
+    //}
     return EXIT_DESIRED;
 }
