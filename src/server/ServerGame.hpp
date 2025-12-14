@@ -11,6 +11,7 @@
 #include "../ecs/relevant_data.hpp"
 
 #include "server.hpp"
+#include "server/NetworkServerBuffer.hpp"
 #include "server/encoder.hpp"
 
 class ServerGame {
@@ -23,6 +24,7 @@ class ServerGame {
 
         NetworkServerBuffer *networkReceiveBuffer;
         NetworkClientBuffer *networkSendBuffer;
+        NetworkClientBuffer *continuousBuffer;
         Server networkServer;
         PacketEncoder encoder;
 

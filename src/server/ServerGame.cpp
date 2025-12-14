@@ -9,6 +9,7 @@
 #include "ecs/System/ShootSystem.hpp"
 #include "protocol.hpp"
 #include "server.hpp"
+#include "server/NetworkServerBuffer.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
@@ -53,17 +54,18 @@ void ServerGame::Update() {
             std::vector<uint8_t> pkt = encoder.encodeCreate(0,data.entityList[j]->getType(),
                 data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
+            continuousBuffer->pushPacket(pkt);
             continue;
         }
         if (!data.entityList[j]->is_Alive()) {
             std::vector<uint8_t> pkt = encoder.encodeDelete(data.entityList[j]->getType(), data.entityList[j]->getId());
             networkSendBuffer->pushPacket(pkt);
+            continuousBuffer->pushPacket(pkt);
             data.entityList.erase(data.entityList.begin() + j);
             j--;
            continue;
         }
         if (data.entityList[j]->hasChanged()) {
-            std::cout << "has changed\n";
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
@@ -76,16 +78,16 @@ void ServerGame::Update() {
 }
 
 void ServerGame::Loop() {
-    Running = true;
     Cooldown cooldown(1.0);
     while(1) {
-        if (cooldown.CheckCooldown() == true) {
-            data.enemy_count++;
-            //createEntity(2, data.enemy_count);
-            cooldown.LaunchCooldown();
-        }
-        if (Running)
+        if (Running) {
             Update();
+            if (cooldown.CheckCooldown() == true) {
+                data.enemy_count++;
+                createEntity(2, data.enemy_count);
+                cooldown.LaunchCooldown();
+            }
+        }
         parseNetworkPackets();
     }
 }
