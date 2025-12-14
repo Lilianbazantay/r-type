@@ -1,0 +1,45 @@
+{
+  "entity": {
+    "type": "player",
+    "name": "player_basic"
+  },
+
+  "components": {
+    "position": [100, 300],
+    "velocity": 5,
+    "hp": 100,
+    "hitbox": {
+      "size": [64, 64],
+      "layer": [10],
+      "mask": [1]
+    },
+    "attack": {
+      "damage": 20,
+      "fireRate": 0.3
+    }
+  },
+
+  "data": {
+    "input": {
+      "up": "Z",
+      "down": "S",
+      "left": "Q",
+      "right": "D",
+      "shoot": "X",
+      "leave": "ESCAPE"
+    },
+
+    "sprite": {
+      "idle": "assets/sprites/player_idle.png",
+      "walk": {
+        "up": ["assets/sprites/player_walk_1.png"],
+        "down": ["assets/sprites/player_walk_1.png"],
+        "left": ["assets/sprites/player_walk_1.png"],
+        "right": ["assets/sprites/player_walk_1.png"]
+      },
+      "shoot": ["assets/sprites/player_shoot_1.png"],
+      "hit": ["assets/sprites/player_hit_1.png"],
+      "death": ["assets/sprites/player_death_1.png"]
+    }
+  }
+}
