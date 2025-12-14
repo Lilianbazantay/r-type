@@ -1,3 +1,6 @@
+
+#pragma once
+
 #include <vector>
 #include "protocol.hpp"
 #include <mutex>
@@ -6,7 +9,7 @@
  * @brief buffer network
  * 
  */
-class NetworkBuffer {
+class NetworkServerBuffer {
     private:
         std::vector<ServerPacket> packets;
         mutable std::mutex mtx;

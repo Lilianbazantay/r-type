@@ -15,7 +15,7 @@
 int main(int argc, char **argv) {
     Parser parser;
 
-    NetworkBuffer netReceiveBuffer;
+    NetworkServerBuffer netReceiveBuffer;
     NetworkBuffer netSendBuffer;
     if (parser.ParseData(argc, argv) == EXIT_ERROR)
         return EXIT_ERROR;

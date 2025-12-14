@@ -1,6 +1,8 @@
 #include "../src/ecs/relevant_data.hpp"
 #include "../src/ecs/System/SystemList.hpp"
+#include "client/Packet.hpp"
 #include "ecs/Component/Direction.hpp"
+#include "ecs/Component/Position.hpp"
 #include "ecs/Entity/Entities.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
 #include "ecs/System/CollisionSystem.hpp"
@@ -11,13 +13,12 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
-#include <iostream>
 #include <memory>
 
 #include "ServerGame.hpp"
 
 
-ServerGame::ServerGame(int port, NetworkBuffer *newRBuffer, NetworkBuffer* newSBuffer):
+ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkBuffer* newSBuffer):
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
     networkServer(port,
@@ -39,10 +40,46 @@ void ServerGame::Update() {
 
     size_t SListSize = systemList.size();
     size_t EListSize = data.entityList.size();
-    std::cout << "Sizes: " << SListSize << ", " << EListSize << std::endl;
-    for (size_t i = 0; i < SListSize; i++)
-        for (size_t j = 0; j < EListSize; j++)
+    for (size_t j = 0; j < EListSize; j++) {
+        for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
+        if (data.entityList[j]->justCreated()) {
+            Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
+            if (playerPos == nullptr)
+                continue;
+            NetworkPacket pkt;
+            pkt.entityType = data.entityList[j]->getType();
+            pkt.entityId = data.entityList[j]->getId();
+            pkt.actionType = 0;
+            pkt.posX = playerPos->GetPosition().first;
+            pkt.posY = playerPos->GetPosition().second;
+            networkSendBuffer->pushPacket(pkt);
+            continue;
+        }
+        if (!data.entityList[j]->is_Alive()) {
+            NetworkPacket pkt;
+            pkt.entityType = data.entityList[j]->getType();
+            pkt.entityId = data.entityList[j]->getId();
+            pkt.actionType = 2;
+            data.entityList.erase(data.entityList.begin() + j);
+            j--;
+            networkSendBuffer->pushPacket(pkt);
+            continue;
+        }
+        if (data.entityList[j]->hasChanged()) {
+            Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
+            if (playerPos == nullptr)
+                continue;
+            NetworkPacket pkt;
+            pkt.entityType = data.entityList[j]->getType();
+            pkt.entityId = data.entityList[j]->getId();
+            pkt.actionType = 1;
+            pkt.posX = playerPos->GetPosition().first;
+            pkt.posY = playerPos->GetPosition().second;
+            networkSendBuffer->pushPacket(pkt);
+            continue;
+        }
+    }
 }
 
 void ServerGame::Loop() {
@@ -50,6 +87,7 @@ void ServerGame::Loop() {
     while(1) {
         if (Running)
             Update();
+        parseNetworkPackets();
     }
 }
 
@@ -153,6 +191,8 @@ void ServerGame::parseNetworkPackets() {
             }
             case ActionType::START_GAME: {
                 Running = true;
+                NetworkPacket startPkt;
+                startPkt.actionType = 4;
                 break;
             }
             default:

@@ -20,12 +20,12 @@ class ServerGame {
         sf::Clock clock;
         bool Running = false;
 
-        NetworkBuffer *networkReceiveBuffer;
+        NetworkServerBuffer *networkReceiveBuffer;
         NetworkBuffer *networkSendBuffer;
         Server networkServer;
 
     public:
-        ServerGame(int, NetworkBuffer *, NetworkBuffer *);
+        ServerGame(int, NetworkServerBuffer *, NetworkBuffer *);
         ~ServerGame() = default;
         bool createEntity(int, int);
         void changePlayerDirection(int, std::pair<int, int>);

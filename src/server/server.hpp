@@ -9,7 +9,8 @@
 #include <atomic>
 #include <string>
 
-#include "NetworkBuffer.hpp"
+#include "NetworkServerBuffer.hpp"
+#include "../client/NetworkBuffer.hpp"
 #include "protocol.hpp"
 #include <array>
 #include <asio/steady_timer.hpp>
@@ -23,7 +24,7 @@
  */
 class Server {
     public:
-        Server(__uint16_t listen_port, NetworkBuffer *, NetworkBuffer *);
+        Server(__uint16_t listen_port, NetworkServerBuffer *, NetworkBuffer *);
         ~Server();
 
         void start();
@@ -46,7 +47,7 @@ class Server {
         void addPort(std::string IP);
 
     private:
-        NetworkBuffer *receivedBuffer;
+        NetworkServerBuffer *receivedBuffer;
         NetworkBuffer *sendBuffer;
         asio::io_context io_ctx_;
         asio::ip::udp::socket socket_;

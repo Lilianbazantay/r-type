@@ -1,11 +1,11 @@
-#include "NetworkBuffer.hpp"
+#include "NetworkServerBuffer.hpp"
 
 /**
  * @brief add a packet to the buffer
  *
  * @param pkt packet to be added
  */
-void NetworkBuffer::pushPacket(ServerPacket& pkt)
+void NetworkServerBuffer::pushPacket(ServerPacket& pkt)
 {
     std::lock_guard<std::mutex> lock(mtx);
     packets.push_back(pkt);
@@ -16,7 +16,7 @@ void NetworkBuffer::pushPacket(ServerPacket& pkt)
  *
  * @return packet that was removed
  */
-ServerPacket NetworkBuffer::popPacket()
+ServerPacket NetworkServerBuffer::popPacket()
 {
     std::lock_guard<std::mutex> lock(mtx);
 
@@ -30,7 +30,7 @@ ServerPacket NetworkBuffer::popPacket()
  *
  * @return std::vector<ServerPacket> list of packet
  */
-std::vector<ServerPacket> NetworkBuffer::popAllPackets()
+std::vector<ServerPacket> NetworkServerBuffer::popAllPackets()
 {
     std::lock_guard<std::mutex> lock(mtx);
     std::vector<ServerPacket> out = packets;
@@ -44,7 +44,7 @@ std::vector<ServerPacket> NetworkBuffer::popAllPackets()
  * @return true buffer is empty
  * @return false buffer is not empty
  */
-bool NetworkBuffer::empty()
+bool NetworkServerBuffer::empty()
 {
     std::lock_guard<std::mutex> lock(mtx);
     return packets.empty();
