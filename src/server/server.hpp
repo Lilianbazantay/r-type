@@ -2,12 +2,7 @@
 #define SERVER_HPP
 
 
-#include "protocol.hpp"
-#include <array>
-#include <asio/steady_timer.hpp>
-#include <chrono>
-#include <cstddef>
-#include <cstdint>
+#include <vector>
 #pragma once
 
 #include <asio.hpp>
@@ -15,21 +10,28 @@
 #include <atomic>
 #include <string>
 
+#include "NetworkServerBuffer.hpp"
+#include "protocol.hpp"
+#include <array>
+#include <asio/steady_timer.hpp>
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+
 /**
  * @brief server class, is the one communicating and parsing data with game and ECS
  *
  */
 class Server {
     public:
-        Server(__uint16_t listen_port);
+        Server(__uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *, NetworkClientBuffer *);
         ~Server();
 
         void start();
         void stop();
         void send(size_t actVal, const std::string& host, __uint16_t port);
+        void send(const std::string& host, uint16_t port, std::vector<uint8_t> pck);
         size_t currentID = 0;
-        void input_pressed(uint8_t action);
-        void input_released(uint8_t action);
 
     private:
         void do_receive();
@@ -39,28 +41,34 @@ class Server {
         void packetDispatch();
         void StartTimer();
         void OnTimer();
+        std::array<bool, 4> is_connected = {false, false, false, false};
+        std::array<bool, 4> has_started = {false, false, false, false};
 
-        std::string addIp();
-        void addPort(std::string IP);
+        size_t addIp();
+        size_t addPort(size_t id);
+        void addConnection(size_t id);
+        void addStart(size_t id);
 
     private:
+        NetworkServerBuffer *receivedBuffer;
+        NetworkClientBuffer *sendBuffer;
         asio::io_context io_ctx_;
+        asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;
-        asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::steady_timer timer{io_ctx_};
 
 
         std::array<char, 2048> recv_buffer_{};
         std::array<std::string, 4> list_ip;
         std::array<size_t, 4> list_port;
-        std::chrono::milliseconds interval{20};
+        std::chrono::milliseconds interval{100};
 
         std::jthread io_thread_;
         std::jthread sender_thread;
         std::atomic<bool> running_{false};
 
-        Packet receiver;
+        ServerPacket receiver;
 
 };
 

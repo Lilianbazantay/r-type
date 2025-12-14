@@ -34,5 +34,7 @@ void ShootSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) 
         return;
     newEntityData->Spawn();
     IMediatorEntity *newEntity = newEntityData->GetEntity();
+    newEntity->setId(data.bullet_count);
+    data.bullet_count++;
     data.entityList.push_back(std::unique_ptr<IMediatorEntity>(newEntity));
 }

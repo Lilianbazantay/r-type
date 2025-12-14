@@ -4,10 +4,10 @@
 #include <mutex>
 #include <vector>
 
-constexpr int ENTITY_BACKGROUND = -1;
-constexpr int ENTITY_PLAYER = 0;
-constexpr int ENTITY_ENEMY = 1;
-constexpr int ENTITY_BULLET = 2;
+constexpr int ENTITY_BACKGROUND = 0;
+constexpr int ENTITY_PLAYER = 1;
+constexpr int ENTITY_ENEMY = 2;
+constexpr int ENTITY_BULLET = 3;
 
 
 /**
@@ -27,6 +27,9 @@ class IMediatorEntity
         int id;
         int Entitytype;
         std::mutex _mutex;
+        bool entity_created = true;
+        bool entity_changed = false;
+        bool entity_live = true;
     public:
         virtual ~IMediatorEntity() = default;
         virtual void run() = 0;
@@ -45,6 +48,12 @@ class IMediatorEntity
 
         void lock();
         void unlock();
+        bool justCreated();
+        bool hasChanged();
+        void hasChanged(bool);
+        void Alive(bool);
+        bool is_Alive();
+
         // CLONE
         virtual IMediatorEntity *Clone() = 0;
 

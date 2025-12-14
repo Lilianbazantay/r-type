@@ -24,7 +24,7 @@ enum ActionType {
  * @brief store and parse a packet received data
  *
  */
-class Packet {
+class ServerPacket {
     private:
         uint16_t packetID;
         uint8_t actionType;
@@ -32,10 +32,11 @@ class Packet {
         uint8_t actionValue;
         uint32_t IP;
         uint16_t port;
+        size_t player_id = 0;
 
     public:
-        Packet() = default;
-        ~Packet() = default;
+        ServerPacket() = default;
+        ~ServerPacket() = default;
 
 
         void FillPacketID(std::vector<uint8_t>);
@@ -45,6 +46,7 @@ class Packet {
         void FillIP(std::vector<uint8_t>);
         void FillPort(std::vector<uint8_t>, size_t offset);
         void FillReceivedData(std::vector<uint8_t>);
+        void FillPlayerId(size_t);
 
         inline uint16_t getID(void) { return packetID; };
         inline uint8_t getActionType(void) { return actionType; };
@@ -52,4 +54,5 @@ class Packet {
         inline uint8_t getActionvalue(void) { return  actionValue; };
         inline uint32_t getIP(void) { return IP; };
         inline uint16_t getPort(void) { return port; };
+        inline uint16_t getPlayerId(void) { return player_id; };
 };

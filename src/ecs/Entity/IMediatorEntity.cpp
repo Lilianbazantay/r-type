@@ -1,6 +1,5 @@
 #include "IMediatorEntity.hpp"
 #include "../IComponent.hpp"
-#include <iostream>
 
 /**
  * @brief returns the actuators components of the entity
@@ -60,7 +59,7 @@ IComponent *IMediatorEntity::FindComponent(ComponentType type)
         if (_undergoerComponents[i]->GetType() == type)
             return _undergoerComponents[i].get();
     }
-    std::cout << "unfound" << std::endl;
+    //std::cout << "component " << (int)type << " not found\n" << std::endl;
     return nullptr;
 }
 
@@ -80,7 +79,13 @@ int IMediatorEntity::getType() {
     return Entitytype;
 }
 
-bool IMediatorEntity::is_wanted_entity(int _id, int _type) {
+/**
+ * @brief checks if the entity matches with the type and id
+ *
+ * @param _type type of the entity
+ * @param _id personnal entity ID
+*/
+bool IMediatorEntity::is_wanted_entity(int _type, int _id) {
     if (_id == id && _type == Entitytype)
         return true;
     return false;
@@ -92,4 +97,37 @@ void IMediatorEntity::lock() {
 
 void IMediatorEntity::unlock() {
     _mutex.unlock();
+}
+
+/**
+ * @brief
+ *
+ *
+ */
+bool IMediatorEntity::justCreated() {
+    if (entity_created) {
+        entity_created = false;
+        return true;
+    }
+    return false;
+}
+
+bool IMediatorEntity::hasChanged() {
+    if (entity_changed) {
+        entity_changed = false;
+        return true;
+    }
+    return false;
+}
+
+void IMediatorEntity::hasChanged(bool val) {
+    entity_changed = val;
+}
+
+bool IMediatorEntity::is_Alive() {
+    return entity_live;
+}
+
+void IMediatorEntity::Alive(bool val) {
+    entity_live = val;
 }

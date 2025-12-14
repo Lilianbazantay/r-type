@@ -2,7 +2,6 @@
 #include "ISystem.hpp"
 #include "../Entity/IMediatorEntity.hpp"
 #include "../IComponent.hpp"
-#include <iostream>
 #include <vector>
 
 /**
@@ -60,8 +59,6 @@ void ISystem::addOptionnalComponentType(ComponentType type) {
     this->optionnalComponents.push_back(type);
 }
 
-
-
 /**
  * @brief calls requirements check, then if applicable applies the system execution to it
  *
@@ -69,8 +66,6 @@ void ISystem::addOptionnalComponentType(ComponentType type) {
  * @param data necessary data for systems. See "../relevant_data.hpp" for more information
 */
 void ISystem::checkEntity(IMediatorEntity& entity, relevant_data_t& data) {
-    //std::cout << "Checkin" << std::endl;
-
     entity.lock();
     if (checkRequirements(entity) == true)
         executeEntity(entity, data);
