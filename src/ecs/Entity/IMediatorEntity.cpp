@@ -99,3 +99,36 @@ void IMediatorEntity::lock() {
 void IMediatorEntity::unlock() {
     _mutex.unlock();
 }
+
+/**
+ * @brief
+ *
+ *
+ */
+bool IMediatorEntity::justCreated() {
+    if (entity_created) {
+        entity_created = false;
+        return true;
+    }
+    return false;
+}
+
+bool IMediatorEntity::hasChanged() {
+    if (entity_changed) {
+        entity_changed = false;
+        return true;
+    }
+    return false;
+}
+
+void IMediatorEntity::hasChanged(bool val) {
+    entity_changed = val;
+}
+
+bool IMediatorEntity::is_Alive() {
+    return entity_live;
+}
+
+void IMediatorEntity::Alive(bool val) {
+    entity_live = val;
+}
