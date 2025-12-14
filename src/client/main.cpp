@@ -1,21 +1,23 @@
+#include "./ClientGame.hpp"
 #include "parser.hpp"
 #include "client.hpp"
 #include <iostream>
 #include <sstream>
 
 /**
- * @brief Main function that launches the program
+ * @brief threads for console debug
  *
- * @param argc number of arguments.
- * @param argv Argument vector.
- * @return 0 if parsing succeeded, 84 otherwise.
+ * @param argc number of args from main
+ * @param argv args from main
  */
-int main(int argc, char **argv)
+void clientConsoleThread(int argc, char **argv)
 {
     Parser parser;
+    std::cout << argc << std::endl;
 
-    if (parser.parse(argc, argv) != EXIT_SUCCESS)
-        return 84;
+    parser.parse(argc, argv);
+
+    std::cout << parser.ip << " " << parser.port << "\n";
     Client client(parser.ip, parser.port);
     client.start();
     std::cout << "Connected to " << parser.ip << ":" << parser.port << "\n";
@@ -81,5 +83,32 @@ int main(int argc, char **argv)
         }
         std::cout << "Unknown command. Type 'help'.\n";
     }
+}
+
+/**
+ * @brief Main function that launches the program
+ *
+ * @param argc number of arguments.
+ * @param argv Argument vector.
+ * @return 0 if parsing succeeded, 84 otherwise.
+ */
+int main(int argc, char **argv)
+{
+    std::thread consoleThread(clientConsoleThread, argc, argv);
+
+    Parser parser;
+    parser.parse(argc, argv);
+    NetworkBuffer netBuffer;
+
+    try {
+        ClientGame rtype(parser.ip, parser.port, &netBuffer);
+        rtype.Loop();
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+    if (consoleThread.joinable())
+        consoleThread.join();
+
     return 0;
 }
