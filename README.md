@@ -63,7 +63,7 @@ This installs dependencies (via vcpkg) and generates:
 ### Start a client
 
 ```sh
-./r-type_client -i <IP of the server machine> -p <free port on your machine>
+./r-type_client -i <IP of the server machine> -p <same port as server>
 ```
 
 Multiple clients can connect simultaneously. (max 5)
