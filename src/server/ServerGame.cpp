@@ -2,6 +2,7 @@
 #include "../src/ecs/System/SystemList.hpp"
 #include "ecs/Component/Direction.hpp"
 #include "ecs/Component/Position.hpp"
+#include "ecs/Component/Cooldown.hpp"
 #include "ecs/Entity/Entities.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
 #include "ecs/System/CollisionSystem.hpp"
@@ -73,7 +74,13 @@ void ServerGame::Update() {
 
 void ServerGame::Loop() {
     Running = true;
+    Cooldown cooldown(1.0);
     while(1) {
+        if (cooldown.CheckCooldown() == true) {
+            data.enemy_count++;
+            createEntity(2, data.enemy_count);
+            cooldown.LaunchCooldown();
+        }
         if (Running)
             Update();
         parseNetworkPackets();
