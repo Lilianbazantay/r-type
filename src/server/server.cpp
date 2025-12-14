@@ -24,7 +24,6 @@
 Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkClientBuffer *newCBuffer)
 : receivedBuffer(newRBuffer),
   sendBuffer(newSBuffer),
-  continuousBuffer(newCBuffer),
   io_ctx_(),
   work_guard_(asio::make_work_guard(io_ctx_)),
   socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
@@ -32,7 +31,7 @@ Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkC
   recv_buffer_{},
   list_ip{},
   list_port{},
-  interval(std::chrono::milliseconds(500))
+  interval(std::chrono::milliseconds(100))
 {
 }
 
@@ -174,6 +173,7 @@ size_t Server::addIp() {
     for (size_t i = 0; i < list_ip.size(); ++i)
         if (list_ip.at(i).empty()) {
             list_ip.at(i) = remote_endpoint_.address().to_string();
+            std::cout << list_ip.at(i);
             return i;
         }
     return 5;
@@ -186,8 +186,9 @@ size_t Server::addIp() {
  * @param tmpIP IP of the client linked to the port
  */
 size_t Server::addPort(size_t id) {
-
+    std::cout << id;
     if (id == 5)
+        return id;
     list_port.at(id) = remote_endpoint_.port();
     return id;
 }
@@ -233,18 +234,21 @@ void Server::packetDispatch() {
 void Server::RoutineSender() {
     std::string ip;
     size_t port;
-    for (size_t i = 0; i < sendBuffer->popAllPackets().size(); i++) {
-        std::string x = std::format("test with i = {}\n", i);
-        std::cout << x;
+    std::vector<std::vector<uint8_t>> buff = sendBuffer->popAllPackets();
+    std::string x = std::format("test with i = {}\n", buff.size());
+    std::cout << x;
+    for (size_t i = 0; i < buff.size(); i++) {
         for (size_t j = 0; j < list_ip.size(); j++) {
             ip = list_ip.at(j);
             port = list_port.at(j);
+            std::cout << ip << ", " << port << std::endl;
             if (ip.empty() || port == 0)
                 continue;
-            send(ip, port, sendBuffer->popPacket());
+            send(ip, port, buff[i]);
         }
     }
 }
+
 
 /**
  * @brief start the timer for the packets to be sent

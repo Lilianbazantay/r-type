@@ -52,7 +52,6 @@ class Server {
     private:
         NetworkServerBuffer *receivedBuffer;
         NetworkClientBuffer *sendBuffer;
-        NetworkClientBuffer *continuousBuffer;
         asio::io_context io_ctx_;
         asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::ip::udp::socket socket_;
@@ -63,7 +62,7 @@ class Server {
         std::array<char, 2048> recv_buffer_{};
         std::array<std::string, 4> list_ip;
         std::array<size_t, 4> list_port;
-        std::chrono::milliseconds interval{500};
+        std::chrono::milliseconds interval{100};
 
         std::jthread io_thread_;
         std::jthread sender_thread;

@@ -15,7 +15,6 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
-#include <iostream>
 #include <memory>
 
 #include "ServerGame.hpp"
@@ -91,7 +90,7 @@ void ServerGame::Loop() {
             }
             if (cooldown.CheckCooldown() == true) {
                 data.enemy_count++;
-                createEntity(2, data.enemy_count);
+                //createEntity(2, data.enemy_count);
                 cooldown.LaunchCooldown();
             }
         }

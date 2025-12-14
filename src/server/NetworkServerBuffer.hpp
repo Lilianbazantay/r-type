@@ -7,7 +7,7 @@
 
 /**
  * @brief buffer network
- * 
+ *
  */
 class NetworkServerBuffer {
     private:
@@ -15,6 +15,8 @@ class NetworkServerBuffer {
         mutable std::mutex mtx;
 
     public:
+        NetworkServerBuffer() = default;
+        ~NetworkServerBuffer() = default;
         void pushPacket(ServerPacket& pkt);
         ServerPacket popPacket();
         std::vector<ServerPacket> popAllPackets();
@@ -27,6 +29,8 @@ class NetworkClientBuffer {
         mutable std::mutex mtx;
 
     public:
+        NetworkClientBuffer() = default;
+        ~NetworkClientBuffer() = default;
         void pushPacket(std::vector<uint8_t>& pkt);
         void pushWholePacket(std::vector<std::vector<uint8_t>>& pkt);
         std::vector<uint8_t> popPacket();
