@@ -11,9 +11,8 @@
 #include "../ecs/relevant_data.hpp"
 
 #include "../ecs/Entity/Entities.hpp"
-#include "client/NetworkBuffer.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
-#include "./server.hpp"
+#include "server.hpp"
 
 class ServerGame {
     private:
@@ -23,11 +22,12 @@ class ServerGame {
         sf::Clock clock;
         bool Running = false;
 
-        NetworkBuffer *networkBuffer;
+        NetworkBuffer *networkReceiveBuffer;
+        NetworkBuffer *networkSendBuffer;
         Server networkServer;
 
     public:
-        ServerGame(int, NetworkBuffer *);
+        ServerGame(int, NetworkBuffer *, NetworkBuffer *);
         ~ServerGame() = default;
         bool createEntity(int, int);
         void changePlayerDirection(int, std::pair<int, int>);

@@ -2,13 +2,6 @@
 #define SERVER_HPP
 
 
-#include "client/NetworkBuffer.hpp"
-#include "protocol.hpp"
-#include <array>
-#include <asio/steady_timer.hpp>
-#include <chrono>
-#include <cstddef>
-#include <cstdint>
 #pragma once
 
 #include <asio.hpp>
@@ -16,13 +9,21 @@
 #include <atomic>
 #include <string>
 
+#include "NetworkBuffer.hpp"
+#include "protocol.hpp"
+#include <array>
+#include <asio/steady_timer.hpp>
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+
 /**
  * @brief server class, is the one communicating and parsing data with game and ECS
  *
  */
 class Server {
     public:
-        Server(__uint16_t listen_port, NetworkBuffer *buffer);
+        Server(__uint16_t listen_port, NetworkBuffer *, NetworkBuffer *);
         ~Server();
 
         void start();
@@ -45,7 +46,8 @@ class Server {
         void addPort(std::string IP);
 
     private:
-        NetworkBuffer *buffer;
+        NetworkBuffer *receivedBuffer;
+        NetworkBuffer *sendBuffer;
         asio::io_context io_ctx_;
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;

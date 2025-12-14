@@ -1,6 +1,5 @@
 #include "../src/ecs/relevant_data.hpp"
 #include "../src/ecs/System/SystemList.hpp"
-#include "client/NetworkBuffer.hpp"
 #include "ecs/Component/Direction.hpp"
 #include "ecs/Entity/Entities.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
@@ -17,7 +16,12 @@
 #include "ServerGame.hpp"
 
 
-ServerGame::ServerGame(int port, NetworkBuffer *newBuffer): networkBuffer(newBuffer), networkServer(port, newBuffer) {
+ServerGame::ServerGame(int port, NetworkBuffer *newRBuffer, NetworkBuffer* newSBuffer):
+    networkReceiveBuffer(newRBuffer),
+    networkSendBuffer(newSBuffer),
+    networkServer(port,
+    newRBuffer, newSBuffer)
+{
     clock.restart();
     Prevtime = clock.getElapsedTime();
     systemList.push_back(std::make_unique<ShootSystem>());
@@ -127,12 +131,7 @@ bool ServerGame::createEntity(int entity_type, int personnal_id) {
 }
 
 void ServerGame::parseNetworkPackets() {
-    auto packets = networkBuffer->popAllPackets();
+    auto packets = networkReceiveBuffer->popAllPackets();
     for (const auto& pkt : packets) {
-        // PUT ENDPOINT ECS
-        std::cout << "[GAME] Received packet id=" << pkt.packetId
-                  << " playerId=" << pkt.entityId
-                  << " action=" << (int)pkt.actionType
-                  << " button=" << (int)pkt.entityId << std::endl;
     }
 }

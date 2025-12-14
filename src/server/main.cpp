@@ -4,7 +4,6 @@
 
 #include <iostream>
 
-
 /**
  * @brief Main function that launch the programe
  *
@@ -16,9 +15,11 @@
 int main(int argc, char **argv) {
     Parser parser;
 
+    NetworkBuffer netReceiveBuffer;
+    NetworkBuffer netSendBuffer;
     if (parser.ParseData(argc, argv) == EXIT_ERROR)
         return EXIT_ERROR;
-    Server test(parser.getPort());
+    Server test(parser.getPort(), &netReceiveBuffer, &netSendBuffer);
     test.start();
     if (argc >= 2) {
         std::cout << "listening on port " << parser.getPort() << std::endl;
