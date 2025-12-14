@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <unordered_set>
 #include <string>
 #include <cstdint>
@@ -28,7 +28,7 @@ enum class Action : uint8_t {
 class InputManager
 {
 private:
-    std::unordered_map<Action, sf::Keyboard::Key> _keyBindings;
+    std::map<Action, sf::Keyboard::Key> _keyBindings;
     std::unordered_set<sf::Keyboard::Key> keysPressed;
 
     std::string textBuffer;
