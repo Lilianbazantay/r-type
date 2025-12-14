@@ -60,7 +60,7 @@ IComponent *IMediatorEntity::FindComponent(ComponentType type)
         if (_undergoerComponents[i]->GetType() == type)
             return _undergoerComponents[i].get();
     }
-    std::cout << "unfound" << std::endl;
+    //std::cout << "component " << (int)type << " not found\n" << std::endl;
     return nullptr;
 }
 

@@ -173,8 +173,10 @@ bool ServerGame::createEntity(int entity_type, int personnal_id) {
 void ServerGame::parseNetworkPackets() {
     auto packets = networkReceiveBuffer->popAllPackets();
     for (auto& pkt : packets) {
-        if (pkt.getActionType() == START_GAME)
+        if (pkt.getActionType() == START_GAME) {
             createEntity(ENTITY_PLAYER, pkt.getID());
+            continue;
+        }
         std::cout << "entering direction process\n";
         switch (pkt.getActionType()) {
             case ActionType::INPUT_PRESSED: {

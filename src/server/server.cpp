@@ -208,6 +208,14 @@ void Server::packetDispatch() {
                 addStart(receiver.getPlayerId());
                 send(4, remote_endpoint_.address().to_string(), remote_endpoint_.port());
                 receivedBuffer->pushPacket(receiver);
+            case (8):
+                addStart(receiver.getPlayerId());
+                send(4, remote_endpoint_.address().to_string(), remote_endpoint_.port());
+                receivedBuffer->pushPacket(receiver);
+            case (2):
+                addStart(receiver.getPlayerId());
+                send(4, remote_endpoint_.address().to_string(), remote_endpoint_.port());
+                receivedBuffer->pushPacket(receiver);
             case (15):
                 return;
         }
