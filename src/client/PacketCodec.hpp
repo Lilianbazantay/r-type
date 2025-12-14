@@ -20,4 +20,4 @@ Packet encodeClientPacket(
     std::vector<uint8_t> payload
 );
 
-ServerPacket decodeServerPacket(std::vector<uint8_t>bytes, size_t size);
+NetworkPacket decodeNetworkPacket(std::vector<uint8_t>bytes, size_t size);

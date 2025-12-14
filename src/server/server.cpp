@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include "client/NetworkBuffer.hpp"
 #include "protocol.hpp"
 #include "encoder.hpp"
 
@@ -20,8 +21,9 @@
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
-Server::Server(__uint16_t listen_port)
-: io_ctx_(),
+Server::Server(__uint16_t listen_port, NetworkBuffer *newBuffer)
+: buffer(newBuffer),
+  io_ctx_(),
   socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
   work_guard_(asio::make_work_guard(io_ctx_)),
   timer(io_ctx_),

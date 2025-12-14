@@ -8,13 +8,13 @@
  * 
  */
 class NetworkBuffer {
-private:
-    std::vector<ServerPacket> packets;
-    mutable std::mutex mtx;
+    private:
+        std::vector<NetworkPacket> packets;
+        mutable std::mutex mtx;
 
-public:
-    void pushPacket(ServerPacket& pkt);
-    ServerPacket popPacket();
-    std::vector<ServerPacket> popAllPackets();
-    bool empty();
+    public:
+        void pushPacket(NetworkPacket& pkt);
+        NetworkPacket popPacket();
+        std::vector<NetworkPacket> popAllPackets();
+        bool empty();
 };

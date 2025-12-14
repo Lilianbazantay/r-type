@@ -80,7 +80,13 @@ int IMediatorEntity::getType() {
     return Entitytype;
 }
 
-bool IMediatorEntity::is_wanted_entity(int _id, int _type) {
+/**
+ * @brief checks if the entity matches with the type and id
+ *
+ * @param _type type of the entity
+ * @param _id personnal entity ID
+*/
+bool IMediatorEntity::is_wanted_entity(int _type, int _id) {
     if (_id == id && _type == Entitytype)
         return true;
     return false;

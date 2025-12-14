@@ -8,7 +8,7 @@ struct Packet {
     size_t size = 0;
 };
 
-struct ServerPacket {
+struct NetworkPacket {
     uint16_t packetId;
     uint8_t payloadSize;
     uint8_t actionType;

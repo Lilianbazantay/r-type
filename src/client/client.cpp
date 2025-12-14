@@ -11,7 +11,7 @@ static uint16_t GLOBAL_PACKET_ID = 0;
 Client::Client(const std::string &ip, int port, NetworkBuffer* buffer)
     : ip_(ip), port_(port), buffer_(buffer),
       network_(0, [this](const std::vector<uint8_t> data, size_t size, const asio::ip::udp::endpoint&) {
-          ServerPacket pkt = decodeServerPacket(data, size);
+          NetworkPacket pkt = decodeNetworkPacket(data, size);
 
           std::cout << "[CLIENT] Packet received id=" << pkt.packetId << "\n";
 
