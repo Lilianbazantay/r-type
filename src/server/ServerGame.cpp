@@ -15,6 +15,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
+#include <iostream>
 #include <memory>
 
 #include "ServerGame.hpp"
@@ -42,6 +43,7 @@ void ServerGame::Update() {
     data.runtime = (Newtime.asMicroseconds() - Prevtime.asMicroseconds()) / 1000000.;
     Prevtime = Newtime;
 
+//    std::cout << "Up\n";
     size_t SListSize = systemList.size();
     size_t EListSize = data.entityList.size();
     for (size_t j = 0; j < EListSize; j++) {
@@ -80,9 +82,13 @@ void ServerGame::Update() {
 void ServerGame::Loop() {
     Running = true;
     Cooldown cooldown(1.0);
+    Cooldown tmp(0.1);
     while(1) {
         if (Running) {
-            Update();
+            if (tmp.CheckCooldown() == true) {
+                Update();
+                tmp.LaunchCooldown();
+            }
             if (cooldown.CheckCooldown() == true) {
                 data.enemy_count++;
                 createEntity(2, data.enemy_count);
