@@ -11,6 +11,8 @@ public:
     void sendInput(bool pressed, uint8_t inputCode);
     void sendStartGame();
     void sendConnectionRequest(uint32_t ipValue, uint16_t portValue);
+    std::string getServerIP() { return ip_; };
+    int getServerPort() { return port_; };
 
 private:
     std::string ip_;

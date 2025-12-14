@@ -163,7 +163,7 @@ void Server::send(const std::string& host, __uint16_t port, std::vector<uint8_t>
  *
  * @return std::vector<size_t> ip received by the receiver
  */
-std::string Server::addIp() {
+size_t Server::addIp() {
     std::vector<size_t> IP(4);
     uint32_t binIP = receiver.getIP();
     IP[0] = binIP & 0xFFu;
@@ -173,9 +173,9 @@ std::string Server::addIp() {
     for (size_t i = 0; i < list_ip.size(); ++i)
         if (list_ip.at(i).empty()) {
             list_ip.at(i) = remote_endpoint_.address().to_string();
-            return "";
+            return i;
         }
-    return remote_endpoint_.address().to_string();
+    return 5;
 }
 
 
@@ -184,13 +184,11 @@ std::string Server::addIp() {
  *
  * @param tmpIP IP of the client linked to the port
  */
-void Server::addPort(std::string tmpIP) {
-    for (size_t i = 0; i < list_port.size(); i++)
-        if (list_port.at(i) == 0 || !list_port.at(i)) {
-            list_port.at(i) = remote_endpoint_.port();
-            return;
-        }
-    send(0, tmpIP, receiver.getPort());
+size_t Server::addPort(size_t id) {
+
+    if (id == 5)
+    list_port.at(id) = remote_endpoint_.port();
+    return id;
 }
 
 /**
@@ -199,14 +197,15 @@ void Server::addPort(std::string tmpIP) {
  */
 void Server::packetDispatch() {
     if (receiver.getPayload() == 6) {
-        addPort(addIp());
+        addConnection(addPort(addIp()));
         send(15, remote_endpoint_.address().to_string(), remote_endpoint_.port());
     }
-    if (receiver.getPayload() == 1) {
+    if (receiver.getPayload() == 1 && is_connected.at(receiver.getPlayerId()) && has_started.at(receiver.getPlayerId())) {
         receivedBuffer->pushPacket(receiver);
-    } else if (receiver.getPayload() == 0) {
+    } else if (receiver.getPayload() == 0 && is_connected.at(receiver.getPlayerId())) {
         switch (receiver.getActionType()) {
             case (4):
+                addStart(receiver.getPlayerId());
                 send(4, remote_endpoint_.address().to_string(), remote_endpoint_.port());
             case (15):
                 return;
@@ -254,4 +253,16 @@ void Server::StartTimer() {
 void Server::OnTimer() {
     timer.expires_after(interval);
     StartTimer();
+}
+
+void Server::addConnection(size_t id) {
+    if (id == 5)
+        return;
+    is_connected.at(id) = true;
+}
+
+void Server::addStart(size_t id) {
+    if (id == 5)
+        return;
+    has_started.at(id) = true;
 }

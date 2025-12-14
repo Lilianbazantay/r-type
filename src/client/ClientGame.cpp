@@ -11,6 +11,7 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <iostream>
 #include <memory>
+#include <string>
 
 /**
  * @brief Constructor for ClientGame. Init the window with a nice starfield
@@ -29,6 +30,15 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     createEntity(ENTITY_BACKGROUND, 0, {0, 0});
     data.window.setKeyRepeatEnabled(false);
     client.start();
+    std::string IP = client.getServerIP();
+    uint32_t ipValue = 0;
+    unsigned a, b, c, d;
+    if (sscanf(IP.c_str(), "%u.%u.%u.%u", &a, &b, &c, &d) == 4)
+        ipValue = (a << 24u) | (b << 16u) | (c << 8u) | d;
+    else
+        std::cout << "Invalid IP format\n";
+    client.sendConnectionRequest(ipValue, client.getServerPort());
+    client.sendStartGame();
 }
 
 /**

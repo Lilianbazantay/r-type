@@ -95,7 +95,7 @@ void clientConsoleThread(int argc, char **argv)
  */
 int main(int argc, char **argv)
 {
-    std::thread consoleThread(clientConsoleThread, argc, argv);
+    //std::thread consoleThread(clientConsoleThread, argc, argv);
 
     Parser parser;
     parser.parse(argc, argv);
@@ -108,8 +108,8 @@ int main(int argc, char **argv)
         std::cerr << "Error: " << e.what() << std::endl;
     }
 
-    if (consoleThread.joinable())
-        consoleThread.join();
+    //if (consoleThread.joinable())
+    //    consoleThread.join();
 
     return 0;
 }

@@ -2,6 +2,7 @@
 #define SERVER_HPP
 
 
+#include <vector>
 #pragma once
 
 #include <asio.hpp>
@@ -40,9 +41,13 @@ class Server {
         void packetDispatch();
         void StartTimer();
         void OnTimer();
+        std::vector<bool> is_connected;
+        std::vector<bool> has_started;
 
-        std::string addIp();
-        void addPort(std::string IP);
+        size_t addIp();
+        size_t addPort(size_t id);
+        void addConnection(size_t id);
+        void addStart(size_t id);
 
     private:
         NetworkServerBuffer *receivedBuffer;
