@@ -20,3 +20,15 @@ class NetworkServerBuffer {
         std::vector<ServerPacket> popAllPackets();
         bool empty();
 };
+
+class NetworkClientBuffer {
+    private:
+        std::vector<std::vector<uint8_t>> packets;
+        mutable std::mutex mtx;
+
+    public:
+        void pushPacket(std::vector<uint8_t>& pkt);
+        std::vector<uint8_t> popPacket();
+        std::vector<std::vector<uint8_t>> popAllPackets();
+        bool empty();
+};

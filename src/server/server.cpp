@@ -20,7 +20,7 @@
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
-Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkBuffer *newSBuffer)
+Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer)
 : receivedBuffer(newRBuffer),
   sendBuffer(newSBuffer),
   io_ctx_(),

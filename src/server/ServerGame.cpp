@@ -1,13 +1,13 @@
 #include "../src/ecs/relevant_data.hpp"
 #include "../src/ecs/System/SystemList.hpp"
-#include "client/Packet.hpp"
 #include "ecs/Component/Direction.hpp"
 #include "ecs/Component/Position.hpp"
 #include "ecs/Entity/Entities.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
 #include "ecs/System/CollisionSystem.hpp"
 #include "ecs/System/ShootSystem.hpp"
-#include "server/protocol.hpp"
+#include "protocol.hpp"
+#include "server.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
@@ -18,7 +18,7 @@
 #include "ServerGame.hpp"
 
 
-ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkBuffer* newSBuffer):
+ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer):
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
     networkServer(port,
@@ -47,35 +47,24 @@ void ServerGame::Update() {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            NetworkPacket pkt;
-            pkt.entityType = data.entityList[j]->getType();
-            pkt.entityId = data.entityList[j]->getId();
-            pkt.actionType = 0;
-            pkt.posX = playerPos->GetPosition().first;
-            pkt.posY = playerPos->GetPosition().second;
+            std::vector<uint8_t> pkt = encoder.encodeCreate(0,data.entityList[j]->getType(),
+                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
             continue;
         }
         if (!data.entityList[j]->is_Alive()) {
-            NetworkPacket pkt;
-            pkt.entityType = data.entityList[j]->getType();
-            pkt.entityId = data.entityList[j]->getId();
-            pkt.actionType = 2;
+            std::vector<uint8_t> pkt = encoder.encodeDelete(data.entityList[j]->getType(), data.entityList[j]->getId());
+            networkSendBuffer->pushPacket(pkt);
             data.entityList.erase(data.entityList.begin() + j);
             j--;
-            networkSendBuffer->pushPacket(pkt);
-            continue;
+           continue;
         }
         if (data.entityList[j]->hasChanged()) {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            NetworkPacket pkt;
-            pkt.entityType = data.entityList[j]->getType();
-            pkt.entityId = data.entityList[j]->getId();
-            pkt.actionType = 1;
-            pkt.posX = playerPos->GetPosition().first;
-            pkt.posY = playerPos->GetPosition().second;
+            std::vector<uint8_t> pkt = encoder.encodeMove(0,data.entityList[j]->getType(),
+                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
             continue;
         }
@@ -191,8 +180,8 @@ void ServerGame::parseNetworkPackets() {
             }
             case ActionType::START_GAME: {
                 Running = true;
-                NetworkPacket startPkt;
-                startPkt.actionType = 4;
+                std::vector<uint8_t> start_pkt = encoder.encodeStart(0);
+                networkSendBuffer->pushPacket(start_pkt);
                 break;
             }
             default:

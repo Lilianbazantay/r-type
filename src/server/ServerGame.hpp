@@ -11,6 +11,7 @@
 #include "../ecs/relevant_data.hpp"
 
 #include "server.hpp"
+#include "server/encoder.hpp"
 
 class ServerGame {
     private:
@@ -21,11 +22,12 @@ class ServerGame {
         bool Running = false;
 
         NetworkServerBuffer *networkReceiveBuffer;
-        NetworkBuffer *networkSendBuffer;
+        NetworkClientBuffer *networkSendBuffer;
         Server networkServer;
+        PacketEncoder encoder;
 
     public:
-        ServerGame(int, NetworkServerBuffer *, NetworkBuffer *);
+        ServerGame(int, NetworkServerBuffer *, NetworkClientBuffer *);
         ~ServerGame() = default;
         bool createEntity(int, int);
         void changePlayerDirection(int, std::pair<int, int>);

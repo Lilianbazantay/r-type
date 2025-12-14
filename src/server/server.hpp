@@ -10,7 +10,6 @@
 #include <string>
 
 #include "NetworkServerBuffer.hpp"
-#include "../client/NetworkBuffer.hpp"
 #include "protocol.hpp"
 #include <array>
 #include <asio/steady_timer.hpp>
@@ -24,7 +23,7 @@
  */
 class Server {
     public:
-        Server(__uint16_t listen_port, NetworkServerBuffer *, NetworkBuffer *);
+        Server(__uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *);
         ~Server();
 
         void start();
@@ -48,7 +47,7 @@ class Server {
 
     private:
         NetworkServerBuffer *receivedBuffer;
-        NetworkBuffer *sendBuffer;
+        NetworkClientBuffer *sendBuffer;
         asio::io_context io_ctx_;
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;
