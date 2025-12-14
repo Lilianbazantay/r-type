@@ -41,8 +41,8 @@ class Server {
         void packetDispatch();
         void StartTimer();
         void OnTimer();
-        std::vector<bool> is_connected;
-        std::vector<bool> has_started;
+        std::array<bool, 4> is_connected;
+        std::array<bool, 4> has_started;
 
         size_t addIp();
         size_t addPort(size_t id);
