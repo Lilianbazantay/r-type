@@ -1,18 +1,17 @@
 #pragma once
 
-#include <map>
 #include <unordered_set>
 #include <string>
-#include <cstdint>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <vector>
 #include "../client.hpp"
 
 /**
  * @brief action type enum
  *
  */
-enum class Action : uint8_t {
+enum Action {
     Up,
     Down,
     Left,
@@ -28,7 +27,7 @@ enum class Action : uint8_t {
 class InputManager
 {
 private:
-    std::map<Action, sf::Keyboard::Key> _keyBindings;
+    std::vector<sf::Keyboard::Key> _keyBindings;
     std::unordered_set<sf::Keyboard::Key> keysPressed;
 
     std::string textBuffer;

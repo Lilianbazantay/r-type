@@ -1,4 +1,5 @@
 #include "InputManager.hpp"
+#include <cstddef>
 
 /**
  * @brief Construct a new Input Manager:: Input Manager object
@@ -6,11 +7,12 @@
  */
 InputManager::InputManager() : textBuffer("")
 {
-    _keyBindings[Action::Up]    = sf::Keyboard::Z;
-    _keyBindings[Action::Down]  = sf::Keyboard::S;
-    _keyBindings[Action::Left]  = sf::Keyboard::Q;
-    _keyBindings[Action::Right] = sf::Keyboard::D;
-    _keyBindings[Action::Fire]  = sf::Keyboard::Space;
+    _keyBindings.resize(Action::Unknown);
+    _keyBindings.at(Action::Up) = sf::Keyboard::Z;
+    _keyBindings.at(Action::Down) = sf::Keyboard::S;
+    _keyBindings.at(Action::Left)  = sf::Keyboard::Q;
+    _keyBindings.at(Action::Right) = sf::Keyboard::D;
+    _keyBindings.at(Action::Fire)  = sf::Keyboard::Space;
 }
 /**
  * @brief set the client of the input manager
@@ -41,9 +43,8 @@ void InputManager::bindKey(Action action, sf::Keyboard::Key key)
  */
 sf::Keyboard::Key InputManager::getKey(Action action) const
 {
-    auto it = _keyBindings.find(action);
-    if (it != _keyBindings.end())
-        return it->second;
+    if (action != _keyBindings.size())
+        return _keyBindings.at(action);
     return sf::Keyboard::Unknown;
 }
 
@@ -56,9 +57,8 @@ sf::Keyboard::Key InputManager::getKey(Action action) const
  */
 bool InputManager::isActionPressed(Action action) const
 {
-    auto it = _keyBindings.find(action);
-    if (it == _keyBindings.end()) return false;
-    return keysPressed.find(it->second) != keysPressed.end();
+    if (action == _keyBindings.size()) return false;
+    return keysPressed.find(_keyBindings.at(action)) != keysPressed.end();
 }
 
 /**
@@ -114,9 +114,8 @@ std::string InputManager::consumeTextBuffer()
  */
 Action InputManager::keyToAction(sf::Keyboard::Key key) const
 {
-    for (const auto& [act, k] : _keyBindings) {
-        if (k == key)
-            return act;
-    }
+    for (size_t i = 0; i < _keyBindings.size(); i++)
+        if (_keyBindings.at(i) == key)
+            return (Action)i;
     return Action::Unknown;
 }
