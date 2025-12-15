@@ -8,30 +8,10 @@
  * @param number_of_spawn Number of entity the spawner can spawn (if -1 not limit)
  * @param is_activated Enable or disable the spawner
  */
-EntitySpawner::EntitySpawner(double cooldown_lenth, IMediatorEntity *entity, int number_of_spawn, int is_activated)
-    : _cooldown(cooldown_lenth), _entity(entity), _nb_of_spawn(number_of_spawn), _is_activated(is_activated)
+EntitySpawner::EntitySpawner(double cooldown_lenth, std::unique_ptr<IMediatorEntity> entity, int is_activated)
+    : _entity(std::move(entity)), length(cooldown_lenth), _is_activated(is_activated)
 {
     _type = ComponentType::ENTITY_SPAWNER;
-}
-
-/**
- * @brief Return the component cooldown
- *
- * @return Cooldown is the component
- */
-Cooldown EntitySpawner::GetCooldown()
-{
-    return _cooldown;
-}
-
-/**
- * @brief Set the cooldown component with a new
- *
- * @param new_cooldown Set _cooldown
- */
-void EntitySpawner::SetCooldown(Cooldown new_cooldown)
-{
-    _cooldown = new_cooldown;
 }
 
 /**
@@ -41,7 +21,7 @@ void EntitySpawner::SetCooldown(Cooldown new_cooldown)
  */
 double EntitySpawner::GetCooldownLenth()
 {
-    return _cooldown.GetLenth();
+    return length;
 }
 
 /**
@@ -51,7 +31,7 @@ double EntitySpawner::GetCooldownLenth()
  */
 void EntitySpawner::SetCooldownLenth(double new_cooldown)
 {
-    _cooldown.SetLenth(new_cooldown);
+    length = new_cooldown;
 }
 
 /**
@@ -59,7 +39,7 @@ void EntitySpawner::SetCooldownLenth(double new_cooldown)
  *
  * @return IMediatorEntity* Entity stocked
  */
-IMediatorEntity *EntitySpawner::GetEntity()
+std::unique_ptr<IMediatorEntity> EntitySpawner::GetEntity()
 {
     return _entity->Clone();
 }
@@ -69,29 +49,9 @@ IMediatorEntity *EntitySpawner::GetEntity()
  *
  * @param new_entity Set _entity
  */
-void EntitySpawner::SetEntity(IMediatorEntity *new_entity)
+void EntitySpawner::SetEntity(std::unique_ptr<IMediatorEntity> new_entity)
 {
-    _entity = new_entity;
-}
-
-/**
- * @brief Return the number of entity that the spawner can spawn
- *
- * @return int Number of spawn
- */
-int EntitySpawner::GetNumberOfSpawn()
-{
-    return _nb_of_spawn;
-}
-
-/**
- * @brief Replace the number of spawn
- *
- * @param new_number_of_spawn Set _nb_of_spawn
- */
-void EntitySpawner::SetNumberOfSpawn(int new_number_of_spawn)
-{
-    _nb_of_spawn = new_number_of_spawn;
+    _entity = std::move(new_entity);
 }
 
 /**
@@ -126,8 +86,12 @@ void EntitySpawner::Disable()
  */
 void EntitySpawner::Spawn()
 {
-    _nb_of_spawn -= 1;
-    _cooldown.LaunchCooldown();
+    can_spawn = false;
+}
+
+void EntitySpawner::enableSpawn()
+{
+    can_spawn = true;
 }
 
 /**
@@ -138,7 +102,7 @@ void EntitySpawner::Spawn()
  */
 bool EntitySpawner::CanSpawn()
 {
-    if (_cooldown.CheckCooldown() == true && _nb_of_spawn == 0)
+    if (can_spawn)
         return true;
     return false;
 }

@@ -7,32 +7,28 @@
 class EntitySpawner : public IComponent
 {
 private:
-    Cooldown _cooldown;
-    IMediatorEntity *_entity;
-    int _nb_of_spawn;
+    std::unique_ptr<IMediatorEntity> _entity;
+    bool can_spawn = false;
+    double length;
     bool _is_activated;
 
 public:
-    EntitySpawner(double cooldown_lenth, IMediatorEntity *entity, int number_of_spawn, int is_activated);
+    EntitySpawner(double cooldown_lenth, std::unique_ptr<IMediatorEntity> entity, int is_activated);
     ~EntitySpawner() override = default;
 
     // GET / SET
-    Cooldown GetCooldown();
-    void SetCooldown(Cooldown new_cooldown);
     double GetCooldownLenth();
     void SetCooldownLenth(double new_cooldown);
 
-    IMediatorEntity *GetEntity();
-    void SetEntity(IMediatorEntity *new_entity);
-
-    int GetNumberOfSpawn();
-    void SetNumberOfSpawn(int new_number_of_spawn);
+    std::unique_ptr<IMediatorEntity> GetEntity();
+    void SetEntity(std::unique_ptr<IMediatorEntity> new_entity);
 
     bool IsActivated();
     void Enable();
     void Disable();
 
     // SPAWN
+    void enableSpawn();
     void Spawn();
     bool CanSpawn();
 };
