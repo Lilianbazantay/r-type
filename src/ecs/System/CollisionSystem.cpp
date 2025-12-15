@@ -46,13 +46,11 @@ bool CollisionSystem::checkLayers(std::vector<int> masks, std::vector<int> layer
 bool CollisionSystem::checkCollison(std::pair<float, float> playerPos, std::pair<float, float> playerSize,
     std::pair<float, float> entityPos, std::pair<float, float> entitySize) {
 
-    if ((playerPos.first < entityPos.first || playerPos.first > entityPos.first + entitySize.first)
-        && (playerPos.first + playerSize.first < entityPos.first || playerPos.first + playerSize.first > entityPos.first + entitySize.first))
+    if (playerPos.first > entityPos.first + entitySize.first || playerPos.first + playerSize.first < entityPos.first)
         return false;
-    if ((playerPos.second < entityPos.second || playerPos.second > entityPos.second + entitySize.second)
-        && (playerPos.second + playerSize.second < entityPos.second || playerPos.second + playerSize.second > entityPos.second + entitySize.second))
+    if (playerPos.second > entityPos.second + entitySize.second || playerPos.second + playerSize.second < entityPos.second)
         return false;
-    return true;
+   return true;
 }
 
 /**
@@ -72,16 +70,18 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
     Hitbox *entityHitbox;
     Position *entityPosition;
     Hp *entityHp;
+    int focus_entity_type = entity.getType();
+    int focus_entity_id = entity.getId();
     std::vector<std::unique_ptr<IMediatorEntity>>& entityList = data.entityList;
     for (size_t i = 0; i < entityList.size(); i++) {
+        if (entityList[i]->is_wanted_entity(focus_entity_type, focus_entity_id))
+            continue;
         entityHitbox = dynamic_cast<Hitbox*>(entityList[i]->FindComponent(ComponentType::HITBOX));
         entityPosition = dynamic_cast<Position*>(entityList[i]->FindComponent(ComponentType::POSITION));
         if (entityHitbox == nullptr || entityPosition == nullptr)
             continue;
         if (!checkCollison(playerPosition->GetPosition(), playerHitbox->GetHitboxSize(),
-            entityPosition->GetPosition(), entityHitbox->GetHitboxSize())
-            || !checkCollison(entityPosition->GetPosition(), entityHitbox->GetHitboxSize(),
-            playerPosition->GetPosition(), playerHitbox->GetHitboxSize()))
+            entityPosition->GetPosition(), entityHitbox->GetHitboxSize()))
             continue;
         if (playerHp != nullptr && checkLayers(playerHitbox->GetMask(), entityHitbox->GetLayers())) {
             playerHp->SubHp(entityHitbox->GetDamage());
