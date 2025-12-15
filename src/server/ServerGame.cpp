@@ -121,19 +121,19 @@ void ServerGame::changePlayerDirection(int personnal_id, std::pair<int, int> new
         }
         std::pair<float, float> direction = playerDirection->GetDirection();
         switch (newValues.second) {
-            case 0: {
+            case 1: {
                 direction.second += (1 * released);
                 break;
             }
-            case 1: {
+            case 2: {
                 direction.second += (-1 * released);
                 break;
             }
-            case 2: {
+            case 3: {
                 direction.first += (1 * released);
                 break;
             }
-            case 3: {
+            case 4: {
                 direction.first += (-1 * released);
                 break;
             }

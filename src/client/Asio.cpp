@@ -45,7 +45,7 @@ void Asio_network::start() {
     running_ = true;
     do_receive();
     io_thread_ = std::jthread(&Asio_network::run, this);
-    std::cout << "io_context stopped\n";
+    //std::cout << "io_context stopped\n";
 }
 
 /**
@@ -68,9 +68,9 @@ void Asio_network::do_receive() {
     socket_.async_receive_from(asio::buffer(recv_buffer_),
         remote_endpoint_,
         [this](std::error_code error_code, std::size_t bytes_recvd) {
-            std::cout << "listening\n";
+            //std::cout << "listening\n";
             if (!error_code && bytes_recvd > 0) {
-                std::cout << "Received message:\n" << std::string(recv_buffer_.data(), bytes_recvd) << std::endl;
+                //std::cout << "Received message:\n" << std::string(recv_buffer_.data(), bytes_recvd) << std::endl;
                 gotText = true;
                 std::vector<uint8_t> arr(recv_buffer_.data(),
                     recv_buffer_.data() + bytes_recvd);

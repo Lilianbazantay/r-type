@@ -199,15 +199,15 @@ void ClientGame::processNetworkPackets()
         switch ((int)packets[i].actionType)
         {
         case 0:
-            std::cout << "ENTITY CREATED\n";
+            //std::cout << "ENTITY CREATED\n";
             createEntity((int)packets[i].entityType, (int)packets[i].entityId, {(int)packets[i].posX, (int)packets[i].posY});
             break;
         case 1:
-            std::cout << "ENTITY MOVED\n";
+            //std::cout << "ENTITY MOVED\n";
             moveEntity((int)packets[i].entityType, (int)packets[i].entityId, {(int)packets[i].posX, (int)packets[i].posY});
             break;
         case 2:
-            std::cout << "ENTITY DELETED\n";
+            //std::cout << "ENTITY DELETED\n";
             deleteEntity((int)packets[i].entityType, (int)packets[i].entityId);
             break;
         default:
