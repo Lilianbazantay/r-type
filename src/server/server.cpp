@@ -148,6 +148,7 @@ void Server::send(const std::string& host, __uint16_t port, std::vector<uint8_t>
     std::shared_ptr<asio::ip::udp::endpoint> endpoint =
         std::make_shared<asio::ip::udp::endpoint>(asio::ip::address::from_string(host), port);
     try {
+        currentID++;
         socket_.async_send_to(
             asio::buffer(packet),
             *endpoint,

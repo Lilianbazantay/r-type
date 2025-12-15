@@ -16,6 +16,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <memory>
+#include <unistd.h>
 
 #include "ServerGame.hpp"
 
@@ -52,7 +53,7 @@ void ServerGame::Update() {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            std::vector<uint8_t> pkt = encoder.encodeCreate(0,data.entityList[j]->getType(),
+            std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
                 data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
             continuousBuffer->pushPacket(pkt);
@@ -70,7 +71,7 @@ void ServerGame::Update() {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            std::vector<uint8_t> pkt = encoder.encodeMove(0,data.entityList[j]->getType(),
+            std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, data.entityList[j]->getType(),
                 data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
             continue;
