@@ -131,7 +131,7 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
     if (actVal == ENTITY_MOVED)
         *buffer = PacketEncoder::encodeMove(currentID, 0, 0, 0, 0);
     if (actVal == ENTITY_DELETED)
-        *buffer = PacketEncoder::encodeDelete(currentID, 0);
+        *buffer = PacketEncoder::encodeDelete(currentID, 0, 0);
     if (actVal == PACKAGE_NOT_RECEIVED)
         *buffer = PacketEncoder::encodeNotReceived(currentID);
     if (actVal == VALIDATION)

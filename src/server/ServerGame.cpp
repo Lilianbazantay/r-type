@@ -62,7 +62,7 @@ void ServerGame::Update() {
             continue;
         }
         if (!data.entityList[j]->is_Alive()) {
-            std::vector<uint8_t> pkt = encoder.encodeDelete(data.entityList[j]->getType(), data.entityList[j]->getId());
+            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
             networkSendBuffer->pushPacket(pkt);
             continuousBuffer->pushPacket(pkt);
             data.entityList.erase(data.entityList.begin() + j);
@@ -79,8 +79,10 @@ void ServerGame::Update() {
             networkSendBuffer->pushPacket(pkt);
             continue;
         }
+        ++j;
     }
 }
+
 
 void ServerGame::Loop() {
     Running = true;
@@ -155,6 +157,8 @@ void ServerGame::playerShoot(int player_id) {
             return;
         }
         playerEntitySpawner->enableSpawn();
+        createEntity(ENTITY_BULLET, bulletID);
+        bulletID++;
         return;
     }
 }

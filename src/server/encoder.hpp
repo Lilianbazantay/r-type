@@ -119,11 +119,12 @@ public:
      */
     static std::vector<uint8_t> encodeDelete(
         uint16_t packetID,
-        uint16_t entityID) {
+        uint16_t entityType,
+        uint8_t entityID) {
             return encode(packetID,
                 2,
                 ENTITY_DELETED, // entity deleted
-                0u,
+                entityType,
                 entityID,
                 0, 0);
         }

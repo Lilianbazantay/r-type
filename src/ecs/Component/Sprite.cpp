@@ -28,7 +28,7 @@ Sprite::Sprite(const std::string& file_path, float size_x, float size_y)
  *
  * @return sf::Sprite& Reference to the sprite
  */
-sf::Sprite Sprite::GetSprite()
+sf::Sprite& Sprite::GetSprite()
 {
     return _sprite;
 }

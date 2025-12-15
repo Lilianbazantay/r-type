@@ -49,12 +49,9 @@ void ClientGame::Update() {
     sf::Time Newtime = clock.getElapsedTime();
     data.runtime = (Newtime.asMicroseconds() - Prevtime.asMicroseconds()) / 1000000.;
     Prevtime = Newtime;
-
-    size_t SListSize = systemList.size();
-    size_t EListSize = data.entityList.size();
-    for (size_t i = 0; i < SListSize; i++)
-        for (size_t j = 0; j < EListSize; j++)
-            systemList[i]->checkEntity(*data.entityList[j].get(), data);
+    for (size_t i = 0; i < systemList.size(); i++)
+        for (size_t j = 0; j < data.entityList.size(); j++)
+            systemList[i]->checkEntity(*data.entityList[j], data);
 }
 
 /**
@@ -137,11 +134,17 @@ void ClientGame::moveEntity(int entity_type, int entity_id, std::pair<float, flo
  * @param entity_id id allocated by the server for the entity
  */
 void ClientGame::deleteEntity(int entity_type, int entity_id) {
-    for (size_t i = 0; i < data.entityList.size(); i++) {
-        if (data.entityList[i]->is_wanted_entity(entity_type, entity_id))
-            data.entityList.erase(data.entityList.begin() + i);
+    std::cout << "[DELETE] looking for type=" << entity_type
+              << " id=" << entity_id << "\n";
+
+    for (const auto& e : data.entityList) {
+        std::cout << "  entity type=" << e->getType()
+                  << " id=" << e->getId() << "\n";
     }
 
+    std::erase_if(data.entityList, [&](const auto& e) {
+        return e->is_wanted_entity(entity_type, entity_id);
+    });
 }
 
 /**
@@ -208,6 +211,8 @@ void ClientGame::processNetworkPackets()
             break;
         case 2:
             //std::cout << "ENTITY DELETED\n";
+            std::cout << "Message actionType: " << (int)packets[i].actionType << "\n";
+            std::cout << "Message affected entity: " << (int)packets[i].entityId << " type: " << (int)packets[i].entityType << "\n";
             deleteEntity((int)packets[i].entityType, (int)packets[i].entityId);
             break;
         case 14:

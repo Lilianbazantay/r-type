@@ -18,7 +18,7 @@ public:
     ~Sprite() override = default;
 
     // SET / GET
-    sf::Sprite GetSprite();
+    sf::Sprite& GetSprite();
     void SetTexture(const std::string& file_path);
 
     // SIZE

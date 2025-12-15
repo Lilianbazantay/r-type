@@ -38,4 +38,5 @@ class ServerGame {
         void requestGameData();
         void Update();
         void Loop();
+        int bulletID = 0;
 };
