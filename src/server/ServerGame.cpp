@@ -44,14 +44,12 @@ void ServerGame::Update() {
     data.runtime = (Newtime.asMicroseconds() - Prevtime.asMicroseconds()) / 1000000.;
     Prevtime = Newtime;
 
-//    std::cout << "Up\n";
     size_t SListSize = systemList.size();
     size_t EListSize = data.entityList.size();
     for (size_t j = 0; j < EListSize; j++) {
         for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
         if (data.entityList[j]->justCreated()) {
-            std::cout << "Type: " << data.entityList[j]->getType() << std::endl;
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
@@ -84,7 +82,7 @@ void ServerGame::Update() {
 void ServerGame::Loop() {
     Running = true;
     Cooldown cooldown(1.0);
-    Cooldown tmp(0.1);
+    Cooldown tmp(0.01);
     while(1) {
         if (Running) {
             if (tmp.CheckCooldown() == true) {
@@ -117,24 +115,26 @@ void ServerGame::changePlayerDirection(int personnal_id, std::pair<int, int> new
         if (!data.entityList[i]->is_wanted_entity(ENTITY_PLAYER, personnal_id))
             continue;
         Direction *playerDirection = dynamic_cast<Direction*>(data.entityList[i]->FindComponent(ComponentType::DIRECTION));
-        if (playerDirection == nullptr)
+        if (playerDirection == nullptr) {
+            std::cout << "Error Null" << std::endl;
             return;
+        }
         std::pair<float, float> direction = playerDirection->GetDirection();
         switch (newValues.second) {
-            case 1: {
-                direction.first += (1 * released);
-                break;
-            }
-            case 2: {
-                direction.first += (-1 * released);
-                break;
-            }
-            case 3: {
+            case 0: {
                 direction.second += (1 * released);
                 break;
             }
-            case 4: {
+            case 1: {
                 direction.second += (-1 * released);
+                break;
+            }
+            case 2: {
+                direction.first += (1 * released);
+                break;
+            }
+            case 3: {
+                direction.first += (-1 * released);
                 break;
             }
             default:
@@ -183,7 +183,7 @@ void ServerGame::parseNetworkPackets() {
     auto packets = networkReceiveBuffer->popAllPackets();
     for (auto& pkt : packets) {
         if (pkt.getActionType() == START_GAME) {
-            createEntity(ENTITY_PLAYER, pkt.getID());
+            createEntity(ENTITY_PLAYER, pkt.getPlayerId());
             continue;
         }
         switch (pkt.getActionType()) {
@@ -205,9 +205,9 @@ void ServerGame::parseNetworkPackets() {
             }
             case ActionType::START_GAME: {
                 Running = true;
-                std::vector<uint8_t> start_pkt = encoder.encodeStart(0);
-                networkSendBuffer->pushPacket(start_pkt);
-                break;
+//                std::vector<uint8_t> start_pkt = encoder.encodeStart(0);
+//                networkSendBuffer->pushPacket(start_pkt);
+//                break;
             }
             default:
                 continue;

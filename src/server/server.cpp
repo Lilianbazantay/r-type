@@ -98,7 +98,7 @@ void Server::do_receive() {
                     recv_buffer_.data() + bytes_recvd);
                 receiver.FillReceivedData(arr);
                 for (size_t i = 0; i < 4; i++)
-                    if (list_ip.at(i).empty() != false && list_ip.at(i) == remote_endpoint_.address().to_string())
+                    if (list_ip.at(i) == remote_endpoint_.address().to_string())
                         receiver.FillPlayerId(i);
                 packetDispatch();
             }
@@ -236,13 +236,10 @@ void Server::RoutineSender() {
     std::string ip;
     size_t port;
     std::vector<std::vector<uint8_t>> buff = sendBuffer->popAllPackets();
-//    std::string x = std::format("test with i = {}\n", buff.size());
-//    std::cout << x;
     for (size_t i = 0; i < buff.size(); i++) {
         for (size_t j = 0; j < list_ip.size(); j++) {
             ip = list_ip.at(j);
             port = list_port.at(j);
-//            std::cout << ip << ", " << port << std::endl;
             if (ip.empty() || port == 0)
                 continue;
             send(ip, port, buff[i]);

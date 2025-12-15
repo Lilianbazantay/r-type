@@ -89,26 +89,20 @@ void ClientGame::Loop() {
  */
 void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, float> position) {
     int prevSize = data.entityList.size();
-    std::cout << "Create ";
     switch (entity_type) {
         case ENTITY_BACKGROUND: {
             data.entityList.push_back(std::make_unique<Background>());
-            std::cout << "background" << std::endl;
             break;
         } case ENTITY_PLAYER: {
             data.entityList.push_back(std::make_unique<Player>());
-            std::cout << "player" << std::endl;
             break;
         } case ENTITY_ENEMY: {
             data.entityList.push_back(std::make_unique<Enemy>());
-            std::cout << "enemy" << std::endl;
             break;
         } case ENTITY_BULLET: {
             data.entityList.push_back(std::make_unique<PlayerBullet>());
-            std::cout << "bullet" << std::endl;
             break;
         } default:
-            std::cout << "UNDEFINED" << std::endl;
             return;
     }
     data.entityList[prevSize]->setId(entity_id);
@@ -199,10 +193,9 @@ void ClientGame::setStop(bool value) {
 void ClientGame::processNetworkPackets()
 {
     auto packets = _netBuffer->popAllPackets();
-    if (packets.size() != 0)
-        std::cout << "Packet Size: " << packets.size() << ", " << (int)packets[0].actionType << std::endl;
+//    if (packets.size() != 0)
+//        std::cout << "Packet Size: " << packets.size() << ", " << (int)packets[0].actionType << std::endl;
     for (size_t i = 0; i < packets.size(); i++) {
-        std::cout << "hehe: " << (int)packets[i].actionType << std::endl;
         switch ((int)packets[i].actionType)
         {
         case 0:
