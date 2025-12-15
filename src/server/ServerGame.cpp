@@ -182,10 +182,6 @@ bool ServerGame::createEntity(int entity_type, int personnal_id) {
 void ServerGame::parseNetworkPackets() {
     auto packets = networkReceiveBuffer->popAllPackets();
     for (auto& pkt : packets) {
-        if (pkt.getActionType() == START_GAME) {
-            createEntity(ENTITY_PLAYER, pkt.getPlayerId());
-            continue;
-        }
         switch (pkt.getActionType()) {
             case ActionType::INPUT_PRESSED: {
                 changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_PRESSED, pkt.getActionvalue()});
@@ -204,7 +200,9 @@ void ServerGame::parseNetworkPackets() {
                 break;
             }
             case ActionType::START_GAME: {
+                createEntity(ENTITY_PLAYER, pkt.getPlayerId());
                 Running = true;
+                continue;
 //                std::vector<uint8_t> start_pkt = encoder.encodeStart(0);
 //                networkSendBuffer->pushPacket(start_pkt);
 //                break;
