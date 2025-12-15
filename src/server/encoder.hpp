@@ -122,7 +122,7 @@ public:
         uint16_t entityType,
         uint8_t entityID) {
             return encode(packetID,
-                2,
+                3,
                 ENTITY_DELETED, // entity deleted
                 entityType,
                 entityID,

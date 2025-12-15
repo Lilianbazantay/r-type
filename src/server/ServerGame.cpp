@@ -157,8 +157,6 @@ void ServerGame::playerShoot(int player_id) {
             return;
         }
         playerEntitySpawner->enableSpawn();
-        createEntity(ENTITY_BULLET, bulletID);
-        bulletID++;
         return;
     }
 }
