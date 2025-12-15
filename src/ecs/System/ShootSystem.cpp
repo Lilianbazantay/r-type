@@ -4,6 +4,7 @@
 #include "../IComponent.hpp"
 
 #include "../Component/Position.hpp"
+#include "../Component/Sprite.hpp"
 #include "../Component/Velocity.hpp"
 #include "../Component/Clock.hpp"
 #include "../Component/EntitySpawner.hpp"
@@ -30,6 +31,7 @@ ShootSystem::ShootSystem() {
  */
 void ShootSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) {
     Position *playerPos = dynamic_cast<Position*>(entity.FindComponent(ComponentType::POSITION));
+    Sprite *playerSize = dynamic_cast<Sprite*>(entity.FindComponent(ComponentType::SPRITE));
     Velocity *playerVelocity = dynamic_cast<Velocity*>(entity.FindComponent(ComponentType::VELOCITY));
     EntitySpawner *newEntityData = dynamic_cast<EntitySpawner*>(entity.FindComponent(ComponentType::ENTITY_SPAWNER));
     Clock *playerClock = dynamic_cast<Clock*>(entity.FindComponent(ComponentType::CLOCK));
@@ -46,7 +48,16 @@ void ShootSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) 
     }
     Position *bulletPos = dynamic_cast<Position*>(newEntity->FindComponent(ComponentType::POSITION));
     if (bulletPos != nullptr) {
-        bulletPos->SetPosition(playerPos->GetPosition());
+        auto pos = playerPos->GetPosition();
+        auto size = playerSize->GetSize();
+
+        float offsetX = size.first;
+        float offsetY = size.second / 2.0f - 3.5f;
+
+        bulletPos->SetPosition({
+            pos.first + offsetX,
+            pos.second + offsetY
+        });
     }
     newEntity->setId(data.bullet_count);
     data.bullet_count++;
