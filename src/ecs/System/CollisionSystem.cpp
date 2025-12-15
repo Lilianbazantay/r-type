@@ -8,6 +8,7 @@
 #include "../Entity/IMediatorEntity.hpp"
 #include "../IComponent.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -84,14 +85,18 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
             continue;
         if (playerHp != nullptr && checkLayers(playerHitbox->GetMask(), entityHitbox->GetLayers())) {
             playerHp->SubHp(entityHitbox->GetDamage());
-            if (playerHp->GetHp() <= 0)
+            if (playerHp->GetHp() <= 0) {
+                std::cout << "Entity " << entityList[i]->getType() << " is dead !" << std::endl;
                 entity.Alive(false);
+            }
         }
         entityHp = dynamic_cast<Hp*>(entityList[i]->FindComponent(ComponentType::HP));
         if (entityHp != nullptr && checkLayers(entityHitbox->GetMask(), playerHitbox->GetLayers())) {
             entityHp->SubHp(playerHitbox->GetDamage());
-            if (entityHp->GetHp() <= 0)
+            if (entityHp->GetHp() <= 0) {
+                std::cout << "Entity " << entityList[i]->getType() << " is dead !" << std::endl;
                 entityList[i]->Alive(false);
+            }
         }
     }
 }

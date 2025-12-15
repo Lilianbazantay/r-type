@@ -2,6 +2,7 @@
 #include "ISystem.hpp"
 #include "../Entity/IMediatorEntity.hpp"
 #include "../IComponent.hpp"
+#include <iostream>
 #include <vector>
 
 /**
@@ -27,6 +28,9 @@ bool ISystem::checkRequirements(IMediatorEntity& entity) {
     }
     if (requirements == 0)
         return true;
+//    if (entity.getType() == ENTITY_PLAYER) {
+//        std::cout << "Missing " << requirements << " requirement(s)\n";
+//    }
     return false;
 }
 

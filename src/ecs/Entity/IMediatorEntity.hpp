@@ -56,7 +56,7 @@ class IMediatorEntity
         bool is_Alive();
 
         // CLONE
-        virtual IMediatorEntity *Clone() = 0;
+        virtual std::unique_ptr<IMediatorEntity> Clone() = 0;
 
         // FIND
         IComponent *FindComponent(ComponentType type);

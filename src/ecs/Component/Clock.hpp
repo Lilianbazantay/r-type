@@ -13,5 +13,6 @@ public:
     ~Clock() override = default;
 
     sf::Time GetElapseTime();
+    int getTimeMilliseconds();
     void RestartClock();
 };
