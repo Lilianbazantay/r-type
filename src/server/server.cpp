@@ -98,7 +98,7 @@ void Server::do_receive() {
                     recv_buffer_.data() + bytes_recvd);
                 receiver.FillReceivedData(arr);
                 for (size_t i = 0; i < 4; i++)
-                    if (list_ip.at(i) == remote_endpoint_.address().to_string())
+                    if (list_ip.at(i) == remote_endpoint_.address().to_string() && list_port.at(i) == remote_endpoint_.port())
                         receiver.FillPlayerId(i);
                 packetDispatch();
             }
