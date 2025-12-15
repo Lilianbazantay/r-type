@@ -11,7 +11,8 @@
  * @param on_receive Callback function
  */
 Asio_network::Asio_network(__uint16_t listen_port, ReceiveCallback on_receive)
-    : socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
+    : work_guard_(asio::make_work_guard(io_ctx_)),
+    socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
 {
     this->receive_callback_ = on_receive;
 }
@@ -29,6 +30,7 @@ Asio_network::~Asio_network() {
 void Asio_network::run() {
     try {
         io_ctx_.run();
+        std::cout << "io_context stopped\n";
     } catch (const std::exception& e) {
         std::cerr << "IO thread exception: " << e.what() << "\n";
     }
@@ -43,6 +45,7 @@ void Asio_network::start() {
     running_ = true;
     do_receive();
     io_thread_ = std::jthread(&Asio_network::run, this);
+    std::cout << "io_context stopped\n";
 }
 
 /**
@@ -51,7 +54,9 @@ void Asio_network::start() {
 void Asio_network::stop() {
     if (!running_)
         return;
+    std::cout << "Stopping\n";
     running_ = false;
+    work_guard_.reset();
     io_ctx_.stop();
     socket_.close();
 }
@@ -77,6 +82,11 @@ void Asio_network::do_receive() {
                     );
                 }
             }
+            if (error_code) {
+                std::cerr << "Receive error: "
+                    << error_code.message() << "\n";
+            }
+
             if (running_)
                 do_receive();
         }

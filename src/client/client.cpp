@@ -13,7 +13,7 @@ Client::Client(const std::string &ip, int port, NetworkBuffer* buffer)
       network_(0, [this](const std::vector<uint8_t> data, size_t size, const asio::ip::udp::endpoint&) {
           NetworkPacket pkt = decodeNetworkPacket(data, size);
 
-          std::cout << "[CLIENT] Packet received id=" << pkt.packetId << "\n";
+          std::cout << "[CLIENT] Packet received id=" << pkt.packetId << ", " << (int)pkt.actionType << "\n";
 
           if (buffer_)
               buffer_->pushPacket(pkt);

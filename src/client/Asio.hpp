@@ -28,6 +28,7 @@ class Asio_network {
         void run();
 
     private:
+        asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::io_context io_ctx_;
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;

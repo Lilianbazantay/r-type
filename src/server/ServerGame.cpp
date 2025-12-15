@@ -15,6 +15,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
+#include <iostream>
 #include <memory>
 #include <unistd.h>
 
@@ -50,6 +51,7 @@ void ServerGame::Update() {
         for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
         if (data.entityList[j]->justCreated()) {
+            std::cout << "Type: " << data.entityList[j]->getType() << std::endl;
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
@@ -90,8 +92,8 @@ void ServerGame::Loop() {
                 tmp.LaunchCooldown();
             }
             if (cooldown.CheckCooldown() == true) {
-                data.enemy_count++;
-                //createEntity(2, data.enemy_count);
+//                data.enemy_count++;
+//                createEntity(2, data.enemy_count);
                 cooldown.LaunchCooldown();
             }
         }

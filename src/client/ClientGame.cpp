@@ -89,20 +89,26 @@ void ClientGame::Loop() {
  */
 void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, float> position) {
     int prevSize = data.entityList.size();
+    std::cout << "Create ";
     switch (entity_type) {
         case ENTITY_BACKGROUND: {
             data.entityList.push_back(std::make_unique<Background>());
+            std::cout << "background" << std::endl;
             break;
         } case ENTITY_PLAYER: {
             data.entityList.push_back(std::make_unique<Player>());
+            std::cout << "player" << std::endl;
             break;
         } case ENTITY_ENEMY: {
             data.entityList.push_back(std::make_unique<Enemy>());
+            std::cout << "enemy" << std::endl;
             break;
         } case ENTITY_BULLET: {
             data.entityList.push_back(std::make_unique<PlayerBullet>());
+            std::cout << "bullet" << std::endl;
             break;
         } default:
+            std::cout << "UNDEFINED" << std::endl;
             return;
     }
     data.entityList[prevSize]->setId(entity_id);
@@ -193,20 +199,23 @@ void ClientGame::setStop(bool value) {
 void ClientGame::processNetworkPackets()
 {
     auto packets = _netBuffer->popAllPackets();
-    for (const auto& pkt : packets) {
-        switch (pkt.actionType)
+    if (packets.size() != 0)
+        std::cout << "Packet Size: " << packets.size() << ", " << (int)packets[0].actionType << std::endl;
+    for (size_t i = 0; i < packets.size(); i++) {
+        std::cout << "hehe: " << (int)packets[i].actionType << std::endl;
+        switch ((int)packets[i].actionType)
         {
         case 0:
             std::cout << "ENTITY CREATED\n";
-            createEntity(pkt.entityType, pkt.entityId, {pkt.posX, pkt.posY});
+            createEntity((int)packets[i].entityType, (int)packets[i].entityId, {(int)packets[i].posX, (int)packets[i].posY});
             break;
         case 1:
             std::cout << "ENTITY MOVED\n";
-            moveEntity(pkt.entityType, pkt.entityId, {pkt.posX, pkt.posY});
+            moveEntity((int)packets[i].entityType, (int)packets[i].entityId, {(int)packets[i].posX, (int)packets[i].posY});
             break;
         case 2:
             std::cout << "ENTITY DELETED\n";
-            deleteEntity(pkt.entityType, pkt.entityId);
+            deleteEntity((int)packets[i].entityType, (int)packets[i].entityId);
             break;
         default:
             break;

@@ -236,13 +236,13 @@ void Server::RoutineSender() {
     std::string ip;
     size_t port;
     std::vector<std::vector<uint8_t>> buff = sendBuffer->popAllPackets();
-    std::string x = std::format("test with i = {}\n", buff.size());
-    std::cout << x;
+//    std::string x = std::format("test with i = {}\n", buff.size());
+//    std::cout << x;
     for (size_t i = 0; i < buff.size(); i++) {
         for (size_t j = 0; j < list_ip.size(); j++) {
             ip = list_ip.at(j);
             port = list_port.at(j);
-            std::cout << ip << ", " << port << std::endl;
+//            std::cout << ip << ", " << port << std::endl;
             if (ip.empty() || port == 0)
                 continue;
             send(ip, port, buff[i]);
