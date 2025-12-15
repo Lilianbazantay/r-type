@@ -65,6 +65,7 @@ void Server::start() {
     if (running_)
         return;
     running_ = true;
+    std::signal(SIGINT, Server::SigHandler);
     io_thread_ = std::jthread(&Server::run, this);
     timer.expires_after(interval);
     StartTimer();
@@ -102,7 +103,10 @@ void Server::do_receive() {
                         receiver.FillPlayerId(i);
                 packetDispatch();
             }
-
+            if (shutdown_requested == true) {
+                    handleShutdown();
+                    return;
+            }
             if (running_)
                 do_receive();
         }
@@ -132,6 +136,8 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
         *buffer = PacketEncoder::encodeNotReceived(currentID);
     if (actVal == VALIDATION)
         *buffer = PacketEncoder::encodeOK(currentID);
+    if (actVal == ActionTypeServer::SERVER_SHUTDOWN)
+        *buffer = PacketEncoder::encodeSHUTDOWN(currentID);
     currentID++;
     try {
         socket_.async_send_to(
@@ -280,4 +286,24 @@ void Server::addStart(size_t id) {
     if (id == 5)
         return;
     has_started.at(id) = true;
+}
+
+void Server::SigHandler(int signal)
+{
+    if (signal == SIGINT)
+        shutdown_requested = true;
+}
+
+void Server::handleShutdown()
+{
+    for (size_t i = 0; i < list_ip.size(); ++i)
+        if (!list_ip.at(i).empty())
+            send(ActionTypeServer::SERVER_SHUTDOWN, list_ip.at(i), list_port.at(i));
+    std::vector<uint8_t>p(5);
+    p.at(0) = (static_cast<uint32_t>(0) >> 8u) & 0xFFu;
+    p.at(1) = static_cast<uint32_t>(0) & 0xFFu;
+    p.at(2) = (( static_cast<uint32_t>(14) & 0x0Fu) << 4u) | (static_cast<uint32_t>(0) & 0x0Fu);
+    receiver.FillReceivedData(p);
+    receivedBuffer->pushPacket(receiver);
+    stop();
 }

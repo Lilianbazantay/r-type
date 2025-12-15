@@ -11,12 +11,15 @@ static uint16_t GLOBAL_PACKET_ID = 0;
 Client::Client(const std::string &ip, int port, NetworkBuffer* buffer)
     : ip_(ip), port_(port), buffer_(buffer),
       network_(0, [this](const std::vector<uint8_t> data, size_t size, const asio::ip::udp::endpoint&) {
-          NetworkPacket pkt = decodeNetworkPacket(data, size);
-
-          //std::cout << "[CLIENT] Packet received id=" << pkt.packetId << ", " << (int)pkt.actionType << "\n";
-
-          if (buffer_)
-              buffer_->pushPacket(pkt);
+            NetworkPacket pkt = decodeNetworkPacket(data, size);
+            if (pkt.actionType == SHUTDOWN) {
+                std::cout << "shutting down\n";
+                network_.stop();
+                buffer_->pushPacket(pkt);
+                return;
+            }
+            if (buffer_)
+                buffer_->pushPacket(pkt);
       })
 {
 }

@@ -210,6 +210,8 @@ void ClientGame::processNetworkPackets()
             //std::cout << "ENTITY DELETED\n";
             deleteEntity((int)packets[i].entityType, (int)packets[i].entityId);
             break;
+        case 14:
+            setStop(true);
         default:
             break;
         }

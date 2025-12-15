@@ -11,6 +11,7 @@
 #include "protocol.hpp"
 #include "server.hpp"
 #include "server/NetworkServerBuffer.hpp"
+#include "server/encoder.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
@@ -84,13 +85,16 @@ void ServerGame::Update() {
 void ServerGame::Loop() {
     Running = true;
     Cooldown cooldown(1.0);
-    while(1) {
-        if (Running) {
-                Update();
-//            if (cooldown.CheckCooldown() == true) {
-//                data.enemy_count++;
-//                cooldown.LaunchCooldown();
-//            }
+    Cooldown tmp(0.01);
+    while(Running) {
+        if (tmp.CheckCooldown() == true) {
+            Update();
+            tmp.LaunchCooldown();
+        }
+        if (cooldown.CheckCooldown() == true) {
+            data.enemy_count++;
+            createEntity(2, data.enemy_count);
+            cooldown.LaunchCooldown();
         }
         parseNetworkPackets();
     }
@@ -220,6 +224,13 @@ void ServerGame::parseNetworkPackets() {
                 createEntity(ENTITY_PLAYER, pkt.getPlayerId());
                 Running = true;
                 continue;
+//                std::vector<uint8_t> start_pkt = encoder.encodeStart(0);
+//                networkSendBuffer->pushPacket(start_pkt);
+//                break;
+            }
+            case ActionTypeServer::SERVER_SHUTDOWN: {
+                Running = false;
+                break;
             }
             default:
                 continue;

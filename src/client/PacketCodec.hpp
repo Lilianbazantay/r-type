@@ -10,6 +10,7 @@ enum ActionTypeClient {
     START_GAME     = 0b0100,
     NEW_CONNECTION = 0b1000,
     NOT_RECEIVED   = 0b1100,
+    SHUTDOWN       = 0b1110,
     OK_C           = 0b1111
 };
 

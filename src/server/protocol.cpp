@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include "protocol.hpp"
+#include "server/encoder.hpp"
 
 /**
  * @brief parse the received data
@@ -12,7 +13,7 @@ void ServerPacket::FillReceivedData(std::vector<uint8_t> received) {
     FillPacketID(received);
     FillActionType(received);
     FillPayloadSize(received);
-    if (actionType == OK || actionType == START_GAME)
+    if (actionType == OK || actionType == START_GAME || actionType == SERVER_SHUTDOWN)
         return;
     else if (actionType == PLAYER_CONNECT || actionType == NEW_CONNECTION) {
         FillIP(received);
@@ -29,8 +30,8 @@ void ServerPacket::FillReceivedData(std::vector<uint8_t> received) {
  * @param received data that has been received
  */
 void ServerPacket::FillPacketID(std::vector<uint8_t> received) {
-    uint32_t id1 = received[1];
-    uint32_t id2 = received[2];
+    uint32_t id1 = received[0];
+    uint32_t id2 = received[1];
     packetID = (id1 << 8u) | id2;
 }
 
