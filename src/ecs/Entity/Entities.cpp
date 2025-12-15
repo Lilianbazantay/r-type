@@ -25,7 +25,7 @@ Player::Player() {
     this->AddActuatorComponent(std::make_unique<Sprite>("./assets/Player.png", 64, 64));
     this->AddActuatorComponent(std::make_unique<Direction>());
     this->AddActuatorComponent(std::make_unique<Hp>(3));
-    this->AddActuatorComponent(std::make_unique<Velocity>(50));
+    this->AddActuatorComponent(std::make_unique<Velocity>(150));
     this->AddActuatorComponent(std::make_unique<Position>(100, 200));
     this->AddActuatorComponent(std::make_unique<Hitbox>(64, 64, 1, std::vector<int>{1}, std::vector<int>{2}));
     this->setType(ENTITY_PLAYER);

@@ -65,6 +65,7 @@ void ServerGame::Update() {
             continuousBuffer->pushPacket(pkt);
             data.entityList.erase(data.entityList.begin() + j);
             j--;
+            EListSize--;
            continue;
         }
         if (data.entityList[j]->hasChanged()) {
@@ -90,8 +91,8 @@ void ServerGame::Loop() {
                 tmp.LaunchCooldown();
             }
             if (cooldown.CheckCooldown() == true) {
-//                data.enemy_count++;
-//                createEntity(2, data.enemy_count);
+                data.enemy_count++;
+                createEntity(2, data.enemy_count);
                 cooldown.LaunchCooldown();
             }
         }
