@@ -10,6 +10,12 @@ sf::Time Clock::GetElapseTime()
     return _clock.getElapsedTime();
 }
 
+int Clock::getTimeMilliseconds()
+{
+    return _clock.getElapsedTime().asMilliseconds();
+}
+
+
 /**
  * @brief Restart the clock
  */

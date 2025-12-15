@@ -11,12 +11,15 @@ static uint16_t GLOBAL_PACKET_ID = 0;
 Client::Client(const std::string &ip, int port, NetworkBuffer* buffer)
     : ip_(ip), port_(port), buffer_(buffer),
       network_(0, [this](const std::vector<uint8_t> data, size_t size, const asio::ip::udp::endpoint&) {
-          NetworkPacket pkt = decodeNetworkPacket(data, size);
-
-          std::cout << "[CLIENT] Packet received id=" << pkt.packetId << "\n";
-
-          if (buffer_)
-              buffer_->pushPacket(pkt);
+            NetworkPacket pkt = decodeNetworkPacket(data, size);
+            if (pkt.actionType == SHUTDOWN) {
+                std::cout << "shutting down\n";
+                network_.stop();
+                buffer_->pushPacket(pkt);
+                return;
+            }
+            if (buffer_)
+                buffer_->pushPacket(pkt);
       })
 {
 }
@@ -38,16 +41,16 @@ void Client::start()
  */
 void Client::sendPacket(const Packet &p)
 {
-    std::cout << "HERE 1\n";
-    std::cout << std::string((char*)p.bytes.data()) << std::endl;
-    std::cout << "HERE 2\n";
-    std::cout << ip_ << std::endl;
-    std::cout << "HERE 3\n";
-    std::cout << port_ << std::endl;
+    //std::cout << "HERE 1\n";
+    //std::cout << std::string((char*)p.bytes.data()) << std::endl;
+    //std::cout << "HERE 2\n";
+    //std::cout << ip_ << std::endl;
+    //std::cout << "HERE 3\n";
+    //std::cout << port_ << std::endl;
 
     network_.send(std::string((char*)p.bytes.data(), p.size), ip_, port_);
 
-    std::cout << "[CLIENT] Sent packet (" << p.size << " bytes)\n";
+    //std::cout << "[CLIENT] Sent packet (" << p.size << " bytes)\n";
 }
 
 /**

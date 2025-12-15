@@ -5,7 +5,6 @@
 
 /**
  * @brief buffer network
- * 
  */
 class NetworkBuffer {
     private:

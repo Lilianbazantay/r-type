@@ -2,6 +2,7 @@
 #include "client/Packet.hpp"
 #include <cstdint>
 #include <cstring>
+#include <iostream>
 #include <vector>
 
 /**
@@ -56,6 +57,7 @@ Packet encodeClientPacket(
 NetworkPacket decodeNetworkPacket(std::vector<uint8_t>b, size_t size) {
     NetworkPacket p {};
 
+    //std::cout << "Decoding..." << std::endl;
     p.packetId = (static_cast<uint32_t>(b.at(0)) << 8u) | b[1];
     p.payloadSize = (static_cast<uint32_t>(b.at(2)) >> 4u) & 0x0Fu;
     p.actionType  =  b.at(2) & 0x0Fu;
@@ -71,6 +73,5 @@ NetworkPacket decodeNetworkPacket(std::vector<uint8_t>b, size_t size) {
         p.posX = (pos >> 12u) & 0xFFFu;
         p.posY = pos & 0xFFFu;
     }
-
     return p;
 }
