@@ -33,8 +33,10 @@ class ServerGame {
         ~ServerGame() = default;
         bool createEntity(int, int);
         void changePlayerDirection(int, std::pair<int, int>);
+        void playerShoot(int);
         void parseNetworkPackets();
         void requestGameData();
         void Update();
         void Loop();
+        int bulletID = 0;
 };

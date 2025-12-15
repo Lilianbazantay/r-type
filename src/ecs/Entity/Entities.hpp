@@ -20,7 +20,7 @@ class Background: public IMediatorEntity {
         Background();
         ~Background() override = default;
         void run() override;
-        IMediatorEntity *Clone() override;
+        std::unique_ptr<IMediatorEntity> Clone() override;
 };
 
 class Player: public IMediatorEntity {
@@ -34,7 +34,7 @@ class Player: public IMediatorEntity {
         Player();
         ~Player() override = default;
         void run() override;
-        IMediatorEntity *Clone() override;
+        std::unique_ptr<IMediatorEntity> Clone() override;
 };
 
 class Enemy: public IMediatorEntity {
@@ -48,7 +48,7 @@ class Enemy: public IMediatorEntity {
         Enemy();
         ~Enemy() override = default;
         void run() override;
-        IMediatorEntity *Clone() override;
+        std::unique_ptr<IMediatorEntity> Clone() override;
 };
 
 
@@ -63,5 +63,5 @@ class PlayerBullet: public IMediatorEntity {
         PlayerBullet();
         ~PlayerBullet() override = default;
         void run() override;
-        IMediatorEntity *Clone() override;
+        std::unique_ptr<IMediatorEntity> Clone() override;
 };

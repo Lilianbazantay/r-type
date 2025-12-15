@@ -1,5 +1,6 @@
 #include "InputManager.hpp"
 #include <cstddef>
+#include <iostream>
 
 /**
  * @brief Construct a new Input Manager:: Input Manager object

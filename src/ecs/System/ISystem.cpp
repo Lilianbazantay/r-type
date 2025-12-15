@@ -27,6 +27,9 @@ bool ISystem::checkRequirements(IMediatorEntity& entity) {
     }
     if (requirements == 0)
         return true;
+//    if (entity.getType() == ENTITY_PLAYER) {
+//        std::cout << "Missing " << requirements << " requirement(s)\n";
+//    }
     return false;
 }
 

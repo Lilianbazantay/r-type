@@ -48,6 +48,10 @@ class Server {
         size_t addPort(size_t id);
         void addConnection(size_t id);
         void addStart(size_t id);
+        static void SigHandler(int signal);
+        void handleShutdown();
+        static inline std::atomic<bool> shutdown_requested{false};
+        static inline Server* instance{nullptr};
 
     private:
         NetworkServerBuffer *receivedBuffer;
