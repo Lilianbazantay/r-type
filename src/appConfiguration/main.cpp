@@ -22,7 +22,6 @@ const char* EntityTypeToString(EntityType type) {
     }
 }
 
-// Minimal component names for the Inspector dropdown
 static const char* componentNames[] = {
     "AnimatedSprite","Attack","Clock","Cooldown",
     "Direction","EntitySpawner","Gravity","Hitbox",
@@ -33,9 +32,11 @@ static const char* componentNames[] = {
 // =====================
 // Draw Components
 // =====================
+
+// Animated Sprite (DÉJÀ OK)
 void drawComponentList(std::vector<AnimatedSpriteStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
+        ImGui::PushID((int)i);
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
             ImGui::InputText("File Path", &vec[i].file_path);
             ImGui::InputFloat("Size X", &vec[i].size_x);
@@ -50,9 +51,10 @@ void drawComponentList(std::vector<AnimatedSpriteStruct> &vec, const char* label
     }
 }
 
+// Attack (DÉJÀ OK)
 void drawComponentList(std::vector<AttackStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
+        ImGui::PushID((int)i);
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
             ImGui::InputFloat("Damage", &vec[i].damage);
             ImGui::InputFloat("Fire Rate", &vec[i].fireRate);
@@ -63,17 +65,22 @@ void drawComponentList(std::vector<AttackStruct> &vec, const char* label, const 
     }
 }
 
+// Clock
 void drawComponentList(std::vector<ClockStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::InputFloat(label, &vec[i].elapsedTime);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::InputFloat("Elapsed Time", &vec[i].elapsedTime);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Cooldown (DÉJÀ OK)
 void drawComponentList(std::vector<CooldownStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
+        ImGui::PushID((int)i);
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
             ImGui::InputDouble("Length", &vec[i].length);
             ImGui::InputDouble("Remaining", &vec[i].remaining);
@@ -84,94 +91,134 @@ void drawComponentList(std::vector<CooldownStruct> &vec, const char* label, cons
     }
 }
 
+// Direction
 void drawComponentList(std::vector<DirectionStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::InputFloat("X", &vec[i].x);
-        ImGui::InputFloat("Y", &vec[i].y);
-        ImGui::InputFloat("Angle", &vec[i].angle);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::InputFloat("X", &vec[i].x);
+            ImGui::InputFloat("Y", &vec[i].y);
+            ImGui::InputFloat("Angle", &vec[i].angle);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Entity Spawner
 void drawComponentList(std::vector<EntitySpawnerStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::Checkbox("Activated", &vec[i].is_activated);
-        ImGui::InputDouble("Cooldown Length", &vec[i].cooldown_length);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::Checkbox("Activated", &vec[i].is_activated);
+            ImGui::InputDouble("Cooldown Length", &vec[i].cooldown_length);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Gravity
 void drawComponentList(std::vector<GravityStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::Checkbox("Activated", &vec[i].is_activated);
-        ImGui::InputFloat("Attraction Strength", &vec[i].attraction_strength);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::Checkbox("Activated", &vec[i].is_activated);
+            ImGui::InputFloat("Attraction Strength", &vec[i].attraction_strength);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Hitbox
 void drawComponentList(std::vector<HitboxStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::InputFloat("Size X", &vec[i].sizeX);
-        ImGui::InputFloat("Size Y", &vec[i].sizeY);
-        ImGui::InputInt("Damage", &vec[i].damage);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::InputFloat("Size X", &vec[i].sizeX);
+            ImGui::InputFloat("Size Y", &vec[i].sizeY);
+            ImGui::InputInt("Damage", &vec[i].damage);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Hp
 void drawComponentList(std::vector<HpStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::InputInt("Value", &vec[i].value);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::InputInt("Value", &vec[i].value);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Position
 void drawComponentList(std::vector<PositionStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::InputFloat("X", &vec[i].x);
-        ImGui::InputFloat("Y", &vec[i].y);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::InputFloat("X", &vec[i].x);
+            ImGui::InputFloat("Y", &vec[i].y);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Sound
 void drawComponentList(std::vector<SoundStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::InputText("File Path", &vec[i].file_path);
-        ImGui::InputFloat("Volume", &vec[i].volume);
-        ImGui::Checkbox("Looping", &vec[i].is_looping);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::InputText("File Path", &vec[i].file_path);
+            ImGui::InputFloat("Volume", &vec[i].volume);
+            ImGui::Checkbox("Looping", &vec[i].is_looping);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Sprite
 void drawComponentList(std::vector<SpriteStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::InputText("File Path", &vec[i].file_path);
-        ImGui::InputFloat("Size X", &vec[i].size_x);
-        ImGui::InputFloat("Size Y", &vec[i].size_y);
-        ImGui::Checkbox("Visible", &vec[i].is_visible);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::InputText("File Path", &vec[i].file_path);
+            ImGui::InputFloat("Size X", &vec[i].size_x);
+            ImGui::InputFloat("Size Y", &vec[i].size_y);
+            ImGui::Checkbox("Visible", &vec[i].is_visible);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Strategy
 void drawComponentList(std::vector<StrategyStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::Text("Pattern size: %zu", vec[i].pattern.size());
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::Text("Pattern size: %zu", vec[i].pattern.size());
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
 
+// Velocity
 void drawComponentList(std::vector<VelocityStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID(static_cast<int>(i));
-        ImGui::InputFloat("Value", &vec[i].value);
+        ImGui::PushID((int)i);
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
+            ImGui::InputFloat("Value", &vec[i].value);
+            ImGui::TreePop();
+        }
         ImGui::PopID();
     }
 }
@@ -213,6 +260,9 @@ int main() {
         ImGui::Begin("Entities", nullptr, flags);
         ImGui::Columns(2, nullptr, false);
 
+        if (ImGui::Button("Add Entity"))
+            entities.push_back({});
+        ImGui::Separator();
         for (int i = 0; i < (int)entities.size(); i++) {
             ImGui::PushID(i);
             if (ImGui::Selectable(entities[i].name.c_str(), selectedEntityIndex == i))
@@ -226,11 +276,8 @@ int main() {
             }
             ImGui::NextColumn();
             ImGui::PopID();
+            ImGui::Separator();
         }
-
-        ImGui::Separator();
-        if (ImGui::Button("Add Entity"))
-            entities.push_back({});
         ImGui::Columns(1);
         ImGui::End();
 
