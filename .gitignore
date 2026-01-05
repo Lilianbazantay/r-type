@@ -42,6 +42,7 @@
 # binaries
 r-type*
 .env
+imgui.ini
 
 #build folder
 build
