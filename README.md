@@ -44,6 +44,7 @@ cd r-type
 ```sh
 ./installer.sh
 ```
+
 This installs dependencies (via vcpkg) and generates:
 
 ```
@@ -52,7 +53,7 @@ This installs dependencies (via vcpkg) and generates:
 ./r-type_app
 ```
 *<u>Note:</u>
-The installation script will install system-wide dependencies. These includes:*
+The installation script will install **system-wide dependencies**. These includes:*
 - basic developement tools: used to compile the program and run it
 - `cmake`: our build system
 - `ninja`: a build system paired with cmake to improve compilation speed
