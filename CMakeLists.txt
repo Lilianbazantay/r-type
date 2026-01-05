@@ -4,7 +4,7 @@ project(r-type LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND APPLE)
     add_compile_options(-stdlib=libc++)
     add_link_options(-stdlib=libc++)
 endif()
@@ -21,6 +21,8 @@ find_package(SFML 2.6 COMPONENTS graphics network window audio system REQUIRED)
 find_package(asio CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(ImGui CONFIG REQUIRED)
+find_package(ImGui-SFML CONFIG REQUIRED)
 
 
 # Set the compiler optimization flags
@@ -42,6 +44,7 @@ endif()
 file(GLOB_RECURSE ECS_SOURCES CONFIGURE_DEPENDS "src/ecs/*.cpp")
 file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "src/client/*.cpp")
 file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS "src/server/*.cpp")
+file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "src/appConfiguration/*.cpp")
 
 # Build the ECS as a standalone library
 
@@ -85,11 +88,12 @@ install(TARGETS r-type_ecs
 )
 
 # Add the executables
-add_executable(r-type_client ${CLIENT_SOURCES})
-add_executable(r-type_server ${SERVER_SOURCES})
+add_executable(r-type_client ${CLIENT_SOURCES} ${ECS_SOURCES})
+add_executable(r-type_server ${SERVER_SOURCES} ${ECS_SOURCES})
+add_executable(r-type_app ${APP_SOURCES})
 
 # Target configuration
-foreach(target r-type_client r-type_server)
+foreach(target r-type_client r-type_server r-type_app)
     target_include_directories(${target} PRIVATE
         ${CMAKE_SOURCE_DIR}/src
     )
@@ -116,6 +120,8 @@ foreach(target r-type_client r-type_server)
         r-type_ecs
         asio::asio
         nlohmann_json::nlohmann_json
+        imgui::imgui
+        ImGui-SFML::ImGui-SFML
     )
 
     # Define compilation target
