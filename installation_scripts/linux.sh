@@ -7,9 +7,13 @@ BUILD_DIR=build
 
 # Add missing dependencies
 echo "Checking for any missing dependencies"
+echo "If missing the following dependencies will be added:"
+echo "cmake ninja freetype X11 xcb xrandr xi xcursor udev openal opengl and libtool"
+echo "to find more information refer yourself to the readme at the root of the project repository."
+
 if command -v dnf &> /dev/null; then
     sudo dnf update
-    sudo dnf install -y --skip-unavailable \
+    sudo dnf install --skip-unavailable \
       @development-tools cmake ninja-build \
       freetype-devel libX11-devel libxcb-devel \
       libXrandr-devel libXi-devel libXcursor-devel \
@@ -17,7 +21,7 @@ if command -v dnf &> /dev/null; then
       libtool
 elif command -v apt &> /dev/null; then
     sudo apt-get update
-    sudo apt-get install -y \
+    sudo apt-get install \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
@@ -25,7 +29,7 @@ elif command -v apt &> /dev/null; then
       libtool
 elif command -v pacman &> /dev/null; then
     sudo pacman update
-    sudo pacman install -y \
+    sudo pacman install \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
