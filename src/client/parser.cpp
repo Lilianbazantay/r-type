@@ -1,4 +1,5 @@
 #include "parser.hpp"
+#include "../utils.hpp"
 #include <iostream>
 #include <string>
 
@@ -83,17 +84,17 @@ int Parser::parse(int argc, char **argv)
 {
     if (argc == 2 && std::string(argv[1]) == "-h") {
         show_help();
-        return EXIT_FAILURE;
+        return EXIT_ERROR;
     }
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
-        if (!parse_ip(arg, argv, i, argc)) return EXIT_FAILURE;
-        if (!parse_port(arg, argv, i, argc)) return EXIT_FAILURE;
+        if (!parse_ip(arg, argv, i, argc)) return EXIT_ERROR;
+        if (!parse_port(arg, argv, i, argc)) return EXIT_ERROR;
     }
     if (ip.empty() || port == -1) {
         std::cerr << "Missing required arguments.\n";
         show_help();
-        return EXIT_FAILURE;
+        return EXIT_ERROR;
     }
     return true;
 }

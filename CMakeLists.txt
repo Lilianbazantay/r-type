@@ -66,6 +66,7 @@ foreach(target r-type_client r-type_server)
             -Wshadow -Winit-self -Wredundant-decls
             -Wstrict-overflow=2 -Wundef -Wunreachable-code
             -Wwrite-strings
+            -g
         )
     endif()
 

@@ -17,7 +17,7 @@ public:
 private:
     std::string ip_;
     int port_;
-    NetworkBuffer* buffer_;
+    NetworkBuffer* buffer_ = nullptr;
     Asio_network network_;
     void sendPacket(const Packet &p);
 };
