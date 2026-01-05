@@ -26,7 +26,7 @@ class ClientGame {
         bool Paused = false;
         std::mutex pause_mutex;
 
-        NetworkBuffer *_netBuffer;
+        NetworkBuffer *_netBuffer = nullptr;
         Client client;
 
     public:
