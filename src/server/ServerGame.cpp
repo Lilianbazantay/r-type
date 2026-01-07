@@ -24,7 +24,7 @@
 #include "ServerGame.hpp"
 
 
-ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkClientBuffer *newCBuffer):
+ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer *newCBuffer):
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
     continuousBuffer(newCBuffer),
@@ -36,7 +36,6 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
     systemList.push_back(std::make_unique<ShootSystem>());
     systemList.push_back(std::make_unique<CollisionSystem>());
     systemList.push_back(std::make_unique<MovementSystem>());
-    createEntity(ENTITY_BACKGROUND, 0);
     networkServer.start();
 }
 
@@ -58,13 +57,14 @@ void ServerGame::Update() {
             std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
                 data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->pushPacket(pkt);
+            std::cout << "Create entity" << std::endl;
+            continuousBuffer->addEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
             continue;
         }
         if (!data.entityList[j]->is_Alive()) {
             std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->pushPacket(pkt);
+            continuousBuffer->deleteEntity(data.entityList[j]->getType(), data.entityList[j]->getId());
             data.entityList.erase(data.entityList.begin() + j);
             j--;
             EListSize--;
@@ -76,6 +76,7 @@ void ServerGame::Update() {
                 continue;
             std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, data.entityList[j]->getType(),
                 data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
+            continuousBuffer->moveEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
             networkSendBuffer->pushPacket(pkt);
             continue;
         }
@@ -86,8 +87,9 @@ void ServerGame::Update() {
 
 void ServerGame::Loop() {
     Running = true;
-    Cooldown cooldown(1.0);
+    Cooldown cooldown(20.0);
     Cooldown tmp(0.01);
+    cooldown.LaunchCooldown();
     while(Running) {
         if (tmp.CheckCooldown() == true) {
             Update();
@@ -95,6 +97,7 @@ void ServerGame::Loop() {
         }
         if (cooldown.CheckCooldown() == true) {
             data.enemy_count++;
+//            std::cout << "Set enemy" << std::endl;
             createEntity(2, data.enemy_count);
             cooldown.LaunchCooldown();
         }
@@ -179,7 +182,6 @@ bool ServerGame::createEntity(int entity_type, int personnal_id) {
         }
         case ENTITY_PLAYER: {
             data.entityList.push_back(std::make_unique<Player>());
-//            createEntity(ENTITY_ENEMY, data.enemy_count);
             break;
         }
         case ENTITY_ENEMY: {
@@ -203,14 +205,12 @@ void ServerGame::parseNetworkPackets() {
         switch (pkt.getActionType()) {
             case ActionType::INPUT_PRESSED: {
                 if (pkt.getActionvalue() == 0) {
-                    std::cout << "IN_PR\n";
                     playerShoot(pkt.getPlayerId());
                 } else
                     changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_PRESSED, pkt.getActionvalue()});
                 break;
             }
             case ActionType::INPUT_RELEASED: {
-                std::cout << "IN_RE\n";
                 changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_RELEASED, pkt.getActionvalue()});
                 break;
             }

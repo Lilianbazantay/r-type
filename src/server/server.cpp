@@ -21,9 +21,10 @@
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
-Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkClientBuffer *newCBuffer)
+Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkContinuousBuffer *newCBuffer)
 : receivedBuffer(newRBuffer),
   sendBuffer(newSBuffer),
+  continuousBuffer(newCBuffer),
   io_ctx_(),
   work_guard_(asio::make_work_guard(io_ctx_)),
   socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
@@ -206,8 +207,12 @@ size_t Server::addPort(size_t id) {
  */
 void Server::packetDispatch() {
     if (receiver.getPayload() == 6) {
+        std::cout << "New connection !" << std::endl;
         addConnection(addPort(addIp()));
         send(15, remote_endpoint_.address().to_string(), remote_endpoint_.port());
+        std::vector<std::vector<uint8_t>> continuousPackets = continuousBuffer->getAllPackets();
+        for(size_t i = 0; i < continuousPackets.size(); i++)
+            send(remote_endpoint_.address().to_string(), remote_endpoint_.port(), continuousPackets[i]);
     }
     if (receiver.getPayload() == 1 && is_connected.at(receiver.getPlayerId()) && has_started.at(receiver.getPlayerId())) {
         receivedBuffer->pushPacket(receiver);
