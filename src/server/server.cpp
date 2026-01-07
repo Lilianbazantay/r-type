@@ -147,7 +147,7 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
             [](std::error_code, std::size_t) {}
         );
     } catch(std::exception &e) {
-        std::cout << e.what() << "\n";
+        std::cout << e.what() << std::endl;
     }
 }
 
@@ -162,7 +162,7 @@ void Server::send(const std::string& host, __uint16_t port, std::vector<uint8_t>
             [](std::error_code, std::size_t) {}
         );
     } catch(std::exception &e) {
-        std::cout << e.what() << "\n";
+        std::cout << e.what() << std::endl;
     }
 }
 
@@ -181,7 +181,6 @@ size_t Server::addIp() {
     for (size_t i = 0; i < list_ip.size(); ++i)
         if (list_ip.at(i).empty()) {
             list_ip.at(i) = remote_endpoint_.address().to_string();
-            std::cout << list_ip.at(i);
             return i;
         }
     return 5;
@@ -194,7 +193,6 @@ size_t Server::addIp() {
  * @param tmpIP IP of the client linked to the port
  */
 size_t Server::addPort(size_t id) {
-    std::cout << id;
     if (id == 5)
         return id;
     list_port.at(id) = remote_endpoint_.port();
@@ -207,7 +205,6 @@ size_t Server::addPort(size_t id) {
  */
 void Server::packetDispatch() {
     if (receiver.getPayload() == 6) {
-        std::cout << "New connection !" << std::endl;
         addConnection(addPort(addIp()));
         send(15, remote_endpoint_.address().to_string(), remote_endpoint_.port());
         std::vector<std::vector<uint8_t>> continuousPackets = continuousBuffer->getAllPackets();

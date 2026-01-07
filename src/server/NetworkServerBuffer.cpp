@@ -125,9 +125,7 @@ NetworkContinuousBuffer::NetworkContinuousBuffer(int servId) {
 }
 
 void NetworkContinuousBuffer::addEntity(int type, int id, std::vector<uint8_t> packet) {
-    std::cout << "wait..." << std::endl;
     std::lock_guard<std::mutex> lock(mtx);
-    std::cout << "Good !" << std::endl;
 
     if (findEntity({type, id}) != -1)
         return;
@@ -155,12 +153,10 @@ void NetworkContinuousBuffer::moveEntity(int type, int id, std::vector<uint8_t> 
 void NetworkContinuousBuffer::deleteEntity(int type, int id) {
     std::lock_guard<std::mutex> lock(mtx);
 
-    std::cout << "Deleting !" << std::endl;
     int pos = findEntity({type, id});
     if (pos == -1) {
         return;
     }
-    std::cout << "Found Entity" << std::endl;
     std::vector<uint8_t> movedPacket = entities[pos].second.second;
     std::vector<uint8_t> createdPacket = entities[pos].second.first;
     bool isMoveDeleted = movedPacket.empty();
@@ -168,7 +164,6 @@ void NetworkContinuousBuffer::deleteEntity(int type, int id) {
     size_t packetsCount = packets.size();
     for (size_t i = 0; i < packetsCount; i++) {
         if (!isMoveDeleted && packets[i] == movedPacket) {
-            std::cout << "Delete move" << std::endl;
             isMoveDeleted = true;
             packets.erase(packets.begin() + i);
             if (isCreationDeleted)
@@ -177,7 +172,6 @@ void NetworkContinuousBuffer::deleteEntity(int type, int id) {
             continue;
         }
         if (!isCreationDeleted && packets[i] == createdPacket) {
-            std::cout << "Delete creation" << std::endl;
             isCreationDeleted = true;
             packets.erase(packets.begin() + i);
             if (isMoveDeleted)
@@ -185,7 +179,6 @@ void NetworkContinuousBuffer::deleteEntity(int type, int id) {
             i--;
         }
     }
-    std::cout << "Finished deleting" << std::endl;
 }
 
 int NetworkContinuousBuffer::findEntity(std::pair<int, int> typeId) {

@@ -57,7 +57,6 @@ void ServerGame::Update() {
             std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
                 data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
-            std::cout << "Create entity" << std::endl;
             continuousBuffer->addEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
             continue;
         }
@@ -97,7 +96,6 @@ void ServerGame::Loop() {
         }
         if (cooldown.CheckCooldown() == true) {
             data.enemy_count++;
-//            std::cout << "Set enemy" << std::endl;
             createEntity(2, data.enemy_count);
             cooldown.LaunchCooldown();
         }
@@ -122,7 +120,6 @@ void ServerGame::changePlayerDirection(int personnal_id, std::pair<int, int> new
             continue;
         Direction *playerDirection = dynamic_cast<Direction*>(data.entityList[i]->FindComponent(ComponentType::DIRECTION));
         if (playerDirection == nullptr) {
-            std::cout << "Error Null" << std::endl;
             return;
         }
         std::pair<float, float> direction = playerDirection->GetDirection();
