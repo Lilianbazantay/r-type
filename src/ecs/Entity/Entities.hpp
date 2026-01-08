@@ -11,9 +11,9 @@
 
 class Background: public IMediatorEntity {
     private:
-        std::vector<IComponent> _undergoerComponents;   // Ex: Healt, Shield, Position ...
-        std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
-        std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
+        std::vector<IComponent> _undergoerComponents;
+        std::vector<IComponent> _actuatorComponents;
+        std::vector<IMediatorEntity> _attachedEntities;
 
         std::mutex _mutex;
     public:
@@ -25,9 +25,9 @@ class Background: public IMediatorEntity {
 
 class Player: public IMediatorEntity {
     private:
-        std::vector<IComponent> _undergoerComponents;   // Ex: Healt, Shield, Position ...
-        std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
-        std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
+        std::vector<IComponent> _undergoerComponents;
+        std::vector<IComponent> _actuatorComponents;
+        std::vector<IMediatorEntity> _attachedEntities;
 
         std::mutex _mutex;
     public:
@@ -39,9 +39,9 @@ class Player: public IMediatorEntity {
 
 class Enemy: public IMediatorEntity {
     private:
-        std::vector<IComponent> _undergoerComponents;   // Ex: Healt, Shield, Position ...
-        std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
-        std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a Enemy, ...
+        std::vector<IComponent> _undergoerComponents;
+        std::vector<IComponent> _actuatorComponents;
+        std::vector<IMediatorEntity> _attachedEntities;
 
         std::mutex _mutex;
     public:
@@ -54,14 +54,29 @@ class Enemy: public IMediatorEntity {
 
 class PlayerBullet: public IMediatorEntity {
     private:
-        std::vector<IComponent> _undergoerComponents;   // Ex: Healt, Shield, Position ...
-        std::vector<IComponent> _actuatorComponents;    // Ex: Input Catcher, Button, ...
-        std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
+        std::vector<IComponent> _undergoerComponents;
+        std::vector<IComponent> _actuatorComponents;
+        std::vector<IMediatorEntity> _attachedEntities;
 
         std::mutex _mutex;
     public:
         PlayerBullet();
         ~PlayerBullet() override = default;
+        void run() override;
+        std::unique_ptr<IMediatorEntity> Clone() override;
+};
+
+
+class EnemyBullet: public IMediatorEntity {
+    private:
+        std::vector<IComponent> _undergoerComponents;
+        std::vector<IComponent> _actuatorComponents;
+        std::vector<IMediatorEntity> _attachedEntities;
+
+        std::mutex _mutex;
+    public:
+        EnemyBullet();
+        ~EnemyBullet() override = default;
         void run() override;
         std::unique_ptr<IMediatorEntity> Clone() override;
 };
