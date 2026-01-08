@@ -12,7 +12,7 @@
  */
 class NetworkServerBuffer {
     private:
-        std::vector<ServerPacket> packets;
+        std::vector<ServerPacket> packets = {};
         mutable std::mutex mtx;
 
     public:
@@ -26,13 +26,16 @@ class NetworkServerBuffer {
 
 class NetworkClientBuffer {
     private:
-        std::vector<std::vector<uint8_t>> packets;
+        std::vector<std::vector<uint8_t>> packets = {};
+        std::vector<std::pair<std::pair<int, int>, size_t>> entities = {};
         mutable std::mutex mtx;
 
+        int findEntity(std::pair<int, int>);
     public:
         NetworkClientBuffer() = default;
         ~NetworkClientBuffer() = default;
-        void pushPacket(std::vector<uint8_t>& pkt);
+        void pushPacket(std::vector<uint8_t>&);
+        void moveEntity(int, int, std::vector<uint8_t>&);
         void pushWholePacket(std::vector<std::vector<uint8_t>>& pkt);
         std::vector<uint8_t> popPacket();
         std::vector<std::vector<uint8_t>> popAllPackets();

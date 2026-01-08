@@ -54,16 +54,20 @@ void ServerGame::Update() {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
-                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
+            int type = data.entityList[j]->getType();
+            int id = data.entityList[j]->getId();
+            std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,type,
+                id, playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->addEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
+            continuousBuffer->addEntity(type, id, pkt);
             continue;
         }
         if (!data.entityList[j]->is_Alive()) {
-            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
+            int type = data.entityList[j]->getType();
+            int id = data.entityList[j]->getId();
+            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, type, id);
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->deleteEntity(data.entityList[j]->getType(), data.entityList[j]->getId());
+            continuousBuffer->deleteEntity(type, id);
             data.entityList.erase(data.entityList.begin() + j);
             j--;
             EListSize--;
@@ -73,10 +77,13 @@ void ServerGame::Update() {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, data.entityList[j]->getType(),
-                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
-            continuousBuffer->moveEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
-            networkSendBuffer->pushPacket(pkt);
+            int type = data.entityList[j]->getType();
+            int id = data.entityList[j]->getId();
+            std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, type,
+                id, playerPos->GetPosition().first, playerPos->GetPosition().second);
+            continuousBuffer->moveEntity(type, id, pkt);
+//            networkSendBuffer->pushPacket(pkt);
+            networkSendBuffer->moveEntity(type, id, pkt);
             continue;
         }
         ++j;
