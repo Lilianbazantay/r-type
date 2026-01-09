@@ -31,6 +31,8 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
     networkServer(port,
     newRBuffer, newSBuffer, newCBuffer)
 {
+    data.bullet_count = 0;
+    data.enemy_count = 0;
     clock.restart();
     Prevtime = clock.getElapsedTime();
     systemList.push_back(std::make_unique<ShootSystem>());
