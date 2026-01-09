@@ -23,6 +23,8 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     data.window.create(sf::VideoMode({1920, 1080}), "RTYPE");
     data.window.clear(sf::Color::Black);
     data.window.setActive(true);
+    data.bullet_count = 0;
+    data.enemy_count = 0;
     clock.restart();
     _inputManager.setClient(&client);
     Prevtime = clock.getElapsedTime();
