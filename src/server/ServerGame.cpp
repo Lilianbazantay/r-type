@@ -31,6 +31,8 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
     networkServer(port,
     newRBuffer, newSBuffer, newCBuffer)
 {
+    data.bullet_count = 0;
+    data.enemy_count = 0;
     clock.restart();
     Prevtime = clock.getElapsedTime();
     systemList.push_back(std::make_unique<ShootSystem>());
@@ -48,6 +50,7 @@ void ServerGame::Update() {
 
     size_t SListSize = systemList.size();
     size_t EListSize = data.entityList.size();
+    _serverTick++;
     for (size_t j = 0; j < EListSize; j++) {
         for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
@@ -56,7 +59,7 @@ void ServerGame::Update() {
             if (playerPos == nullptr)
                 continue;
             std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
-                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
+                data.entityList[j]->getId(), _serverTick, playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
             continuousBuffer->pushPacket(pkt);
             continue;
@@ -75,7 +78,7 @@ void ServerGame::Update() {
             if (playerPos == nullptr)
                 continue;
             std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, data.entityList[j]->getType(),
-                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
+                data.entityList[j]->getId(), _serverTick , playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
             continue;
         }

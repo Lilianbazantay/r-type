@@ -21,6 +21,7 @@ class ServerGame {
         sf::Time Prevtime;
         sf::Clock clock;
         bool Running = false;
+        uint32_t _serverTick = 0;
 
         NetworkServerBuffer *networkReceiveBuffer;
         NetworkClientBuffer *networkSendBuffer;

@@ -63,6 +63,40 @@ private:
             return out;
         }
 
+    static std::vector<uint8_t> encodeWithTick(
+        uint16_t packetID, uint8_t actionType,
+        uint8_t entityType, uint16_t entityID,
+        uint32_t serverTick,
+        uint16_t posX, uint16_t posY)
+    {
+        constexpr uint8_t payloadSize = 10;
+        std::vector<uint8_t> out(3 + payloadSize);
+
+        out[0] = static_cast<uint8_t>((packetID >> 8u) & 0xFFu);
+        out[1] = static_cast<uint8_t>( packetID        & 0xFFu);
+        out[2] = static_cast<uint8_t>(((payloadSize & 0x0Fu) << 4u) |
+                                    ( actionType  & 0x0Fu));
+
+        out[3] = entityType;
+        out[4] = static_cast<uint8_t>((entityID >> 8u) & 0xFFu);
+        out[5] = static_cast<uint8_t>( entityID        & 0xFFu);
+
+        out[6] = static_cast<uint8_t>((serverTick >> 24u) & 0xFFu);
+        out[7] = static_cast<uint8_t>((serverTick >> 16u) & 0xFFu);
+        out[8] = static_cast<uint8_t>((serverTick >>  8u) & 0xFFu);
+        out[9] = static_cast<uint8_t>( serverTick         & 0xFFu);
+
+        posX &= 0x0FFFu;
+        posY &= 0x0FFFu;
+        uint32_t pos24 = (uint32_t(posX) << 12u) | uint32_t(posY);
+
+        out[10] = static_cast<uint8_t>((pos24 >> 16u) & 0xFFu);
+        out[11] = static_cast<uint8_t>((pos24 >>  8u) & 0xFFu);
+        out[12] = static_cast<uint8_t>( pos24         & 0xFFu);
+
+        return out;
+    }
+
 public:
         /**
          * @brief helper functions that creates an entity
@@ -77,15 +111,19 @@ public:
     static std::vector<uint8_t> encodeCreate(
         uint16_t packetID,
         uint8_t entityType, uint16_t entityID,
-        uint16_t posX, uint16_t posY) {
-            return encode(packetID,
-                6,
-                ENTITY_CREATED,
-                entityType,
-                entityID,
-                posX,
-                posY);
-        }
+        uint16_t posX, uint16_t posY)
+    {
+        return encodeWithTick(packetID, ENTITY_CREATED, entityType, entityID, 0, posX, posY);
+    }
+
+    static std::vector<uint8_t> encodeCreate(
+        uint16_t packetID,
+        uint8_t entityType, uint16_t entityID,
+        uint32_t serverTick,
+        uint16_t posX, uint16_t posY)
+    {
+        return encodeWithTick(packetID, ENTITY_CREATED, entityType, entityID, serverTick, posX, posY);
+    }
 
     /**
      * @brief helper functions to signal that an entity has moved
@@ -100,15 +138,19 @@ public:
     static std::vector<uint8_t> encodeMove(
         uint16_t packetID,
         uint8_t entityType, uint16_t entityID,
-        uint16_t posX, uint16_t posY) {
-            return encode(packetID,
-                6,
-                ENTITY_MOVED,
-                entityType,
-                entityID,
-                posX,
-                posY);
-        }
+        uint16_t posX, uint16_t posY)
+    {
+        return encodeWithTick(packetID, ENTITY_MOVED, entityType, entityID, 0, posX, posY);
+    }
+
+    static std::vector<uint8_t> encodeMove(
+        uint16_t packetID,
+        uint8_t entityType, uint16_t entityID,
+        uint32_t serverTick,
+        uint16_t posX, uint16_t posY)
+    {
+        return encodeWithTick(packetID, ENTITY_MOVED, entityType, entityID, serverTick, posX, posY);
+    }
 
     /**
      * @brief helper functions to signal that an entity has been deleted
