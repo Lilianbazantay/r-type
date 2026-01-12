@@ -43,9 +43,50 @@ file(GLOB_RECURSE ECS_SOURCES CONFIGURE_DEPENDS "src/ecs/*.cpp")
 file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "src/client/*.cpp")
 file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS "src/server/*.cpp")
 
+# Build the ECS as a standalone library
+
+add_library(r-type_ecs STATIC ${ECS_SOURCES})
+
+target_include_directories(r-type_ecs PUBLIC
+    ${CMAKE_SOURCE_DIR}/src
+)
+
+if (MSVC)
+    target_compile_options(r-type_ecs PRIVATE
+        /W4
+        /permissive-
+        /Zc:preprocessor
+    )
+else()
+    target_compile_options(r-type_ecs PRIVATE
+        -Wall -Wextra -Wpedantic
+        -Wshadow -Winit-self -Wredundant-decls
+        -Wstrict-overflow=2 -Wundef -Wunreachable-code
+        -Wwrite-strings
+        -g
+    )
+endif()
+
+
+target_link_libraries(r-type_ecs PUBLIC
+    OpenAL::OpenAL
+    fmt::fmt
+    sfml-graphics
+    sfml-network
+    sfml-window
+    sfml-audio
+    sfml-system
+)
+
+target_compile_features(r-type_ecs PUBLIC cxx_std_23)
+
+install(TARGETS r-type_ecs
+    ARCHIVE DESTINATION lib
+)
+
 # Add the executables
-add_executable(r-type_client ${CLIENT_SOURCES} ${ECS_SOURCES})
-add_executable(r-type_server ${SERVER_SOURCES} ${ECS_SOURCES})
+add_executable(r-type_client ${CLIENT_SOURCES})
+add_executable(r-type_server ${SERVER_SOURCES})
 
 # Target configuration
 foreach(target r-type_client r-type_server)
@@ -72,14 +113,8 @@ foreach(target r-type_client r-type_server)
 
     # Add libraries
     target_link_libraries(${target} PRIVATE
-        sfml-graphics
-        sfml-network
-        sfml-window
-        sfml-audio
-        sfml-system
+        r-type_ecs
         asio::asio
-        OpenAL::OpenAL
-        fmt::fmt
         nlohmann_json::nlohmann_json
     )
 
