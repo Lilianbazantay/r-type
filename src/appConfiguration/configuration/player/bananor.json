@@ -1,0 +1,34 @@
+{
+    "animatedSprite": [
+        {
+            "animation_rate": 0.0,
+            "file_path": "",
+            "is_visible": true,
+            "number_of_sprite_x": 0,
+            "number_of_sprite_y": 0,
+            "size_x": 0.0,
+            "size_y": 0.0
+        }
+    ],
+    "attack": [
+        {
+            "damage": 1.0,
+            "fireRate": 1.0,
+            "remaining": 1.0
+        }
+    ],
+    "clock": [],
+    "cooldown": [],
+    "direction": [],
+    "entitySpawner": [],
+    "gravity": [],
+    "hitbox": [],
+    "hp": [],
+    "name": "bananor",
+    "position": [],
+    "sound": [],
+    "sprite": [],
+    "strategy": [],
+    "type": 1,
+    "velocity": []
+}
