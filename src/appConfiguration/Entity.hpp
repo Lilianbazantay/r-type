@@ -50,7 +50,7 @@ struct DirectionStruct {
 struct EntitySpawnerStruct {
     double cooldown_length = 0.0;
     bool is_activated = false;
-    void* entity = nullptr;
+    int entityIndex = -1;
 };
 
 struct GravityStruct {
@@ -62,6 +62,8 @@ struct HitboxStruct {
     float sizeX = 0.f;
     float sizeY = 0.f;
     int damage = 0;
+    std::vector<int> masks;
+    std::vector<int> layers;
 };
 
 struct HpStruct {
