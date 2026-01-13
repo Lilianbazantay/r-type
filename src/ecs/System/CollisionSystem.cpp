@@ -87,7 +87,7 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
             playerHp->SubHp(entityHitbox->GetDamage());
             if (playerHp->GetHp() <= 0) {
                 std::cout << "Entity " << entityList[i]->getType() << " is dead !" << std::endl;
-                entity.Alive(false);
+                entityList[i]->Alive(false);
             }
         }
         entityHp = dynamic_cast<Hp*>(entityList[i]->FindComponent(ComponentType::HP));

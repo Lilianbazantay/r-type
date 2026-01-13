@@ -49,43 +49,37 @@ void ServerGame::Update() {
 
     size_t SListSize = systemList.size();
     size_t EListSize = data.entityList.size();
+    _serverTick++;
     for (size_t j = 0; j < EListSize; j++) {
         for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
+        if (!data.entityList[j]->is_Alive()) {
+            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
+            networkSendBuffer->pushPacket(pkt);
+            continuousBuffer->deleteEntity(data.entityList[j]->getType(), data.entityList[j]->getId());
+            data.entityList.erase(data.entityList.begin() + j);
+            j--;
+            EListSize--;
+            continue;
+        }
         if (data.entityList[j]->justCreated()) {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            int type = data.entityList[j]->getType();
-            int id = data.entityList[j]->getId();
-            std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,type,
-                id, playerPos->GetPosition().first, playerPos->GetPosition().second);
+            std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
+                data.entityList[j]->getId(), _serverTick, playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->addEntity(type, id, pkt);
+            continuousBuffer->addEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
             continue;
-        }
-        if (!data.entityList[j]->is_Alive()) {
-            int type = data.entityList[j]->getType();
-            int id = data.entityList[j]->getId();
-            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, type, id);
-            networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->deleteEntity(type, id);
-            data.entityList.erase(data.entityList.begin() + j);
-            j--;
-            EListSize--;
-           continue;
         }
         if (data.entityList[j]->hasChanged()) {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            int type = data.entityList[j]->getType();
-            int id = data.entityList[j]->getId();
-            std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, type,
-                id, playerPos->GetPosition().first, playerPos->GetPosition().second);
-            continuousBuffer->moveEntity(type, id, pkt);
-//            networkSendBuffer->pushPacket(pkt);
-            networkSendBuffer->moveEntity(type, id, pkt);
+            std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, data.entityList[j]->getType(),
+                data.entityList[j]->getId(), _serverTick , playerPos->GetPosition().first, playerPos->GetPosition().second);
+            continuousBuffer->moveEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
+            networkSendBuffer->pushPacket(pkt);
             continue;
         }
         ++j;

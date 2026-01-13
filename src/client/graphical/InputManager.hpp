@@ -7,6 +7,8 @@
 #include <vector>
 #include "../client.hpp"
 
+class ClientGame;
+
 /**
  * @brief action type enum
  *
@@ -32,6 +34,7 @@ private:
 
     std::string textBuffer;
     Client* _client = nullptr;
+    ClientGame* _clientGame = nullptr;
 
     Action keyToAction(sf::Keyboard::Key key) const;
 
@@ -40,6 +43,7 @@ public:
     ~InputManager() = default;
 
     void setClient(Client* client);
+    void setClientGame(ClientGame* game);
 
     void bindKey(Action action, sf::Keyboard::Key key);
     sf::Keyboard::Key getKey(Action action) const;

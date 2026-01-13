@@ -12,6 +12,15 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <cmath>
+
+static std::pair<float,float> lerp2(const std::pair<float,float>& a,
+                                   const std::pair<float,float>& b,
+                                   float t)
+{
+    return { a.first + (b.first - a.first) * t,
+             a.second + (b.second - a.second) * t };
+}
 
 /**
  * @brief Constructor for ClientGame. Init the window with a nice starfield
@@ -20,6 +29,7 @@
 ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): client(ip, port, netBuffer)
 {
     _netBuffer = netBuffer;
+    _inputManager.setClientGame(this);
     data.window.create(sf::VideoMode({1920, 1080}), "RTYPE");
     data.window.clear(sf::Color::Black);
     data.window.setActive(true);
@@ -66,7 +76,7 @@ void ClientGame::Update() {
 }
 
 /**
- * @brief main loop for ClientGame. clear window, display, and retrieves events. Does not update/draw the entities if paused
+ * @brief main loop for ClientGame. clear window, display, and retrieves events.
  *
  */
 void ClientGame::Loop() {
@@ -76,8 +86,9 @@ void ClientGame::Loop() {
             return;
         data.window.clear(sf::Color::Black);
         if (!Paused) {
-            Update();
             processNetworkPackets();
+            applyNetworkInterpolation();
+            Update();
         }
         data.window.display();
         while(data.window.pollEvent(evt)) {
@@ -90,10 +101,6 @@ void ClientGame::Loop() {
 
 /**
  * @brief creates an entity based on its entity type, and assigns it an ID and a position
- *
- * @param entity_type the entity type to create. If not found, does not creates and entity
- * @param entity_id id allocated by the server for the entity
- * @param position position of the entity. Does nothing if the entity does not have the component POSITION
  */
 void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, float> position) {
     int prevSize = data.entityList.size();
@@ -121,13 +128,8 @@ void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, f
 }
 
 /**
- * @brief changes the entity position
- *
- * @param entity_type entity type
- * @param entity_id id allocated by the server for the entity
- * @param new_position new position of the entity. Does nothing if the entity does not have the component POSITION
+ * @brief changes the entity position,
  */
-
 void ClientGame::moveEntity(int entity_type, int entity_id, std::pair<float, float> new_position) {
     for (size_t i = 0; i < data.entityList.size(); i++) {
         if (!data.entityList[i]->is_wanted_entity(entity_type, entity_id))
@@ -141,9 +143,6 @@ void ClientGame::moveEntity(int entity_type, int entity_id, std::pair<float, flo
 
 /**
  * @brief deletes the specified entity
- *
- * @param entity_type entity type
- * @param entity_id id allocated by the server for the entity
  */
 void ClientGame::deleteEntity(int entity_type, int entity_id) {
     std::cout << "[DELETE] looking for type=" << entity_type
@@ -153,15 +152,13 @@ void ClientGame::deleteEntity(int entity_type, int entity_id) {
         std::cout << "  entity type=" << e->getType()
                   << " id=" << e->getId() << "\n";
     }
-
     std::erase_if(data.entityList, [&](const auto& e) {
-        return e->is_wanted_entity(entity_type, entity_id);
+        return e->getType() == entity_type && e->getId() == entity_id;
     });
 }
 
 /**
  * @brief checks if the game is pause. Necessary to avoid multiple threads looking at the same variable
- *
  */
 bool ClientGame::isPaused() {
     bool value;
@@ -171,21 +168,12 @@ bool ClientGame::isPaused() {
     return value;
 }
 
-/**
- * @brief modifies the game pause value. Necessary to avoid multiple threads looking at the same variable
- *
- * @param value new pause value
- */
 void ClientGame::setPaused(bool value) {
     pause_mutex.lock();
     Paused = value;
     pause_mutex.unlock();
 }
 
-/**
- * @brief checks if the game is Stopped. Necessary to avoid multiple threads looking at the same variable
- *
- */
 bool ClientGame::isStop() {
     bool value;
     pause_mutex.lock();
@@ -194,43 +182,145 @@ bool ClientGame::isStop() {
     return value;
 }
 
-/**
- * @brief modifies the game stop value. Necessary to avoid multiple threads looking at the same variable
- *
- * @param value new pause value
- */
 void ClientGame::setStop(bool value) {
     pause_mutex.lock();
     Stopping = value;
     pause_mutex.unlock();
 }
 
+void ClientGame::pushSnapshot(uint8_t type, uint16_t id, uint32_t tick, float x, float y)
+{
+    uint32_t key = makeKey(type, id);
+    _latestServerTick = std::max(_latestServerTick, tick);
+
+    auto &q = _netBuffers[key].snaps;
+    if (!q.empty() && q.back().tick == tick) {
+        q.back().pos = {x, y};
+    } else {
+        q.push_back({tick, {x, y}});
+    }
+
+    while (q.size() > MAX_SNAPSHOTS)
+        q.pop_front();
+}
+
+void ClientGame::applyNetworkInterpolation()
+{
+    if (_latestServerTick <= INTERP_DELAY_TICKS)
+        return;
+
+    uint32_t renderTick = _latestServerTick - INTERP_DELAY_TICKS;
+
+    std::vector<uint32_t> toErase;
+
+    for (auto &[key, buf] : _netBuffers) {
+        auto &snaps = buf.snaps;
+        if (snaps.size() < 2)
+            continue;
+        int type = int((key >> 16) & 0xFF);
+        int id   = int(key & 0xFFFF);
+        IMediatorEntity *ent = nullptr;
+        for (auto &ptr : data.entityList) {
+            if (ptr->is_wanted_entity(type, id)) {
+                ent = ptr.get();
+                break;
+            }
+        }
+        if (!ent) {
+            toErase.push_back(key);
+            continue;
+        }
+        Snapshot *a = nullptr;
+        Snapshot *b = nullptr;
+        for (size_t i = 0; i + 1 < snaps.size(); ++i) {
+            if (snaps[i].tick <= renderTick && renderTick <= snaps[i + 1].tick) {
+                a = &snaps[i];
+                b = &snaps[i + 1];
+                break;
+            }
+        }
+        std::pair<float,float> finalPos = snaps.back().pos;
+        if (a && b && b->tick != a->tick) {
+            float t = float(renderTick - a->tick) / float(b->tick - a->tick);
+            finalPos = lerp2(a->pos, b->pos, t);
+        } else {
+            const auto &s0 = snaps[snaps.size() - 2];
+            const auto &s1 = snaps[snaps.size() - 1];
+
+            uint32_t dtTicks = 0;
+            if (renderTick > s1.tick)
+                dtTicks = std::min<uint32_t>(renderTick - s1.tick, MAX_EXTRAP_TICKS);
+
+            float denom = float(std::max<uint32_t>(1, s1.tick - s0.tick));
+            float vx = (s1.pos.first  - s0.pos.first)  / denom;
+            float vy = (s1.pos.second - s0.pos.second) / denom;
+
+            finalPos = { s1.pos.first  + vx * dtTicks,
+                         s1.pos.second + vy * dtTicks };
+        }
+        Position *pos = dynamic_cast<Position*>(ent->FindComponent(ComponentType::POSITION));
+        if (pos) {
+            pos->SetPosition(finalPos);
+        }
+        while (snaps.size() >= 2 && snaps[1].tick < renderTick) {
+            snaps.pop_front();
+        }
+    }
+    for (auto key : toErase) {
+        _netBuffers.erase(key);
+    }
+}
+
 void ClientGame::processNetworkPackets()
 {
     auto packets = _netBuffer->popAllPackets();
-//    if (packets.size() != 0)
-//        std::cout << "Packet Size: " << packets.size() << ", " << (int)packets[0].actionType << std::endl;
+
     for (size_t i = 0; i < packets.size(); i++) {
-        switch ((int)packets[i].actionType)
+        const auto &p = packets[i];
+        switch ((int)p.actionType)
         {
-        case 0:
-            //std::cout << "ENTITY CREATED\n";
-            createEntity((int)packets[i].entityType, (int)packets[i].entityId, {(int)packets[i].posX, (int)packets[i].posY});
+        case 0: {
+            createEntity((int)p.entityType, (int)p.entityId, {(float)p.posX, (float)p.posY});
+            pushSnapshot(p.entityType, p.entityId, p.serverTick, (float)p.posX, (float)p.posY);
             break;
-        case 1:
-            //std::cout << "ENTITY MOVED\n";
-            moveEntity((int)packets[i].entityType, (int)packets[i].entityId, {(int)packets[i].posX, (int)packets[i].posY});
+        }
+        case 1: {
+            pushSnapshot(p.entityType, p.entityId, p.serverTick, (float)p.posX, (float)p.posY);
             break;
-        case 2:
-            //std::cout << "ENTITY DELETED\n";
-            std::cout << "Message actionType: " << (int)packets[i].actionType << "\n";
-            std::cout << "Message affected entity: " << (int)packets[i].entityId << " type: " << (int)packets[i].entityType << "\n";
-            deleteEntity((int)packets[i].entityType, (int)packets[i].entityId);
+        }
+        case 2: {
+            deleteEntity((int)p.entityType, (int)p.entityId);
+            uint32_t key = makeKey(p.entityType, p.entityId);
+            _netBuffers.erase(key);
+
             break;
+        }
         case 14:
             setStop(true);
+            break;
         default:
             break;
         }
+    }
+}
+
+void ClientGame::predictLocalMove(float dx, float dy)
+{
+    if (_localPlayerId < 0)
+        return;
+
+    for (auto &e : data.entityList) {
+        if (!e->is_wanted_entity(ENTITY_PLAYER, _localPlayerId))
+            continue;
+        Position *p = dynamic_cast<Position*>(e->FindComponent(ComponentType::POSITION));
+        if (!p)
+            return;
+        auto pos = p->GetPosition();
+        // ptet ajuster ca
+        float speed = 300.f;
+        pos.first  += dx * speed * data.runtime;
+        pos.second += dy * speed * data.runtime;
+        p->SetPosition(pos);
+        return;
     }
 }
