@@ -54,6 +54,15 @@ void ServerGame::Update() {
     for (size_t j = 0; j < EListSize; j++) {
         for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
+        if (!data.entityList[j]->is_Alive()) {
+            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
+            networkSendBuffer->pushPacket(pkt);
+            continuousBuffer->pushPacket(pkt);
+            data.entityList.erase(data.entityList.begin() + j);
+            j--;
+            EListSize--;
+            continue;
+        }
         if (data.entityList[j]->justCreated()) {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
@@ -63,15 +72,6 @@ void ServerGame::Update() {
             networkSendBuffer->pushPacket(pkt);
             continuousBuffer->pushPacket(pkt);
             continue;
-        }
-        if (!data.entityList[j]->is_Alive()) {
-            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
-            networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->pushPacket(pkt);
-            data.entityList.erase(data.entityList.begin() + j);
-            j--;
-            EListSize--;
-           continue;
         }
         if (data.entityList[j]->hasChanged()) {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));

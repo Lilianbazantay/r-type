@@ -141,7 +141,7 @@ void ClientGame::deleteEntity(int entity_type, int entity_id) {
                   << " id=" << e->getId() << "\n";
     }
     std::erase_if(data.entityList, [&](const auto& e) {
-        return e->is_wanted_entity(entity_type, entity_id);
+        return e->getType() == entity_type && e->getId() == entity_id;
     });
 }
 
@@ -199,6 +199,8 @@ void ClientGame::applyNetworkInterpolation()
 
     uint32_t renderTick = _latestServerTick - INTERP_DELAY_TICKS;
 
+    std::vector<uint32_t> toErase;
+
     for (auto &[key, buf] : _netBuffers) {
         auto &snaps = buf.snaps;
         if (snaps.size() < 2)
@@ -212,8 +214,10 @@ void ClientGame::applyNetworkInterpolation()
                 break;
             }
         }
-        if (!ent)
+        if (!ent) {
+            toErase.push_back(key);
             continue;
+        }
         Snapshot *a = nullptr;
         Snapshot *b = nullptr;
         for (size_t i = 0; i + 1 < snaps.size(); ++i) {
@@ -250,6 +254,9 @@ void ClientGame::applyNetworkInterpolation()
             snaps.pop_front();
         }
     }
+    for (auto key : toErase) {
+        _netBuffers.erase(key);
+    }
 }
 
 void ClientGame::processNetworkPackets()
@@ -270,10 +277,10 @@ void ClientGame::processNetworkPackets()
             break;
         }
         case 2: {
+            deleteEntity((int)p.entityType, (int)p.entityId);
             uint32_t key = makeKey(p.entityType, p.entityId);
             _netBuffers.erase(key);
 
-            deleteEntity((int)p.entityType, (int)p.entityId);
             break;
         }
         case 14:
