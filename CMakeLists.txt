@@ -22,6 +22,13 @@ find_package(asio CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 
+# Windows / Asio required definitions
+if (WIN32)
+    add_compile_definitions(
+        _WIN32_WINNT=0x0601
+        ASIO_STANDALONE
+    )
+endif()
 
 # Set the compiler optimization flags
 if (MSVC)
@@ -69,7 +76,6 @@ endif()
 
 
 target_link_libraries(r-type_ecs PUBLIC
-    OpenAL::OpenAL
     fmt::fmt
     sfml-graphics
     sfml-network
