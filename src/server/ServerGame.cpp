@@ -20,9 +20,17 @@
 #include <iostream>
 #include <memory>
 #include <unistd.h>
+#include <atomic>
+#include <csignal>
 
 #include "ServerGame.hpp"
 
+static std::atomic_bool g_sigint(false);
+
+static void handleSigint(int)
+{
+    g_sigint = true;
+}
 
 ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer *newCBuffer):
     networkReceiveBuffer(newRBuffer),
@@ -39,6 +47,7 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
     systemList.push_back(std::make_unique<CollisionSystem>());
     systemList.push_back(std::make_unique<MovementSystem>());
     networkServer.start();
+    std::signal(SIGINT, handleSigint);
 }
 
 
@@ -82,17 +91,16 @@ void ServerGame::Update() {
             networkSendBuffer->pushPacket(pkt);
             continue;
         }
-        ++j;
     }
 }
 
 
 void ServerGame::Loop() {
     Running = true;
-    Cooldown cooldown(20.0);
+    Cooldown cooldown(1.0);
     Cooldown tmp(0.01);
     cooldown.LaunchCooldown();
-    while(Running) {
+    while(Running && !g_sigint) {
         if (tmp.CheckCooldown() == true) {
             Update();
             tmp.LaunchCooldown();
@@ -104,6 +112,7 @@ void ServerGame::Loop() {
         }
         parseNetworkPackets();
     }
+    Running = false;
 }
 
 /**

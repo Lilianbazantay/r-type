@@ -6,6 +6,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <memory>
 #include <vector>
+#include <atomic>
 
 #include "../ecs/System/ISystem.hpp"
 #include "../ecs/relevant_data.hpp"
@@ -20,7 +21,7 @@ class ServerGame {
         std::vector<std::unique_ptr<ISystem>> systemList;
         sf::Time Prevtime;
         sf::Clock clock;
-        bool Running = false;
+        std::atomic_bool Running{false};
         uint32_t _serverTick = 0;
 
         NetworkServerBuffer *networkReceiveBuffer;
