@@ -55,21 +55,6 @@ void ComponentDrawer::drawComponentList(std::vector<AnimatedSpriteStruct>& vec, 
     }
 }
 
-
-// Attack
-void ComponentDrawer::drawComponentList(std::vector<AttackStruct> &vec, const char* label, const char*) {
-    for (size_t i = 0; i < vec.size(); ++i) {
-        ImGui::PushID((int)i);
-        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
-            ImGui::InputFloat("Damage", &vec[i].damage);
-            ImGui::InputFloat("Fire Rate", &vec[i].fireRate);
-            ImGui::InputFloat("Remaining", &vec[i].remaining);
-            ImGui::TreePop();
-        }
-        ImGui::PopID();
-    }
-}
-
 // Clock
 void ComponentDrawer::drawComponentList(std::vector<ClockStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {

@@ -20,6 +20,7 @@ inline std::string EntityTypeToString(EntityType type)
         case EntityType::player: return "player";
         case EntityType::weapon: return "weapon";
         case EntityType::bullet: return "bullet";
+        case EntityType::map: return "map";
         default:                 return "none";
     }
 }
@@ -30,6 +31,7 @@ inline EntityType StringToEntityType(const std::string& s)
     if (s == "player") return EntityType::player;
     if (s == "weapon") return EntityType::weapon;
     if (s == "bullet") return EntityType::bullet;
+    if (s == "map") return EntityType::map;
     return EntityType::none;
 }
 
@@ -67,14 +69,6 @@ inline void to_json(json& j, const Entity& e)
             {"size", { h.sizeX, h.sizeY }},
             {"layer", h.layers},
             {"mask",  h.masks}
-        };
-    }
-
-    if (!e.attack.empty()) {
-        const AttackStruct& a = e.attack[0];
-        c["attack"] = {
-            {"damage", a.damage},
-            {"fireRate", a.fireRate}
         };
     }
 
@@ -234,13 +228,6 @@ inline void from_json(const json& j, Entity& e)
         h.layers = c.at("hitbox").at("layer").get<std::vector<int>>();
         h.masks  = c.at("hitbox").at("mask").get<std::vector<int>>();
         e.hitbox.push_back(h);
-    }
-
-    if (c.contains("attack")) {
-        AttackStruct a;
-        a.damage   = c.at("attack").at("damage").get<float>();
-        a.fireRate = c.at("attack").at("fireRate").get<float>();
-        e.attack.push_back(a);
     }
 
     if (c.contains("clock"))
