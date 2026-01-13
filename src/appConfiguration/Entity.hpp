@@ -15,12 +15,23 @@ enum class EntityType {
 // =====================
 // Component Structures
 // =====================
-struct AnimatedSpriteStruct {
-    std::string file_path;
+struct AnimatedSpriteContext
+{
+    std::string path;
+    int number_of_sprite_x = 1;
+    int number_of_sprite_y = 1;
+};
+
+struct AnimatedSpriteStruct
+{
+    AnimatedSpriteContext idle;
+    AnimatedSpriteContext up;
+    AnimatedSpriteContext down;
+    AnimatedSpriteContext shoot;
+    AnimatedSpriteContext death;
+
     float size_x = 0.f;
     float size_y = 0.f;
-    int number_of_sprite_x = 0;
-    int number_of_sprite_y = 0;
     float animation_rate = 0.f;
     bool is_visible = true;
 };
@@ -75,14 +86,37 @@ struct PositionStruct {
     float y = 0.f;
 };
 
-struct SoundStruct {
-    std::string file_path;
+struct SoundContext
+{
+    std::string path;
+};
+
+struct SoundStruct
+{
+    SoundContext idle;
+    SoundContext up;
+    SoundContext down;
+    SoundContext shoot;
+    SoundContext death;
+
     float volume = 100.f;
     bool is_looping = false;
 };
 
-struct SpriteStruct {
-    std::string file_path;
+
+struct SpriteContext
+{
+    std::string path;
+};
+
+struct SpriteStruct
+{
+    SpriteContext idle;
+    SpriteContext up;
+    SpriteContext down;
+    SpriteContext shoot;
+    SpriteContext death;
+
     float size_x = 0.f;
     float size_y = 0.f;
     bool is_visible = true;
