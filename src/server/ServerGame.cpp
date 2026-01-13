@@ -56,7 +56,7 @@ void ServerGame::Update() {
         if (!data.entityList[j]->is_Alive()) {
             std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->pushPacket(pkt);
+            continuousBuffer->deleteEntity(data.entityList[j]->getType(), data.entityList[j]->getId());
             data.entityList.erase(data.entityList.begin() + j);
             j--;
             EListSize--;
@@ -69,7 +69,7 @@ void ServerGame::Update() {
             std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
                 data.entityList[j]->getId(), _serverTick, playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->addEntity(type, id, pkt);
+            continuousBuffer->addEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
             continue;
         }
         if (data.entityList[j]->hasChanged()) {
@@ -78,6 +78,7 @@ void ServerGame::Update() {
                 continue;
             std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, data.entityList[j]->getType(),
                 data.entityList[j]->getId(), _serverTick , playerPos->GetPosition().first, playerPos->GetPosition().second);
+            continuousBuffer->moveEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
             networkSendBuffer->pushPacket(pkt);
             continue;
         }
