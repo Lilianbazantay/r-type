@@ -23,6 +23,8 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     data.window.create(sf::VideoMode({1920, 1080}), "RTYPE");
     data.window.clear(sf::Color::Black);
     data.window.setActive(true);
+    data.bullet_count = 0;
+    data.enemy_count = 0;
     clock.restart();
     _inputManager.setClient(&client);
     Prevtime = clock.getElapsedTime();
@@ -40,6 +42,15 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     client.sendConnectionRequest(ipValue, client.getServerPort());
     client.sendStartGame();
 }
+
+bool ClientGame::IsEntityExist(int type, int id) {
+    std::vector<std::unique_ptr<IMediatorEntity>> &list = data.entityList;
+    for (size_t i = 0; i < list.size(); i++)
+        if (list[i]->getType() == type && list[i]->getId() == id)
+            return true;
+    return false;
+}
+
 
 /**
  * @brief updates the deltatime(runtime), and go through every entity and system.
@@ -91,7 +102,8 @@ void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, f
             data.entityList.push_back(std::make_unique<Background>());
             break;
         } case ENTITY_PLAYER: {
-            data.entityList.push_back(std::make_unique<Player>());
+            if (!IsEntityExist(entity_type, entity_id))
+                data.entityList.push_back(std::make_unique<Player>());
             break;
         } case ENTITY_ENEMY: {
             data.entityList.push_back(std::make_unique<Enemy>());
