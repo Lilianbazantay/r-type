@@ -9,6 +9,7 @@ enum class EntityType {
     player,
     weapon,
     bullet,
+    map,
     none,
 };
 
@@ -34,12 +35,6 @@ struct AnimatedSpriteStruct
     float size_y = 0.f;
     float animation_rate = 0.f;
     bool is_visible = true;
-};
-
-struct AttackStruct {
-    float damage = 0.f;
-    float fireRate = 0.f;
-    float remaining = 0.f;
 };
 
 struct ClockStruct {
@@ -139,7 +134,6 @@ public:
     EntityType type = EntityType::none;
 
     std::vector<AnimatedSpriteStruct> animatedSprite;
-    std::vector<AttackStruct> attack;
     std::vector<ClockStruct> clock;
     std::vector<CooldownStruct> cooldown;
     std::vector<DirectionStruct> direction;

@@ -12,7 +12,6 @@ public:
     ~ComponentDrawer() = default;
 
     static void drawComponentList(std::vector<AnimatedSpriteStruct> &vec, const char* label, const char*);
-    static void drawComponentList(std::vector<AttackStruct> &vec, const char* label, const char*);
     static void drawComponentList(std::vector<ClockStruct> &vec, const char* label, const char*);
     static void drawComponentList(std::vector<CooldownStruct> &vec, const char* label, const char*);
     static void drawComponentList(std::vector<DirectionStruct> &vec, const char* label, const char*);

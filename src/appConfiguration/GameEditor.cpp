@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 // Utils
 // =====================
 static const char* componentNames[] = {
-    "AnimatedSprite","Attack","Clock","Cooldown",
+    "AnimatedSprite","Clock","Cooldown",
     "Direction","EntitySpawner","Gravity","Hitbox",
     "Hp","Position","Sound","Sprite",
     "Strategy","Velocity"
@@ -273,7 +273,6 @@ void GameEditor::drawRightPanel()
     if (ImGui::Button("Add")) {
         switch (componentToAdd) {
             case 0:  e.animatedSprite.push_back({}); break;
-            case 1:  e.attack.push_back({}); break;
             case 2:  e.clock.push_back({}); break;
             case 3:  e.cooldown.push_back({}); break;
             case 4:  e.direction.push_back({}); break;
@@ -290,7 +289,6 @@ void GameEditor::drawRightPanel()
     }
 
     ComponentDrawer::drawComponentList(e.animatedSprite, "AnimatedSprite", "AS");
-    ComponentDrawer::drawComponentList(e.attack, "Attack", "AT");
     ComponentDrawer::drawComponentList(e.clock, "Clock", "CL");
     ComponentDrawer::drawComponentList(e.cooldown, "Cooldown", "CD");
     ComponentDrawer::drawComponentList(e.direction, "Direction", "DIR");
