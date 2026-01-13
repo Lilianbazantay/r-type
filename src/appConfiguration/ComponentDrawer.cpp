@@ -9,23 +9,52 @@
 
 #include "ComponentDrawer.hpp"
 
+static void DrawContextPath(const char* label, std::string& path)
+{
+    ImGui::InputText(label, &path);
+}
+
 // Animated Sprite
-void ComponentDrawer::drawComponentList(std::vector<AnimatedSpriteStruct> &vec, const char* label, const char*) {
+static void DrawAnimatedContext(const char* name, AnimatedSpriteContext& ctx)
+{
+    if (ImGui::TreeNode(name)) {
+        ImGui::InputText("Path", &ctx.path);
+        ImGui::InputInt("Grid X", &ctx.number_of_sprite_x);
+        ImGui::InputInt("Grid Y", &ctx.number_of_sprite_y);
+        ImGui::TreePop();
+    }
+}
+
+void ComponentDrawer::drawComponentList(std::vector<AnimatedSpriteStruct>& vec, const char* label, const char*)
+{
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
+
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
-            ImGui::InputText("File Path", &vec[i].file_path);
-            ImGui::InputFloat("Size X", &vec[i].size_x);
-            ImGui::InputFloat("Size Y", &vec[i].size_y);
-            ImGui::InputInt("Sprite X Count", &vec[i].number_of_sprite_x);
-            ImGui::InputInt("Sprite Y Count", &vec[i].number_of_sprite_y);
-            ImGui::InputFloat("Animation Rate", &vec[i].animation_rate);
-            ImGui::Checkbox("Visible", &vec[i].is_visible);
+
+            AnimatedSpriteStruct& a = vec[i];
+
+            ImGui::InputFloat("Size X", &a.size_x);
+            ImGui::InputFloat("Size Y", &a.size_y);
+            ImGui::InputFloat("Animation Rate", &a.animation_rate);
+            ImGui::Checkbox("Visible", &a.is_visible);
+
+            ImGui::Separator();
+            ImGui::Text("Contexts");
+
+            DrawAnimatedContext("Idle",  a.idle);
+            DrawAnimatedContext("Up",    a.up);
+            DrawAnimatedContext("Down",  a.down);
+            DrawAnimatedContext("Shoot", a.shoot);
+            DrawAnimatedContext("Death", a.death);
+
             ImGui::TreePop();
         }
+
         ImGui::PopID();
     }
 }
+
 
 // Attack
 void ComponentDrawer::drawComponentList(std::vector<AttackStruct> &vec, const char* label, const char*) {
@@ -242,30 +271,61 @@ void ComponentDrawer::drawComponentList(std::vector<PositionStruct> &vec, const 
 }
 
 // Sound
-void ComponentDrawer::drawComponentList(std::vector<SoundStruct> &vec, const char* label, const char*) {
+void ComponentDrawer::drawComponentList(std::vector<SoundStruct>& vec, const char* label, const char*)
+{
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
+
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
-            ImGui::InputText("File Path", &vec[i].file_path);
-            ImGui::InputFloat("Volume", &vec[i].volume);
-            ImGui::Checkbox("Looping", &vec[i].is_looping);
+
+            SoundStruct& s = vec[i];
+
+            ImGui::InputFloat("Volume", &s.volume);
+            ImGui::Checkbox("Looping", &s.is_looping);
+
+            ImGui::Separator();
+            ImGui::Text("Contexts");
+
+            DrawContextPath("Idle",  s.idle.path);
+            DrawContextPath("Up",    s.up.path);
+            DrawContextPath("Down",  s.down.path);
+            DrawContextPath("Shoot", s.shoot.path);
+            DrawContextPath("Death", s.death.path);
+
             ImGui::TreePop();
         }
+
         ImGui::PopID();
     }
 }
 
+
 // Sprite
-void ComponentDrawer::drawComponentList(std::vector<SpriteStruct> &vec, const char* label, const char*) {
+void ComponentDrawer::drawComponentList(std::vector<SpriteStruct>& vec, const char* label, const char*)
+{
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
+
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
-            ImGui::InputText("File Path", &vec[i].file_path);
-            ImGui::InputFloat("Size X", &vec[i].size_x);
-            ImGui::InputFloat("Size Y", &vec[i].size_y);
-            ImGui::Checkbox("Visible", &vec[i].is_visible);
+
+            SpriteStruct& s = vec[i];
+
+            ImGui::InputFloat("Size X", &s.size_x);
+            ImGui::InputFloat("Size Y", &s.size_y);
+            ImGui::Checkbox("Visible", &s.is_visible);
+
+            ImGui::Separator();
+            ImGui::Text("Contexts");
+
+            DrawContextPath("Idle",  s.idle.path);
+            DrawContextPath("Up",    s.up.path);
+            DrawContextPath("Down",  s.down.path);
+            DrawContextPath("Shoot", s.shoot.path);
+            DrawContextPath("Death", s.death.path);
+
             ImGui::TreePop();
         }
+
         ImGui::PopID();
     }
 }

@@ -1,170 +1,382 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+#include <string>
+#include <vector>
+#include <utility>
 #include "Entity.hpp"
+
 using json = nlohmann::json;
 
-// =====================
-// Component JSON Serialization
-// =====================
+// =====================================================
+// EntityType <-> string
+// =====================================================
 
-// AnimatedSpriteStruct
-inline void to_json(json& j, const AnimatedSpriteStruct& a) {
-    j = json{
-        {"file_path", a.file_path},
-        {"size_x", a.size_x},
-        {"size_y", a.size_y},
-        {"number_of_sprite_x", a.number_of_sprite_x},
-        {"number_of_sprite_y", a.number_of_sprite_y},
-        {"animation_rate", a.animation_rate},
-        {"is_visible", a.is_visible}
-    };
-}
-inline void from_json(const json& j, AnimatedSpriteStruct& a) {
-    j.at("file_path").get_to(a.file_path);
-    j.at("size_x").get_to(a.size_x);
-    j.at("size_y").get_to(a.size_y);
-    j.at("number_of_sprite_x").get_to(a.number_of_sprite_x);
-    j.at("number_of_sprite_y").get_to(a.number_of_sprite_y);
-    j.at("animation_rate").get_to(a.animation_rate);
-    j.at("is_visible").get_to(a.is_visible);
+inline std::string EntityTypeToString(EntityType type)
+{
+    switch (type)
+    {
+        case EntityType::enemy:  return "enemy";
+        case EntityType::player: return "player";
+        case EntityType::weapon: return "weapon";
+        case EntityType::bullet: return "bullet";
+        default:                 return "none";
+    }
 }
 
-// AttackStruct
-inline void to_json(json& j, const AttackStruct& a) {
-    j = json{{"damage", a.damage}, {"fireRate", a.fireRate}, {"remaining", a.remaining}};
-}
-inline void from_json(const json& j, AttackStruct& a) {
-    j.at("damage").get_to(a.damage);
-    j.at("fireRate").get_to(a.fireRate);
-    j.at("remaining").get_to(a.remaining);
-}
-
-// ClockStruct
-inline void to_json(json& j, const ClockStruct& c) {
-    j = json{{"elapsedTime", c.elapsedTime}};
-}
-inline void from_json(const json& j, ClockStruct& c) {
-    j.at("elapsedTime").get_to(c.elapsedTime);
+inline EntityType StringToEntityType(const std::string& s)
+{
+    if (s == "enemy")  return EntityType::enemy;
+    if (s == "player") return EntityType::player;
+    if (s == "weapon") return EntityType::weapon;
+    if (s == "bullet") return EntityType::bullet;
+    return EntityType::none;
 }
 
-// CooldownStruct
-inline void to_json(json& j, const CooldownStruct& c) {
-    j = json{{"length", c.length}, {"remaining", c.remaining}, {"timestamp_activation", c.timestamp_activation}};
-}
-inline void from_json(const json& j, CooldownStruct& c) {
-    j.at("length").get_to(c.length);
-    j.at("remaining").get_to(c.remaining);
-    j.at("timestamp_activation").get_to(c.timestamp_activation);
-}
+// =====================================================
+// Entity -> JSON (CONFIG FORMAT)
+// =====================================================
 
-// DirectionStruct
-inline void to_json(json& j, const DirectionStruct& d) {
-    j = json{{"x", d.x}, {"y", d.y}, {"angle", d.angle}};
-}
-inline void from_json(const json& j, DirectionStruct& d) {
-    j.at("x").get_to(d.x);
-    j.at("y").get_to(d.y);
-    j.at("angle").get_to(d.angle);
-}
-
-// EntitySpawnerStruct
-inline void to_json(json& j, const EntitySpawnerStruct& e) {
-    j = json{{"cooldown_length", e.cooldown_length}, {"is_activated", e.is_activated}, {"entityIndex", e.entityIndex}};
-}
-inline void from_json(const json& j, EntitySpawnerStruct& e) {
-    j.at("cooldown_length").get_to(e.cooldown_length);
-    j.at("is_activated").get_to(e.is_activated);
-    j.at("entityIndex").get_to(e.entityIndex);
-}
-
-// GravityStruct
-inline void to_json(json& j, const GravityStruct& g) {
-    j = json{{"is_activated", g.is_activated}, {"attraction_strength", g.attraction_strength}};
-}
-inline void from_json(const json& j, GravityStruct& g) {
-    j.at("is_activated").get_to(g.is_activated);
-    j.at("attraction_strength").get_to(g.attraction_strength);
-}
-
-// HitboxStruct
-inline void to_json(json& j, const HitboxStruct& h) {
-    j = json{{"sizeX", h.sizeX}, {"sizeY", h.sizeY}, {"damage", h.damage}, {"masks", h.masks}, {"layers", h.layers}};
-}
-inline void from_json(const json& j, HitboxStruct& h) {
-    j.at("sizeX").get_to(h.sizeX);
-    j.at("sizeY").get_to(h.sizeY);
-    j.at("damage").get_to(h.damage);
-    j.at("masks").get_to(h.masks);
-    j.at("layers").get_to(h.layers);
-}
-
-// HpStruct
-inline void to_json(json& j, const HpStruct& h) { j = json{{"value", h.value}}; }
-inline void from_json(const json& j, HpStruct& h) { j.at("value").get_to(h.value); }
-
-// PositionStruct
-inline void to_json(json& j, const PositionStruct& p) { j = json{{"x", p.x}, {"y", p.y}}; }
-inline void from_json(const json& j, PositionStruct& p) { j.at("x").get_to(p.x); j.at("y").get_to(p.y); }
-
-// SoundStruct
-inline void to_json(json& j, const SoundStruct& s) { j = json{{"file_path", s.file_path}, {"volume", s.volume}, {"is_looping", s.is_looping}}; }
-inline void from_json(const json& j, SoundStruct& s) { j.at("file_path").get_to(s.file_path); j.at("volume").get_to(s.volume); j.at("is_looping").get_to(s.is_looping); }
-
-// SpriteStruct
-inline void to_json(json& j, const SpriteStruct& s) { j = json{{"file_path", s.file_path}, {"size_x", s.size_x}, {"size_y", s.size_y}, {"is_visible", s.is_visible}}; }
-inline void from_json(const json& j, SpriteStruct& s) { j.at("file_path").get_to(s.file_path); j.at("size_x").get_to(s.size_x); j.at("size_y").get_to(s.size_y); j.at("is_visible").get_to(s.is_visible); }
-
-// StrategyStruct
-inline void to_json(json& j, const StrategyStruct& s) { j = json{{"pattern", s.pattern}}; }
-inline void from_json(const json& j, StrategyStruct& s) { j.at("pattern").get_to(s.pattern); }
-
-// VelocityStruct
-inline void to_json(json& j, const VelocityStruct& v) { j = json{{"value", v.value}}; }
-inline void from_json(const json& j, VelocityStruct& v) { j.at("value").get_to(v.value); }
-
-// =====================
-// Entity JSON Serialization (global namespace)
-// =====================
-inline void to_json(json& j, const Entity& e) {
-    j = json{
+inline void to_json(json& j, const Entity& e)
+{
+    // =====================
+    // ENTITY
+    // =====================
+    j["entity"] = {
         {"name", e.name},
-        {"type", static_cast<int>(e.type)},
-        {"animatedSprite", e.animatedSprite},
-        {"attack", e.attack},
-        {"clock", e.clock},
-        {"cooldown", e.cooldown},
-        {"direction", e.direction},
-        {"entitySpawner", e.entitySpawner},
-        {"gravity", e.gravity},
-        {"hitbox", e.hitbox},
-        {"hp", e.hp},
-        {"position", e.position},
-        {"sound", e.sound},
-        {"sprite", e.sprite},
-        {"strategy", e.strategy},
-        {"velocity", e.velocity}
+        {"type", EntityTypeToString(e.type)}
     };
+
+    // =====================
+    // COMPONENTS
+    // =====================
+    json c = json::object();
+
+    if (!e.hp.empty())
+        c["hp"] = e.hp[0].value;
+
+    if (!e.velocity.empty())
+        c["velocity"] = e.velocity[0].value;
+
+    if (!e.position.empty())
+        c["position"] = { e.position[0].x, e.position[0].y };
+
+    if (!e.hitbox.empty()) {
+        const HitboxStruct& h = e.hitbox[0];
+        c["hitbox"] = {
+            {"size", { h.sizeX, h.sizeY }},
+            {"layer", h.layers},
+            {"mask",  h.masks}
+        };
+    }
+
+    if (!e.attack.empty()) {
+        const AttackStruct& a = e.attack[0];
+        c["attack"] = {
+            {"damage", a.damage},
+            {"fireRate", a.fireRate}
+        };
+    }
+
+    if (!e.clock.empty())
+        c["clock"] = {
+            {"elapsedTime", e.clock[0].elapsedTime}
+        };
+
+    if (!e.cooldown.empty()) {
+        const CooldownStruct& cd = e.cooldown[0];
+        c["cooldown"] = {
+            {"length", cd.length},
+            {"remaining", cd.remaining},
+            {"timestamp_activation", cd.timestamp_activation}
+        };
+    }
+
+    if (!e.direction.empty()) {
+        const DirectionStruct& d = e.direction[0];
+        c["direction"] = {
+            {"x", d.x},
+            {"y", d.y},
+            {"angle", d.angle}
+        };
+    }
+
+    if (!e.entitySpawner.empty()) {
+        const EntitySpawnerStruct& es = e.entitySpawner[0];
+        c["entitySpawner"] = {
+            {"cooldown_length", es.cooldown_length},
+            {"is_activated", es.is_activated},
+            {"entityIndex", es.entityIndex}
+        };
+    }
+
+    if (!e.gravity.empty()) {
+        const GravityStruct& g = e.gravity[0];
+        c["gravity"] = {
+            {"is_activated", g.is_activated},
+            {"attraction_strength", g.attraction_strength}
+        };
+    }
+
+    // ---------------------
+    // AnimatedSprite
+    // ---------------------
+    if (!e.animatedSprite.empty()) {
+        json arr = json::array();
+        for (const auto& a : e.animatedSprite) {
+            arr.push_back({
+                {"size_x", a.size_x},
+                {"size_y", a.size_y},
+                {"animation_rate", a.animation_rate},
+                {"is_visible", a.is_visible},
+                {"idle",  {{"path", a.idle.path}, {"number_of_sprite_x", a.idle.number_of_sprite_x}, {"number_of_sprite_y", a.idle.number_of_sprite_y}}},
+                {"up",    {{"path", a.up.path},   {"number_of_sprite_x", a.up.number_of_sprite_x},   {"number_of_sprite_y", a.up.number_of_sprite_y}}},
+                {"down",  {{"path", a.down.path}, {"number_of_sprite_x", a.down.number_of_sprite_x}, {"number_of_sprite_y", a.down.number_of_sprite_y}}},
+                {"shoot", {{"path", a.shoot.path},{"number_of_sprite_x", a.shoot.number_of_sprite_x},{"number_of_sprite_y", a.shoot.number_of_sprite_y}}},
+                {"death", {{"path", a.death.path},{"number_of_sprite_x", a.death.number_of_sprite_x},{"number_of_sprite_y", a.death.number_of_sprite_y}}}
+            });
+        }
+        c["animatedSprite"] = arr;
+    }
+
+    // ---------------------
+    // Sprite
+    // ---------------------
+    if (!e.sprite.empty()) {
+        json arr = json::array();
+        for (const auto& s : e.sprite) {
+            arr.push_back({
+                {"size_x", s.size_x},
+                {"size_y", s.size_y},
+                {"is_visible", s.is_visible},
+                {"idle",  {{"path", s.idle.path}}},
+                {"up",    {{"path", s.up.path}}},
+                {"down",  {{"path", s.down.path}}},
+                {"shoot", {{"path", s.shoot.path}}},
+                {"death", {{"path", s.death.path}}}
+            });
+        }
+        c["sprite"] = arr;
+    }
+
+    // ---------------------
+    // Sound
+    // ---------------------
+    if (!e.sound.empty()) {
+        json arr = json::array();
+        for (const auto& s : e.sound) {
+            arr.push_back({
+                {"volume", s.volume},
+                {"is_looping", s.is_looping},
+                {"idle",  {{"path", s.idle.path}}},
+                {"up",    {{"path", s.up.path}}},
+                {"down",  {{"path", s.down.path}}},
+                {"shoot", {{"path", s.shoot.path}}},
+                {"death", {{"path", s.death.path}}}
+            });
+        }
+        c["sound"] = arr;
+    }
+
+    j["components"] = c;
+
+    // =====================
+    // DATA
+    // =====================
+    json d = json::object();
+
+    if (!e.strategy.empty()) {
+        d["strategy"] = {
+            {"patterns", e.strategy[0].pattern}
+        };
+    }
+
+    j["data"] = d;
 }
 
-inline void from_json(const json& j, Entity& e) {
-    int t;
-    j.at("name").get_to(e.name);
-    j.at("type").get_to(t);
-    e.type = static_cast<EntityType>(t);
+// =====================================================
+// JSON -> Entity
+// =====================================================
 
-    j.at("animatedSprite").get_to(e.animatedSprite);
-    j.at("attack").get_to(e.attack);
-    j.at("clock").get_to(e.clock);
-    j.at("cooldown").get_to(e.cooldown);
-    j.at("direction").get_to(e.direction);
-    j.at("entitySpawner").get_to(e.entitySpawner);
-    j.at("gravity").get_to(e.gravity);
-    j.at("hitbox").get_to(e.hitbox);
-    j.at("hp").get_to(e.hp);
-    j.at("position").get_to(e.position);
-    j.at("sound").get_to(e.sound);
-    j.at("sprite").get_to(e.sprite);
-    j.at("strategy").get_to(e.strategy);
-    j.at("velocity").get_to(e.velocity);
+inline void from_json(const json& j, Entity& e)
+{
+    e = Entity{}; // reset propre
+
+    // =====================
+    // ENTITY
+    // =====================
+    const json& je = j.at("entity");
+    e.name = je.at("name").get<std::string>();
+    e.type = StringToEntityType(je.at("type").get<std::string>());
+
+    // =====================
+    // COMPONENTS
+    // =====================
+    const json& c = j.at("components");
+
+    if (c.contains("hp"))
+        e.hp.push_back({ c.at("hp").get<int>() });
+
+    if (c.contains("velocity"))
+        e.velocity.push_back({ c.at("velocity").get<float>() });
+
+    if (c.contains("position")) {
+        PositionStruct p;
+        p.x = c.at("position")[0].get<float>();
+        p.y = c.at("position")[1].get<float>();
+        e.position.push_back(p);
+    }
+
+    if (c.contains("hitbox")) {
+        HitboxStruct h;
+        h.sizeX = c.at("hitbox").at("size")[0].get<float>();
+        h.sizeY = c.at("hitbox").at("size")[1].get<float>();
+        h.layers = c.at("hitbox").at("layer").get<std::vector<int>>();
+        h.masks  = c.at("hitbox").at("mask").get<std::vector<int>>();
+        e.hitbox.push_back(h);
+    }
+
+    if (c.contains("attack")) {
+        AttackStruct a;
+        a.damage   = c.at("attack").at("damage").get<float>();
+        a.fireRate = c.at("attack").at("fireRate").get<float>();
+        e.attack.push_back(a);
+    }
+
+    if (c.contains("clock"))
+        e.clock.push_back({
+            c.at("clock").at("elapsedTime").get<float>()
+        });
+
+    if (c.contains("cooldown")) {
+        CooldownStruct cd;
+        cd.length = c.at("cooldown").at("length").get<double>();
+        cd.remaining = c.at("cooldown").at("remaining").get<double>();
+        cd.timestamp_activation =
+            c.at("cooldown").at("timestamp_activation").get<double>();
+        e.cooldown.push_back(cd);
+    }
+
+    if (c.contains("direction")) {
+        DirectionStruct d;
+        d.x = c.at("direction").at("x").get<float>();
+        d.y = c.at("direction").at("y").get<float>();
+        d.angle = c.at("direction").at("angle").get<float>();
+        e.direction.push_back(d);
+    }
+
+    if (c.contains("entitySpawner")) {
+        EntitySpawnerStruct es;
+        es.cooldown_length =
+            c.at("entitySpawner").at("cooldown_length").get<double>();
+        es.is_activated =
+            c.at("entitySpawner").at("is_activated").get<bool>();
+        es.entityIndex =
+            c.at("entitySpawner").at("entityIndex").get<int>();
+        e.entitySpawner.push_back(es);
+    }
+
+    if (c.contains("gravity")) {
+        GravityStruct g;
+        g.is_activated =
+            c.at("gravity").at("is_activated").get<bool>();
+        g.attraction_strength =
+            c.at("gravity").at("attraction_strength").get<float>();
+        e.gravity.push_back(g);
+    }
+
+    // ---------------------
+    // AnimatedSprite
+    // ---------------------
+    if (c.contains("animatedSprite")) {
+        for (const auto& a : c.at("animatedSprite")) {
+            AnimatedSpriteStruct as;
+            as.size_x = a.at("size_x").get<float>();
+            as.size_y = a.at("size_y").get<float>();
+            as.animation_rate = a.at("animation_rate").get<float>();
+            as.is_visible = a.at("is_visible").get<bool>();
+
+            auto loadCtx = [](const json& jctx) -> AnimatedSpriteContext {
+                AnimatedSpriteContext ctx;
+                ctx.path = jctx.at("path").get<std::string>();
+                ctx.number_of_sprite_x = jctx.at("number_of_sprite_x").get<int>();
+                ctx.number_of_sprite_y = jctx.at("number_of_sprite_y").get<int>();
+                return ctx;
+            };
+
+            as.idle  = loadCtx(a.at("idle"));
+            as.up    = loadCtx(a.at("up"));
+            as.down  = loadCtx(a.at("down"));
+            as.shoot = loadCtx(a.at("shoot"));
+            as.death = loadCtx(a.at("death"));
+
+            e.animatedSprite.push_back(as);
+        }
+    }
+
+    // ---------------------
+    // Sprite
+    // ---------------------
+    if (c.contains("sprite")) {
+        for (const auto& s : c.at("sprite")) {
+            SpriteStruct ss;
+            ss.size_x = s.at("size_x").get<float>();
+            ss.size_y = s.at("size_y").get<float>();
+            ss.is_visible = s.at("is_visible").get<bool>();
+
+            auto loadCtx = [](const json& jctx) -> SpriteContext {
+                SpriteContext ctx;
+                ctx.path = jctx.at("path").get<std::string>();
+                return ctx;
+            };
+
+            ss.idle  = loadCtx(s.at("idle"));
+            ss.up    = loadCtx(s.at("up"));
+            ss.down  = loadCtx(s.at("down"));
+            ss.shoot = loadCtx(s.at("shoot"));
+            ss.death = loadCtx(s.at("death"));
+
+            e.sprite.push_back(ss);
+        }
+    }
+
+    // ---------------------
+    // Sound
+    // ---------------------
+    if (c.contains("sound")) {
+        for (const auto& s : c.at("sound")) {
+            SoundStruct ss;
+            ss.volume = s.at("volume").get<float>();
+            ss.is_looping = s.at("is_looping").get<bool>();
+
+            auto loadCtx = [](const json& jctx) -> SoundContext {
+                SoundContext ctx;
+                ctx.path = jctx.at("path").get<std::string>();
+                return ctx;
+            };
+
+            ss.idle  = loadCtx(s.at("idle"));
+            ss.up    = loadCtx(s.at("up"));
+            ss.down  = loadCtx(s.at("down"));
+            ss.shoot = loadCtx(s.at("shoot"));
+            ss.death = loadCtx(s.at("death"));
+
+            e.sound.push_back(ss);
+        }
+    }
+
+    // =====================
+    // DATA
+    // =====================
+    if (j.contains("data")) {
+        const json& d = j.at("data");
+
+        if (d.contains("strategy")) {
+            StrategyStruct st;
+            st.pattern =
+                d.at("strategy").at("patterns")
+                    .get<std::vector<std::pair<int,int>>>();
+            e.strategy.push_back(st);
+        }
+    }
 }

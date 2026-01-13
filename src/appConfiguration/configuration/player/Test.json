@@ -1,0 +1,129 @@
+{
+    "components": {
+        "animatedSprite": [
+            {
+                "animation_rate": 0.0,
+                "death": {
+                    "number_of_sprite_x": 1,
+                    "number_of_sprite_y": 1,
+                    "path": ""
+                },
+                "down": {
+                    "number_of_sprite_x": 1,
+                    "number_of_sprite_y": 1,
+                    "path": ""
+                },
+                "idle": {
+                    "number_of_sprite_x": 1,
+                    "number_of_sprite_y": 1,
+                    "path": ""
+                },
+                "is_visible": true,
+                "shoot": {
+                    "number_of_sprite_x": 1,
+                    "number_of_sprite_y": 1,
+                    "path": ""
+                },
+                "size_x": 0.0,
+                "size_y": 0.0,
+                "up": {
+                    "number_of_sprite_x": 1,
+                    "number_of_sprite_y": 1,
+                    "path": ""
+                }
+            }
+        ],
+        "attack": {
+            "damage": 0.0,
+            "fireRate": 0.0
+        },
+        "clock": {
+            "elapsedTime": 0.0
+        },
+        "cooldown": {
+            "length": 0.0,
+            "remaining": 0.0,
+            "timestamp_activation": 0.0
+        },
+        "direction": {
+            "angle": 0.0,
+            "x": 0.0,
+            "y": 0.0
+        },
+        "entitySpawner": {
+            "cooldown_length": 0.0,
+            "entityIndex": -1,
+            "is_activated": false
+        },
+        "gravity": {
+            "attraction_strength": 0.0,
+            "is_activated": false
+        },
+        "hitbox": {
+            "layer": [],
+            "mask": [],
+            "size": [
+                0.0,
+                0.0
+            ]
+        },
+        "hp": 0,
+        "position": [
+            0.0,
+            0.0
+        ],
+        "sound": [
+            {
+                "death": {
+                    "path": ""
+                },
+                "down": {
+                    "path": ""
+                },
+                "idle": {
+                    "path": ""
+                },
+                "is_looping": false,
+                "shoot": {
+                    "path": ""
+                },
+                "up": {
+                    "path": ""
+                },
+                "volume": 100.0
+            }
+        ],
+        "sprite": [
+            {
+                "death": {
+                    "path": ""
+                },
+                "down": {
+                    "path": ""
+                },
+                "idle": {
+                    "path": ""
+                },
+                "is_visible": true,
+                "shoot": {
+                    "path": ""
+                },
+                "size_x": 0.0,
+                "size_y": 0.0,
+                "up": {
+                    "path": ""
+                }
+            }
+        ],
+        "velocity": 0.0
+    },
+    "data": {
+        "strategy": {
+            "patterns": []
+        }
+    },
+    "entity": {
+        "name": "Test",
+        "type": "player"
+    }
+}
