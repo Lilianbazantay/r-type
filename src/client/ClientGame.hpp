@@ -58,6 +58,7 @@ class ClientGame {
         void pushSnapshot(uint8_t type, uint16_t id, uint32_t tick, float x, float y);
         void applyNetworkInterpolation();
 
+        bool IsEntityExist(int, int);
     public:
         ClientGame(std::string ip, int port, NetworkBuffer *netBuffer);
         ~ClientGame() = default;

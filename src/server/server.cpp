@@ -21,9 +21,10 @@
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
-Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkClientBuffer *newCBuffer)
+Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkContinuousBuffer *newCBuffer)
 : receivedBuffer(newRBuffer),
   sendBuffer(newSBuffer),
+  continuousBuffer(newCBuffer),
   io_ctx_(),
   work_guard_(asio::make_work_guard(io_ctx_)),
   socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
@@ -146,7 +147,7 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
             [](std::error_code, std::size_t) {}
         );
     } catch(std::exception &e) {
-        std::cout << e.what() << "\n";
+        std::cout << e.what() << std::endl;
     }
 }
 
@@ -161,7 +162,7 @@ void Server::send(const std::string& host, __uint16_t port, std::vector<uint8_t>
             [](std::error_code, std::size_t) {}
         );
     } catch(std::exception &e) {
-        std::cout << e.what() << "\n";
+        std::cout << e.what() << std::endl;
     }
 }
 
@@ -180,7 +181,6 @@ size_t Server::addIp() {
     for (size_t i = 0; i < list_ip.size(); ++i)
         if (list_ip.at(i).empty()) {
             list_ip.at(i) = remote_endpoint_.address().to_string();
-            std::cout << list_ip.at(i);
             return i;
         }
     return 5;
@@ -193,7 +193,6 @@ size_t Server::addIp() {
  * @param tmpIP IP of the client linked to the port
  */
 size_t Server::addPort(size_t id) {
-    std::cout << id;
     if (id == 5)
         return id;
     list_port.at(id) = remote_endpoint_.port();
@@ -208,6 +207,9 @@ void Server::packetDispatch() {
     if (receiver.getPayload() == 6) {
         addConnection(addPort(addIp()));
         send(15, remote_endpoint_.address().to_string(), remote_endpoint_.port());
+        std::vector<std::vector<uint8_t>> continuousPackets = continuousBuffer->getAllPackets();
+        for(size_t i = 0; i < continuousPackets.size(); i++)
+            send(remote_endpoint_.address().to_string(), remote_endpoint_.port(), continuousPackets[i]);
     }
     if (receiver.getPayload() == 1 && is_connected.at(receiver.getPlayerId()) && has_started.at(receiver.getPlayerId())) {
         receivedBuffer->pushPacket(receiver);
