@@ -8,6 +8,10 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <string>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 #include "ComponentDrawer.hpp"
 #include "JsonUtils.hpp"
@@ -26,6 +30,22 @@ static const char* componentNames[] = {
 
 ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
 
+static std::string getCurrentDateTime()
+{
+    std::time_t now = std::time(nullptr);
+    std::tm localTime = *std::localtime(&now);
+
+    std::ostringstream oss;
+    oss << std::setw(2) << std::setfill('0') << localTime.tm_mday << "/"
+        << std::setw(2) << std::setfill('0') << (localTime.tm_mon + 1) << "/"
+        << (localTime.tm_year + 1900) << " - "
+        << std::setw(2) << std::setfill('0') << localTime.tm_hour << ":"
+        << std::setw(2) << std::setfill('0') << localTime.tm_min << " : ";
+
+    return oss.str();
+}
+
+
 // =====================
 // Public
 // =====================
@@ -33,9 +53,9 @@ void GameEditor::RunGameEditor()
 {
     initWindow();
 
-    while (window.isOpen()) {
+    while (_window.isOpen()) {
         processEvents();
-        ImGui::SFML::Update(window, deltaClock.restart());
+        ImGui::SFML::Update(_window, _deltaClock.restart());
 
         updateLayout();
 
@@ -132,7 +152,7 @@ void GameEditor::LoadAllEntities()
             }
         }
 
-        selectedEntityIndex = -1;
+        _selectedEntityIndex = -1;
         std::cout << "Loaded all entities from configuration folders.\n";
     } catch (const std::exception& e) {
         std::cerr << "LoadAllEntities error: " << e.what() << "\n";
@@ -144,10 +164,10 @@ void GameEditor::LoadAllEntities()
 // =====================
 void GameEditor::initWindow()
 {
-    window.create(sf::VideoMode(1920, 1080), "[Insert Name] Editor");
-    window.setFramerateLimit(60);
+    _window.create(sf::VideoMode(1920, 1080), "[Insert Name] Editor");
+    _window.setFramerateLimit(60);
 
-    if (!ImGui::SFML::Init(window)) {
+    if (!ImGui::SFML::Init(_window)) {
         throw std::runtime_error("Failed to init ImGui-SFML");
     }
 
@@ -176,10 +196,10 @@ void GameEditor::initWindow()
 void GameEditor::processEvents()
 {
     sf::Event event;
-    while (window.pollEvent(event)) {
+    while (_window.pollEvent(event)) {
         ImGui::SFML::ProcessEvent(event);
         if (event.type == sf::Event::Closed)
-            window.close();
+            _window.close();
     }
 }
 
@@ -188,12 +208,12 @@ void GameEditor::processEvents()
 // =====================
 void GameEditor::updateLayout()
 {
-    winSize = ImGui::GetIO().DisplaySize;
+    _winSize = ImGui::GetIO().DisplaySize;
 
-    sideWidth    = winSize.x * 0.2f;
-    bottomHeight = winSize.y * 0.2f;
-    centerWidth  = winSize.x - sideWidth * 2.f;
-    centerHeight = winSize.y - bottomHeight;
+    _sideWidth    = _winSize.x * 0.2f;
+    _bottomHeight = _winSize.y * 0.2f;
+    _centerWidth  = _winSize.x - _sideWidth * 2.f;
+    _centerHeight = _winSize.y - _bottomHeight;
 }
 
 // =====================
@@ -202,7 +222,7 @@ void GameEditor::updateLayout()
 void GameEditor::drawTopBar()
 {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(winSize.x, 40));
+    ImGui::SetNextWindowSize(ImVec2(_winSize.x, 40));
     ImGui::Begin("TopBar", nullptr,
                  ImGuiWindowFlags_NoDecoration |
                  ImGuiWindowFlags_NoMove |
@@ -212,10 +232,12 @@ void GameEditor::drawTopBar()
 
     if (ImGui::Button("Save")) {
         SaveAllEntities();
+        _log.push_back("Save the data");
     }
     ImGui::SameLine();
     if (ImGui::Button("Import")) {
         LoadAllEntities();
+        _log.push_back("Load the data");
     }
 
     ImGui::End();
@@ -224,27 +246,29 @@ void GameEditor::drawTopBar()
 void GameEditor::drawLeftPanel()
 {
     ImGui::SetNextWindowPos(ImVec2(0.f, 40.f));
-    ImGui::SetNextWindowSize(ImVec2(sideWidth, winSize.y - 40.f));
+    ImGui::SetNextWindowSize(ImVec2(_sideWidth, _winSize.y - 40.f));
     ImGui::Begin("Entities", nullptr, windowFlags);
 
     ImGui::Columns(2, nullptr, false);
 
-    if (ImGui::Button("Add Entity"))
+    if (ImGui::Button("Add Entity")) {
         entities.push_back(Entity{});
+        _log.push_back("Create a new entity");
+    }
 
     ImGui::Separator();
 
     for (int i = 0; i < (int)entities.size(); i++) {
         ImGui::PushID(i);
 
-        if (ImGui::Selectable(entities[i].name.c_str(), selectedEntityIndex == i))
-            selectedEntityIndex = i;
+        if (ImGui::Selectable(entities[i].name.c_str(), _selectedEntityIndex == i))
+            _selectedEntityIndex = i;
 
         ImGui::NextColumn();
 
         if (ImGui::Button("X")) {
             entities.erase(entities.begin() + i);
-            selectedEntityIndex = -1;
+            _selectedEntityIndex = -1;
             ImGui::PopID();
             break;
         }
@@ -260,17 +284,17 @@ void GameEditor::drawLeftPanel()
 
 void GameEditor::drawRightPanel()
 {
-    ImGui::SetNextWindowPos(ImVec2(winSize.x - sideWidth, 40.f));
-    ImGui::SetNextWindowSize(ImVec2(sideWidth, winSize.y - bottomHeight - 40.f));
+    ImGui::SetNextWindowPos(ImVec2(_winSize.x - _sideWidth, 40.f));
+    ImGui::SetNextWindowSize(ImVec2(_sideWidth, _winSize.y - _bottomHeight - 40.f));
     ImGui::Begin("Inspector", nullptr, windowFlags);
 
-    if (selectedEntityIndex < 0 || selectedEntityIndex >= (int)entities.size()) {
+    if (_selectedEntityIndex < 0 || _selectedEntityIndex >= (int)entities.size()) {
         ImGui::Text("No entity selected");
         ImGui::End();
         return;
     }
 
-    Entity& e = entities[selectedEntityIndex];
+    Entity& e = entities[_selectedEntityIndex];
 
     ImGui::Text("Entity Inspector");
     ImGui::Separator();
@@ -307,6 +331,7 @@ void GameEditor::drawRightPanel()
         }
         if (ImGui::Button("Add Layer")) {
             e._paralaxe.push_back({ "", 0.f });
+            _log.push_back("Add a Layer to the map:" + e.name);
         }
     }
 
@@ -319,19 +344,58 @@ void GameEditor::drawRightPanel()
 
     if (ImGui::Button("Add")) {
         switch (componentToAdd) {
-            case 0:  e.animatedSprite.push_back({}); break;
-            case 1:  e.clock.push_back({}); break;
-            case 2:  e.cooldown.push_back({}); break;
-            case 3:  e.direction.push_back({}); break;
-            case 4:  e.entitySpawner.push_back({}); break;
-            case 5:  e.gravity.push_back({}); break;
-            case 6:  e.hitbox.push_back({}); break;
-            case 7:  e.hp.push_back({}); break;
-            case 8:  e.position.push_back({}); break;
-            case 9: e.sound.push_back({}); break;
-            case 10: e.sprite.push_back({}); break;
-            case 11: e.strategy.push_back({}); break;
-            case 12: e.velocity.push_back({}); break;
+            case 0:
+                 e.animatedSprite.push_back({});
+                 _log.push_back("Add a component: AnimatedSprite to the entity: " + e.name);
+                 break;
+            case 1:
+                 e.clock.push_back({});
+                 _log.push_back("Add a component: Clock to the entity: " + e.name);
+                 break;
+            case 2:
+                 e.cooldown.push_back({});
+                 _log.push_back("Add a component: Cooldown to the entity: " + e.name);
+                 break;
+            case 3:
+                 e.direction.push_back({});
+                 _log.push_back("Add a component: Direction to the entity: " + e.name);
+                 break;
+            case 4:
+                 e.entitySpawner.push_back({});
+                 _log.push_back("Add a component: EntitySpawner to the entity: " + e.name);
+                 break;
+            case 5:
+                 e.gravity.push_back({});
+                 _log.push_back("Add a component: Gravity to the entity: " + e.name);
+                 break;
+            case 6:
+                 e.hitbox.push_back({});
+                 _log.push_back("Add a component: Hitbox to the entity: " + e.name);
+                 break;
+            case 7:
+                 e.hp.push_back({});
+                 _log.push_back("Add a component: Hp to the entity: " + e.name);
+                 break;
+            case 8:
+                 e.position.push_back({});
+                 _log.push_back("Add a component: Position to the entity: " + e.name);
+                 break;
+            case 9:
+                e.sound.push_back({});
+                _log.push_back("Add a component: Sound to the entity: " + e.name);
+                break;
+            case 10:
+                e.sprite.push_back({});
+                _log.push_back("Add a component: Sprite to the entity: " + e.name);
+                break;
+            case 11:
+                e.strategy.push_back({});
+                _log.push_back("Add a component: Strategy to the entity: " + e.name);
+                break;
+            case 12:
+                e.velocity.push_back({});
+                _log.push_back("Add a component: Velocity to the entity: " + e.name);
+                break;
         }
     }
 
@@ -354,29 +418,36 @@ void GameEditor::drawRightPanel()
 
 void GameEditor::drawBottomPanel()
 {
-    ImGui::SetNextWindowPos(ImVec2(sideWidth, winSize.y - bottomHeight));
-    ImGui::SetNextWindowSize(ImVec2(centerWidth, bottomHeight));
+    ImGui::SetNextWindowPos(ImVec2(_sideWidth, _winSize.y - _bottomHeight));
+    ImGui::SetNextWindowSize(ImVec2(_centerWidth, _bottomHeight));
     ImGui::Begin("Bottom", nullptr, windowFlags);
+
+    std::string dateTime = getCurrentDateTime();
+    for (size_t i = 0; i < _log.size(); i++) {
+        std::string text = dateTime + " - " + _log[i];
+        ImGui::Text("%s", text.c_str());
+    }
+
     ImGui::End();
 }
 
 void GameEditor::drawCenterPanel()
 {
-    ImGui::SetNextWindowPos(ImVec2(sideWidth, 40.f));
-    ImGui::SetNextWindowSize(ImVec2(centerWidth, centerHeight - 40.f));
+    ImGui::SetNextWindowPos(ImVec2(_sideWidth, 40.f));
+    ImGui::SetNextWindowSize(ImVec2(_centerWidth, _centerHeight - 40.f));
     ImGui::Begin("Center", nullptr, windowFlags);
 
-    if (selectedEntityIndex < 0 || selectedEntityIndex >= (int)entities.size()) {
+    if (_selectedEntityIndex < 0 || _selectedEntityIndex >= (int)entities.size()) {
         ImGui::Text("No entity selected");
         ImGui::End();
         return;
     }
 
-    Entity& e = entities[selectedEntityIndex];
+    Entity& e = entities[_selectedEntityIndex];
 
-    if (defaultTexture.getSize().x == 0) {
-        if (!defaultTexture.loadFromFile("assets/sprites/default.png")) {
-            defaultTexture.create(100, 100);
+    if (_defaultTexture.getSize().x == 0) {
+        if (!_defaultTexture.loadFromFile("assets/default.png")) {
+            _defaultTexture.create(100, 100);
         }
     }
 
@@ -391,15 +462,15 @@ void GameEditor::drawCenterPanel()
         for (size_t i = 0; i < e.sprite.size(); ++i) {
             SpriteStruct& s = e.sprite[i];
 
-            if (spriteTextures.find(s.path) == spriteTextures.end()) {
+            if (_spriteTextures.find(s.path) == _spriteTextures.end()) {
                 sf::Texture tex;
                 if (!tex.loadFromFile(s.path)) {
-                    tex = defaultTexture;
+                    tex = _defaultTexture;
                 }
-                spriteTextures[s.path] = tex;
+                _spriteTextures[s.path] = tex;
             }
 
-            sf::Texture& tex = spriteTextures[s.path];
+            sf::Texture& tex = _spriteTextures[s.path];
             ImVec2 size(s.size_x > 0 ? s.size_x : tex.getSize().x,
                         s.size_y > 0 ? s.size_y : tex.getSize().y);
 
@@ -409,7 +480,7 @@ void GameEditor::drawCenterPanel()
         }
     } else {
         ImGui::Text("No sprites, using default:");
-        ImGui::Image(defaultTexture, ImVec2(100, 100));
+        ImGui::Image(_defaultTexture, ImVec2(100, 100));
     }
 
     // -----------------------------
@@ -422,14 +493,14 @@ void GameEditor::drawCenterPanel()
         for (size_t i = 0; i < e.animatedSprite.size(); ++i) {
             AnimatedSpriteStruct& a = e.animatedSprite[i];
 
-            if (spriteTextures.find(a.idle.path) == spriteTextures.end()) {
+            if (_spriteTextures.find(a.idle.path) == _spriteTextures.end()) {
                 sf::Texture tex;
                 if (!tex.loadFromFile(a.idle.path))
-                    tex = defaultTexture;
-                spriteTextures[a.idle.path] = tex;
+                    tex = _defaultTexture;
+                _spriteTextures[a.idle.path] = tex;
             }
 
-            sf::Texture& tex = spriteTextures[a.idle.path];
+            sf::Texture& tex = _spriteTextures[a.idle.path];
             sf::IntRect rect(a.idle.start.x, a.idle.start.y, a.idle.size.x, a.idle.size.y);
 
             ImGui::Text("AnimatedSprite %zu:", i);
@@ -449,19 +520,19 @@ void GameEditor::drawCenterPanel()
         for (size_t i = 0; i < e._paralaxe.size(); ++i) {
             auto& layer = e._paralaxe[i];
 
-            if (spriteTextures.find(layer.path) == spriteTextures.end()) {
+            if (_spriteTextures.find(layer.path) == _spriteTextures.end()) {
                 sf::Texture tex;
                 if (!tex.loadFromFile(layer.path)) {
-                    tex = defaultTexture;
+                    tex = _defaultTexture;
                 }
-                spriteTextures[layer.path] = tex;
+                _spriteTextures[layer.path] = tex;
             }
 
-            sf::Texture& tex = spriteTextures[layer.path];
+            sf::Texture& tex = _spriteTextures[layer.path];
 
             ImGui::Text("Layer %zu (speed %.2f):", i, layer.speed);
 
-            float scaleX = centerWidth / tex.getSize().x;
+            float scaleX = _centerWidth / tex.getSize().x;
             float scaleY = previewHeight / tex.getSize().y;
 
             ImGui::Image(tex, ImVec2(tex.getSize().x * scaleX, tex.getSize().y * scaleY));
@@ -478,7 +549,7 @@ void GameEditor::drawCenterPanel()
 // =====================
 void GameEditor::render()
 {
-    window.clear(sf::Color(40, 40, 40));
-    ImGui::SFML::Render(window);
-    window.display();
+    _window.clear(sf::Color(40, 40, 40));
+    ImGui::SFML::Render(_window);
+    _window.display();
 }
