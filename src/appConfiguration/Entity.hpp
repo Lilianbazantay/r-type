@@ -38,9 +38,17 @@ struct AnimatedSpriteStruct
     bool is_visible = true;
 };
 
-struct ClockStruct { bool is_started = false; };
-struct CooldownStruct { double length = 0.0; };
-struct DirectionStruct { sf::Vector2f vec; };
+struct ClockStruct {
+    bool is_started = false;
+};
+
+struct CooldownStruct {
+    double length = 0.0;
+};
+
+struct DirectionStruct {
+    sf::Vector2f vec;
+};
 
 struct EntitySpawnerStruct {
     sf::Vector2f position;
@@ -105,12 +113,20 @@ struct StrategyStruct {
     std::vector<Pattern> strategy;
 };
 
-struct VelocityStruct { float value = 0.f; };
+struct VelocityStruct {
+    float value = 0.f;
+};
+
+struct ParallaxLayer {
+    std::string path;
+    float speed;
+};
 
 class Entity {
 public:
     std::string name = "new entity";
     EntityType type = EntityType::none;
+    std::vector<ParallaxLayer> _paralaxe;
 
     std::vector<AnimatedSpriteStruct> animatedSprite;
     std::vector<ClockStruct> clock;

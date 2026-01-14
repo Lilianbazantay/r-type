@@ -4,14 +4,11 @@
 #include <vector>
 #include <string>
 
-#include <imgui.h> // <<< OBLIGATOIRE pour ImVec2
+#include <imgui.h>
 
 #include "Entity.hpp"
 
 class GameEditor {
-public:
-    void RunGameEditor();
-
 private:
     // =====================
     // Window / ImGui
@@ -19,11 +16,12 @@ private:
     sf::RenderWindow window;
     sf::Clock deltaClock;
 
-    ImVec2 winSize{};   // <-- maintenant connu
+    ImVec2 winSize{};
     float sideWidth{};
     float bottomHeight{};
     float centerWidth{};
     float centerHeight{};
+    std::vector<ParallaxLayer> _paralaxe;
 
     // =====================
     // Data
@@ -53,4 +51,7 @@ private:
     // =====================
     void SaveAllEntities();
     void LoadAllEntities();
+
+public:
+    void RunGameEditor();
 };

@@ -119,17 +119,17 @@ inline void to_json(json& j, const Entity& e)
     if (!e.sound.empty()) {
         const SoundStruct& s = e.sound[0];
         json sounds = json::object();
-        auto addSound = [&](const std::string& name, const SoundContext& ctx){
+        auto addSound = [&](const SoundContext& ctx, const std::string& name){
             sounds[name] = {
                 {"file_path", ctx.path},
                 {"volume", ctx.volume},
                 {"loop", ctx.loop}
             };
         };
-        addSound("idle", s.idle);
-        addSound("shoot", s.shoot);
-        addSound("hit", s.hit);
-        addSound("death", s.death);
+        addSound(s.idle, "idle");
+        addSound(s.shoot, "shoot");
+        addSound(s.hit, "hit");
+        addSound(s.death, "death");
 
         c["sound"] = {
             {"default", "idle"},
@@ -159,6 +159,20 @@ inline void to_json(json& j, const Entity& e)
             {"cooldown", es.cooldown_length},
             {"is_activated", es.is_activated}
         };
+    }
+
+    // =====================
+    // Parallax -> uniquement si type map
+    // =====================
+    if (e.type == EntityType::map && !e._paralaxe.empty()) {
+        json layers = json::array();
+        for (const auto& layer : e._paralaxe) {
+            layers.push_back({
+                {"path", layer.path},
+                {"speed", layer.speed}
+            });
+        }
+        c["parallax"] = layers;
     }
 
     j["components"] = c;
@@ -288,5 +302,18 @@ inline void from_json(const json& j, Entity& e)
         es.cooldown_length = c.at("entityspawner").at("cooldown").get<double>();
         es.is_activated = c.at("entityspawner").at("is_activated").get<bool>();
         e.entitySpawner.push_back(es);
+    }
+
+    // =====================
+    // Parallax -> uniquement si type map
+    // =====================
+    if (c.contains("parallax") && e.type == EntityType::map) {
+        e._paralaxe.clear();
+        for (const auto& jLayer : c.at("parallax")) {
+            ParallaxLayer layer;
+            layer.path = jLayer.at("path").get<std::string>();
+            layer.speed = jLayer.at("speed").get<float>();
+            e._paralaxe.push_back(layer);
+        }
     }
 }
