@@ -384,7 +384,7 @@ void GameEditor::drawCenterPanel()
     ImGui::Separator();
 
     // -----------------------------
-    // Sprites simples
+    // Sprites
     // -----------------------------
     if (!e.sprite.empty()) {
         ImGui::Text("Sprites:");
@@ -438,7 +438,7 @@ void GameEditor::drawCenterPanel()
     }
 
     // -----------------------------
-    // Parallax Layers (Maps) superposées
+    // Parallax Layers
     // -----------------------------
     if (e.type == EntityType::map && !e._paralaxe.empty()) {
         ImGui::Separator();

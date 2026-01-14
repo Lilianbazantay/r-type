@@ -162,7 +162,7 @@ inline void to_json(json& j, const Entity& e)
     }
 
     // =====================
-    // Parallax -> uniquement si type map
+    // Parallax
     // =====================
     if (e.type == EntityType::map && !e._paralaxe.empty()) {
         json layers = json::array();
@@ -305,7 +305,7 @@ inline void from_json(const json& j, Entity& e)
     }
 
     // =====================
-    // Parallax -> uniquement si type map
+    // Parallax
     // =====================
     if (c.contains("parallax") && e.type == EntityType::map) {
         e._paralaxe.clear();

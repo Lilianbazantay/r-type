@@ -31,7 +31,7 @@ private:
     int selectedEntityIndex = -1;
 
     // =====================
-    // Textures cache pour le panel central
+    // Textures
     // =====================
     std::unordered_map<std::string, sf::Texture> spriteTextures;
     sf::Texture defaultTexture;
