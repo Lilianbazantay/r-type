@@ -7,7 +7,7 @@
                         0.0,
                         0.0
                     ],
-                    "length": 25783,
+                    "length": 0,
                     "loop": true,
                     "start": [
                         0,
@@ -52,8 +52,8 @@
                 }
             },
             "default": "idle",
-            "frame_rate": 0.0,
-            "spritesheet": ""
+            "frame_rate": 2.0,
+            "spritesheet": "assets/default.png"
         },
         "clock": false,
         "cooldown": 0.0,
@@ -85,15 +85,19 @@
         "hp": 0,
         "parallax": [
             {
-                "path": "test",
+                "path": "assets/default.png",
                 "speed": 0.0
             },
             {
-                "path": "teast",
+                "path": "assets/default.png",
                 "speed": 0.0
             },
             {
-                "path": "tast",
+                "path": "assets/default.png",
+                "speed": 0.0
+            },
+            {
+                "path": "assets/default.png",
                 "speed": 0.0
             }
         ],
@@ -129,7 +133,7 @@
         "sprite": [
             {
                 "is_visible": true,
-                "path": "",
+                "path": "assets/default.png",
                 "size_x": 0.0,
                 "size_y": 0.0
             }

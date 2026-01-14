@@ -375,17 +375,19 @@ void GameEditor::drawCenterPanel()
     Entity& e = entities[selectedEntityIndex];
 
     if (defaultTexture.getSize().x == 0) {
-        if (!defaultTexture.loadFromFile("assets/default.png")) {
+        if (!defaultTexture.loadFromFile("assets/sprites/default.png")) {
             defaultTexture.create(100, 100);
         }
     }
 
-    ImGui::Text("Sprite Preview");
+    ImGui::Text("Visualisation");
     ImGui::Separator();
 
-    if (e.sprite.empty()) {
-        ImGui::Image(defaultTexture, ImVec2(100, 100));
-    } else {
+    // -----------------------------
+    // Sprites simples
+    // -----------------------------
+    if (!e.sprite.empty()) {
+        ImGui::Text("Sprites:");
         for (size_t i = 0; i < e.sprite.size(); ++i) {
             SpriteStruct& s = e.sprite[i];
 
@@ -398,18 +400,77 @@ void GameEditor::drawCenterPanel()
             }
 
             sf::Texture& tex = spriteTextures[s.path];
-
-            ImVec2 size = ImVec2(s.size_x > 0 ? s.size_x : tex.getSize().x,
-                                 s.size_y > 0 ? s.size_y : tex.getSize().y);
+            ImVec2 size(s.size_x > 0 ? s.size_x : tex.getSize().x,
+                        s.size_y > 0 ? s.size_y : tex.getSize().y);
 
             ImGui::PushID((int)i);
             ImGui::Image(tex, size);
             ImGui::PopID();
         }
+    } else {
+        ImGui::Text("No sprites, using default:");
+        ImGui::Image(defaultTexture, ImVec2(100, 100));
+    }
+
+    // -----------------------------
+    // AnimatedSprites
+    // -----------------------------
+    if (!e.animatedSprite.empty()) {
+        ImGui::Separator();
+        ImGui::Text("Animated Sprites:");
+
+        for (size_t i = 0; i < e.animatedSprite.size(); ++i) {
+            AnimatedSpriteStruct& a = e.animatedSprite[i];
+
+            if (spriteTextures.find(a.idle.path) == spriteTextures.end()) {
+                sf::Texture tex;
+                if (!tex.loadFromFile(a.idle.path))
+                    tex = defaultTexture;
+                spriteTextures[a.idle.path] = tex;
+            }
+
+            sf::Texture& tex = spriteTextures[a.idle.path];
+            sf::IntRect rect(a.idle.start.x, a.idle.start.y, a.idle.size.x, a.idle.size.y);
+
+            ImGui::Text("AnimatedSprite %zu:", i);
+            ImGui::Image(tex, ImVec2((float)rect.width, (float)rect.height));
+        }
+    }
+
+    // -----------------------------
+    // Parallax Layers (Maps) superposées
+    // -----------------------------
+    if (e.type == EntityType::map && !e._paralaxe.empty()) {
+        ImGui::Separator();
+        ImGui::Text("Parallax Layers (superposed):");
+
+        float previewHeight = 100.f;
+
+        for (size_t i = 0; i < e._paralaxe.size(); ++i) {
+            auto& layer = e._paralaxe[i];
+
+            if (spriteTextures.find(layer.path) == spriteTextures.end()) {
+                sf::Texture tex;
+                if (!tex.loadFromFile(layer.path)) {
+                    tex = defaultTexture;
+                }
+                spriteTextures[layer.path] = tex;
+            }
+
+            sf::Texture& tex = spriteTextures[layer.path];
+
+            ImGui::Text("Layer %zu (speed %.2f):", i, layer.speed);
+
+            float scaleX = centerWidth / tex.getSize().x;
+            float scaleY = previewHeight / tex.getSize().y;
+
+            ImGui::Image(tex, ImVec2(tex.getSize().x * scaleX, tex.getSize().y * scaleY));
+        }
     }
 
     ImGui::End();
 }
+
 
 
 // =====================
