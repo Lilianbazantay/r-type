@@ -41,6 +41,13 @@ void ComponentDrawer::drawComponentList(std::vector<AnimatedSpriteStruct>& vec, 
             DrawAnimatedContext("Shoot", vec[i].shoot);
             DrawAnimatedContext("Death", vec[i].death);
 
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
+
             ImGui::TreePop();
         }
 
@@ -54,7 +61,13 @@ void ComponentDrawer::drawComponentList(std::vector<ClockStruct> &vec, const cha
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
-            ImGui::Checkbox("Activer quelque chose", &vec[i].is_started);
+            ImGui::Checkbox("Activate", &vec[i].is_started);
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
         ImGui::PopID();
@@ -67,7 +80,14 @@ void ComponentDrawer::drawComponentList(std::vector<CooldownStruct> &vec, const 
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
-            ImGui::InputDouble("Lenth", &vec[i].length);
+            ImGui::InputDouble("Length", &vec[i].length);
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
+            ImGui::TreePop();
         }
         ImGui::PopID();
     }
@@ -80,6 +100,12 @@ void ComponentDrawer::drawComponentList(std::vector<DirectionStruct> &vec, const
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
             ImGui::InputFloat("X", &vec[i].vec.x);
             ImGui::InputFloat("Y", &vec[i].vec.y);
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
         ImGui::PopID();
@@ -122,7 +148,12 @@ void ComponentDrawer::drawComponentList(std::vector<EntitySpawnerStruct>& vec, c
                     ImGui::EndCombo();
                 }
             }
-
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
 
@@ -136,6 +167,12 @@ void ComponentDrawer::drawComponentList(std::vector<GravityStruct> &vec, const c
         ImGui::PushID((int)i);
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
             ImGui::InputFloat("Strength", &vec[i].strength);
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
         ImGui::PopID();
@@ -211,7 +248,12 @@ void ComponentDrawer::drawComponentList(std::vector<HitboxStruct> &vec, const ch
             ImGui::PopItemWidth();
 
             ImGui::PopItemWidth();
-
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
 
@@ -226,6 +268,12 @@ void ComponentDrawer::drawComponentList(std::vector<HpStruct> &vec, const char* 
         ImGui::PushID((int)i);
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
             ImGui::InputInt("Value", &vec[i].value);
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
         ImGui::PopID();
@@ -239,6 +287,12 @@ void ComponentDrawer::drawComponentList(std::vector<PositionStruct> &vec, const 
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
             ImGui::InputFloat("X", &vec[i].pos.x);
             ImGui::InputFloat("Y", &vec[i].pos.y);
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
         ImGui::PopID();
@@ -269,6 +323,12 @@ void ComponentDrawer::drawComponentList(std::vector<SoundStruct>& vec, const cha
             DrawSoundContext("Shoot", vec[i].shoot);
             DrawSoundContext("Hit", vec[i].hit);
             DrawSoundContext("Death", vec[i].death);
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
         ImGui::PopID();
@@ -287,6 +347,12 @@ void ComponentDrawer::drawComponentList(std::vector<SpriteStruct>& vec, const ch
             ImGui::InputFloat("Size Y", &vec[i].size_y);
             ImGui::Checkbox("Visible", &vec[i].is_visible);
             ImGui::InputText("path", &vec[i].path);
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
 
@@ -371,12 +437,11 @@ void ComponentDrawer::drawComponentList(std::vector<StrategyStruct>& vec, const 
                 strategy.strategy.push_back(Pattern{});
             }
 
-            if (ImGui::Button(("Remove StrategyStruct##" + std::to_string(strat_index)).c_str())) {
+            if (ImGui::Button(("Delete" + std::to_string(strat_index)).c_str())) {
                 vec.erase(vec.begin() + strat_index);
                 ImGui::PopID();
                 break;
             }
-
             ImGui::TreePop();
         }
 
@@ -385,14 +450,18 @@ void ComponentDrawer::drawComponentList(std::vector<StrategyStruct>& vec, const 
 
 }
 
-
-
 // Velocity
 void ComponentDrawer::drawComponentList(std::vector<VelocityStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
             ImGui::InputFloat("Value", &vec[i].value);
+            if (ImGui::Button("Delete")) {
+                vec.erase(vec.begin() + i);
+                ImGui::TreePop();
+                ImGui::PopID();
+                break;
+            }
             ImGui::TreePop();
         }
         ImGui::PopID();
