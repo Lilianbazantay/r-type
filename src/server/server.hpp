@@ -24,7 +24,7 @@
  */
 class Server {
     public:
-        Server(std::uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *, NetworkClientBuffer *);
+        Server(std::uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *, NetworkContinuousBuffer *);
         ~Server();
 
         void start();

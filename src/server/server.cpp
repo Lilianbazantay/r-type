@@ -22,7 +22,7 @@
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
-Server::Server(std::uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkClientBuffer *newCBuffer)
+Server::Server(std::uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkContinuousBuffer *newCBuffer)
 : receivedBuffer(newRBuffer),
   sendBuffer(newSBuffer),
   continuousBuffer(newCBuffer),
