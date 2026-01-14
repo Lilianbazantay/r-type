@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include <imgui.h>
 
@@ -28,6 +29,12 @@ private:
     // =====================
     std::vector<Entity> entities;
     int selectedEntityIndex = -1;
+
+    // =====================
+    // Textures cache pour le panel central
+    // =====================
+    std::unordered_map<std::string, sf::Texture> spriteTextures;
+    sf::Texture defaultTexture;
 
     // =====================
     // Core
