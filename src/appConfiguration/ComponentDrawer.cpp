@@ -6,14 +6,88 @@
 #include <vector>
 #include <string>
 #include <utility>
+#include <filesystem>
 
 #include "ComponentDrawer.hpp"
+
+namespace fs = std::filesystem;
+
+static bool DrawFileBrowserPopup(const char* popup_id, std::string& outPath, const std::string& startDir, const std::vector<std::string>& extensions)
+{
+    static fs::path currentDir;
+    static bool initialized = false;
+    bool selected = false;
+
+    if (!initialized) {
+        currentDir = startDir.empty() ? fs::current_path() : fs::path(startDir);
+        initialized = true;
+    }
+
+    if (ImGui::BeginPopup(popup_id)) {
+
+        ImGui::Text("Current: %s", currentDir.string().c_str());
+        ImGui::Separator();
+
+        if (currentDir.has_parent_path()) {
+            if (ImGui::Selectable("..")) {
+                currentDir = currentDir.parent_path();
+            }
+        }
+
+        for (auto& entry : fs::directory_iterator(currentDir)) {
+            const auto& path = entry.path();
+            std::string name = path.filename().string();
+
+            if (entry.is_directory()) {
+                if (ImGui::Selectable((name + "/").c_str())) {
+                    currentDir /= name;
+                }
+            }
+            else if (entry.is_regular_file()) {
+                if (!extensions.empty()) {
+                    bool valid = false;
+                    for (auto& ext : extensions) {
+                        if (path.extension() == ext) {
+                            valid = true;
+                            break;
+                        }
+                    }
+                    if (!valid)
+                        continue;
+                }
+
+                if (ImGui::Selectable(name.c_str())) {
+                    outPath = path.string();
+                    selected = true;
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+        }
+
+        ImGui::EndPopup();
+    }
+
+    return selected;
+}
+
+void ComponentDrawer::DrawPathSelector(const char* label, std::string& path, const std::vector<std::string>& extensions, const std::string& startDir)
+{
+    ImGui::InputText(label, &path);
+    ImGui::SameLine();
+
+    std::string popup = std::string("##browser_") + label;
+    if (ImGui::Button(("Browse##" + std::string(label)).c_str())) {
+        ImGui::OpenPopup(popup.c_str());
+    }
+
+    DrawFileBrowserPopup(popup.c_str(), path, startDir, extensions);
+}
 
 // Animated Sprite
 static void DrawAnimatedContext(const char* name, AnimatedSpriteContext& ctx)
 {
     if (ImGui::TreeNode(name)) {
-        ImGui::InputText("Path", &ctx.path);
+        ComponentDrawer::DrawPathSelector("Path", ctx.path, { ".png", ".jpg", ".jpeg" });
         ImGui::InputInt("Lenth", &ctx.lenth);
         ImGui::InputFloat("Size X", &ctx.size.x);
         ImGui::InputFloat("Size Y", &ctx.size.y);
@@ -303,7 +377,7 @@ void ComponentDrawer::drawComponentList(std::vector<PositionStruct> &vec, const 
 static void DrawSoundContext(const char* name, SoundContext& ctx)
 {
     if (ImGui::TreeNode(name)) {
-        ImGui::InputText("Path", &ctx.path);
+        ComponentDrawer::DrawPathSelector("Path", ctx.path, { ".wav", ".ogg", ".mp3" });
         ImGui::InputFloat("Volume", &ctx.volume);
         ImGui::Checkbox("loop", &ctx.loop);
         ImGui::TreePop();
@@ -346,7 +420,7 @@ void ComponentDrawer::drawComponentList(std::vector<SpriteStruct>& vec, const ch
             ImGui::InputFloat("Size X", &vec[i].size_x);
             ImGui::InputFloat("Size Y", &vec[i].size_y);
             ImGui::Checkbox("Visible", &vec[i].is_visible);
-            ImGui::InputText("path", &vec[i].path);
+            ComponentDrawer::DrawPathSelector("Path", vec[i].path, { ".png", ".jpg", ".jpeg" });
             if (ImGui::Button("Delete")) {
                 vec.erase(vec.begin() + i);
                 ImGui::TreePop();
