@@ -1,0 +1,132 @@
+{
+    "components": {
+        "animatedsprite": {
+            "animations": {
+                "death": {
+                    "frame_size": [
+                        0.0,
+                        0.0
+                    ],
+                    "length": 23005,
+                    "loop": true,
+                    "start": [
+                        0,
+                        0
+                    ],
+                    "step": [
+                        0,
+                        0
+                    ]
+                },
+                "idle": {
+                    "frame_size": [
+                        0.0,
+                        0.0
+                    ],
+                    "length": 0,
+                    "loop": false,
+                    "start": [
+                        0,
+                        0
+                    ],
+                    "step": [
+                        0,
+                        0
+                    ]
+                },
+                "walk": {
+                    "frame_size": [
+                        0.0,
+                        0.0
+                    ],
+                    "length": 0,
+                    "loop": false,
+                    "start": [
+                        0,
+                        0
+                    ],
+                    "step": [
+                        0,
+                        0
+                    ]
+                }
+            },
+            "default": "idle",
+            "frame_rate": 0.0,
+            "spritesheet": ""
+        },
+        "clock": false,
+        "cooldown": 0.0,
+        "direction": [
+            0.0,
+            0.0
+        ],
+        "entityspawner": {
+            "cooldown": 0.0,
+            "entity_type": "basic_bullet",
+            "is_activated": false,
+            "position": [
+                0.0,
+                0.0
+            ]
+        },
+        "gravity": {
+            "strength": 0.0
+        },
+        "hitbox": {
+            "damage": 0,
+            "layer": [],
+            "mask": [],
+            "size": [
+                0,
+                0
+            ]
+        },
+        "hp": 0,
+        "position": [
+            0.0,
+            0.0
+        ],
+        "sound": {
+            "default": "idle",
+            "sounds": {
+                "death": {
+                    "file_path": "",
+                    "loop": false,
+                    "volume": 0.0
+                },
+                "hit": {
+                    "file_path": "",
+                    "loop": false,
+                    "volume": 0.0
+                },
+                "idle": {
+                    "file_path": "",
+                    "loop": false,
+                    "volume": 0.0
+                },
+                "shoot": {
+                    "file_path": "",
+                    "loop": false,
+                    "volume": 0.0
+                }
+            }
+        },
+        "sprite": [
+            {
+                "is_visible": true,
+                "path": "",
+                "size_x": 0.0,
+                "size_y": 0.0
+            }
+        ],
+        "strategy": {
+            "patterns": []
+        },
+        "velocity": 0.0
+    },
+    "entity": {
+        "name": "Try",
+        "type": "enemy"
+    }
+}
