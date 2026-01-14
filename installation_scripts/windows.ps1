@@ -47,7 +47,10 @@ Bootstrap-Vcpkg
 
 # --- Prepare build directory ---
 Write-Host "Preparing build directory..."
-Remove-Item -Path $BUILD_DIR | Out-Null
+if (Test-Path $BUILD_DIR) {
+    Remove-Item $BUILD_DIR -Recurse -Force
+}
+
 New-Item -ItemType Directory -Path $BUILD_DIR | Out-Null
 Set-Location $BUILD_DIR
 Write-Host "Current build directory: $PWD"
