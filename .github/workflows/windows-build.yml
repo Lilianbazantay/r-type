@@ -34,11 +34,7 @@ jobs:
     - name: Patch windows.ps1 for CI
       shell: pwsh
       run: |
-<<<<<<< HEAD
         $installer = Get-Content "./scripts/windows.ps1" -Raw
-=======
-        $installer = Get-Content "./installation-scripts/windows.ps1" -Raw
->>>>>>> 41c77eb (fix(CI): get-content not getting the file)
         # Remove any git pull / vcpkg update lines
         $installer = $installer -replace ".*vcpkg\.exe update.*", ""
         Set-Content "installer.sh" $installer
