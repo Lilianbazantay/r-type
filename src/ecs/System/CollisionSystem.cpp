@@ -66,6 +66,8 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
 
     playerHitbox->GetMask();
     playerHitbox->GetLayers();
+    bool is_entity_dead = false;
+    int entity_pos = -1;
 
     Hitbox *entityHitbox;
     Position *entityPosition;
@@ -74,8 +76,12 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
     int focus_entity_id = entity.getId();
     std::vector<std::unique_ptr<IMediatorEntity>>& entityList = data.entityList;
     for (size_t i = 0; i < entityList.size(); i++) {
-        if (entityList[i]->is_wanted_entity(focus_entity_type, focus_entity_id))
+        if (!entityList[i]->is_Alive())
             continue;
+        if (entityList[i]->is_wanted_entity(focus_entity_type, focus_entity_id)) {
+            entity_pos = i;
+            continue;
+        }
         entityHitbox = dynamic_cast<Hitbox*>(entityList[i]->FindComponent(ComponentType::HITBOX));
         entityPosition = dynamic_cast<Position*>(entityList[i]->FindComponent(ComponentType::POSITION));
         if (entityHitbox == nullptr || entityPosition == nullptr)
@@ -87,7 +93,7 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
             playerHp->SubHp(entityHitbox->GetDamage());
             if (playerHp->GetHp() <= 0) {
                 std::cout << "Entity " << entityList[i]->getType() << " is dead !" << std::endl;
-                entityList[i]->Alive(false);
+                is_entity_dead = true;
             }
         }
         entityHp = dynamic_cast<Hp*>(entityList[i]->FindComponent(ComponentType::HP));
@@ -99,4 +105,6 @@ void CollisionSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &da
             }
         }
     }
+    if (is_entity_dead && entity_pos != -1)
+        entityList[entity_pos]->Alive(false);
 }
