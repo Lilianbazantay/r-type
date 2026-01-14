@@ -56,6 +56,7 @@ class Server {
     private:
         NetworkServerBuffer *receivedBuffer;
         NetworkClientBuffer *sendBuffer;
+        NetworkContinuousBuffer *continuousBuffer;
         asio::io_context io_ctx_;
         asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::ip::udp::socket socket_;

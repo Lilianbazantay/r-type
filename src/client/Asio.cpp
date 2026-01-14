@@ -44,7 +44,6 @@ void Asio_network::start() {
     running_ = true;
     do_receive();
     io_thread_ = std::jthread(&Asio_network::run, this);
-    //std::cout << "io_context stopped\n";
 }
 
 /**

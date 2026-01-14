@@ -18,7 +18,7 @@ if command -v dnf &> /dev/null; then
       freetype-devel libX11-devel libxcb-devel \
       libXrandr-devel libXi-devel libXcursor-devel \
       libudev-devel openal-soft-devel mesa-libEGL-devel pkg-config \
-      libtool
+      libtool mesa-libGL-devel libglvnd-devel
 elif command -v apt &> /dev/null; then
     sudo apt-get update
     sudo apt-get install \
@@ -55,7 +55,11 @@ mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 # Configure CMake
+export CMAKE_GENERATOR=Ninja
+export CMAKE_MAKE_PROGRAM=/usr/bin/ninja
+
 cmake .. \
+  -G Ninja \
   -DCMAKE_TOOLCHAIN_FILE="$VCPKG_DIR/scripts/buildsystems/vcpkg.cmake" \
   -DCMAKE_BUILD_TYPE=Release \
   -DVCPKG_TARGET_TRIPLET=x64-linux \
@@ -67,5 +71,6 @@ cmake --build . --parallel
 # Copy executables to root
 cp r-type_client ../r-type_client || true
 cp r-type_server ../r-type_server || true
+cp r-type_app ../r-type_app || true
 
 echo "Build complete!"

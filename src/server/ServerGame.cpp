@@ -6,8 +6,10 @@
 #include "ecs/Component/Cooldown.hpp"
 #include "ecs/Entity/Entities.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
+#include "ecs/IComponent.hpp"
 #include "ecs/System/CollisionSystem.hpp"
 #include "ecs/System/ShootSystem.hpp"
+#include "ecs/System/StrategySystem.hpp"
 #include "protocol.hpp"
 #include "server.hpp"
 #include "server/NetworkServerBuffer.hpp"
@@ -23,19 +25,21 @@
 #include "ServerGame.hpp"
 
 
-ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkClientBuffer *newCBuffer):
+ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer *newCBuffer):
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
     continuousBuffer(newCBuffer),
     networkServer(port,
     newRBuffer, newSBuffer, newCBuffer)
 {
+    data.bullet_count = 0;
+    data.enemy_count = 0;
     clock.restart();
     Prevtime = clock.getElapsedTime();
     systemList.push_back(std::make_unique<ShootSystem>());
     systemList.push_back(std::make_unique<CollisionSystem>());
     systemList.push_back(std::make_unique<MovementSystem>());
-    createEntity(ENTITY_BACKGROUND, 0);
+    systemList.push_back(std::make_unique<StrategySystem>());
     networkServer.start();
 }
 
@@ -51,19 +55,24 @@ void ServerGame::Update() {
         for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
         if (data.entityList[j]->justCreated()) {
+            std::cout << "Creating entity " << data.entityList[j]->getType() << std::endl;
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
-                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
+            int type = data.entityList[j]->getType();
+            int id = data.entityList[j]->getId();
+            std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,type,
+                id, playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->pushPacket(pkt);
+            continuousBuffer->addEntity(type, id, pkt);
             continue;
         }
         if (!data.entityList[j]->is_Alive()) {
-            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
+            int type = data.entityList[j]->getType();
+            int id = data.entityList[j]->getId();
+            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, type, id);
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->pushPacket(pkt);
+            continuousBuffer->deleteEntity(type, id);
             data.entityList.erase(data.entityList.begin() + j);
             j--;
             EListSize--;
@@ -73,9 +82,13 @@ void ServerGame::Update() {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
-            std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, data.entityList[j]->getType(),
-                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
-            networkSendBuffer->pushPacket(pkt);
+            int type = data.entityList[j]->getType();
+            int id = data.entityList[j]->getId();
+            std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, type,
+                id, playerPos->GetPosition().first, playerPos->GetPosition().second);
+            continuousBuffer->moveEntity(type, id, pkt);
+//            networkSendBuffer->pushPacket(pkt);
+            networkSendBuffer->moveEntity(type, id, pkt);
             continue;
         }
         ++j;
@@ -85,18 +98,13 @@ void ServerGame::Update() {
 
 void ServerGame::Loop() {
     Running = true;
-    Cooldown cooldown(1.0);
     Cooldown tmp(0.01);
     while(Running) {
         if (tmp.CheckCooldown() == true) {
             Update();
             tmp.LaunchCooldown();
         }
-        if (cooldown.CheckCooldown() == true) {
-            data.enemy_count++;
-            createEntity(2, data.enemy_count);
-            cooldown.LaunchCooldown();
-        }
+        waveManager.computeEntities(&data);
         parseNetworkPackets();
     }
 }
@@ -118,7 +126,6 @@ void ServerGame::changePlayerDirection(int personnal_id, std::pair<int, int> new
             continue;
         Direction *playerDirection = dynamic_cast<Direction*>(data.entityList[i]->FindComponent(ComponentType::DIRECTION));
         if (playerDirection == nullptr) {
-            std::cout << "Error Null" << std::endl;
             return;
         }
         std::pair<float, float> direction = playerDirection->GetDirection();
@@ -178,7 +185,6 @@ bool ServerGame::createEntity(int entity_type, int personnal_id) {
         }
         case ENTITY_PLAYER: {
             data.entityList.push_back(std::make_unique<Player>());
-//            createEntity(ENTITY_ENEMY, data.enemy_count);
             break;
         }
         case ENTITY_ENEMY: {
@@ -202,14 +208,12 @@ void ServerGame::parseNetworkPackets() {
         switch (pkt.getActionType()) {
             case ActionType::INPUT_PRESSED: {
                 if (pkt.getActionvalue() == 0) {
-                    std::cout << "IN_PR\n";
                     playerShoot(pkt.getPlayerId());
                 } else
                     changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_PRESSED, pkt.getActionvalue()});
                 break;
             }
             case ActionType::INPUT_RELEASED: {
-                std::cout << "IN_RE\n";
                 changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_RELEASED, pkt.getActionvalue()});
                 break;
             }
