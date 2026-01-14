@@ -43,4 +43,5 @@ jobs:
 
     # Run the installer
     - name: Run installer.sh
-      run: ./installer.sh
+      shell: pwsh
+      run: ./installation_scripts/windows.ps1
