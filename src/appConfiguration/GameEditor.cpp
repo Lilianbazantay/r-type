@@ -275,14 +275,12 @@ void GameEditor::drawRightPanel()
     ImGui::Text("Entity Inspector");
     ImGui::Separator();
 
-    // Name
     ImGui::InputText("Name", &e.name);
 
-    // Type dropdown
     const char* entityTypes[] = { "None", "Enemy", "Player", "Weapon", "Map", "Bullet" };
     int currentType = static_cast<int>(e.type);
     if (ImGui::Combo("Type", &currentType, entityTypes, IM_ARRAYSIZE(entityTypes))) {
-        e.type = static_cast<EntityType>(currentType); // met à jour immédiatement
+        e.type = static_cast<EntityType>(currentType);
     }
 
     // ====================
@@ -367,9 +365,52 @@ void GameEditor::drawCenterPanel()
     ImGui::SetNextWindowPos(ImVec2(sideWidth, 40.f));
     ImGui::SetNextWindowSize(ImVec2(centerWidth, centerHeight - 40.f));
     ImGui::Begin("Center", nullptr, windowFlags);
-    ImGui::Text("Center view");
+
+    if (selectedEntityIndex < 0 || selectedEntityIndex >= (int)entities.size()) {
+        ImGui::Text("No entity selected");
+        ImGui::End();
+        return;
+    }
+
+    Entity& e = entities[selectedEntityIndex];
+
+    if (defaultTexture.getSize().x == 0) {
+        if (!defaultTexture.loadFromFile("assets/default.png")) {
+            defaultTexture.create(100, 100);
+        }
+    }
+
+    ImGui::Text("Sprite Preview");
+    ImGui::Separator();
+
+    if (e.sprite.empty()) {
+        ImGui::Image(defaultTexture, ImVec2(100, 100));
+    } else {
+        for (size_t i = 0; i < e.sprite.size(); ++i) {
+            SpriteStruct& s = e.sprite[i];
+
+            if (spriteTextures.find(s.path) == spriteTextures.end()) {
+                sf::Texture tex;
+                if (!tex.loadFromFile(s.path)) {
+                    tex = defaultTexture;
+                }
+                spriteTextures[s.path] = tex;
+            }
+
+            sf::Texture& tex = spriteTextures[s.path];
+
+            ImVec2 size = ImVec2(s.size_x > 0 ? s.size_x : tex.getSize().x,
+                                 s.size_y > 0 ? s.size_y : tex.getSize().y);
+
+            ImGui::PushID((int)i);
+            ImGui::Image(tex, size);
+            ImGui::PopID();
+        }
+    }
+
     ImGui::End();
 }
+
 
 // =====================
 // Render
