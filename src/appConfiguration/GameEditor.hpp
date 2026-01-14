@@ -14,27 +14,28 @@ private:
     // =====================
     // Window / ImGui
     // =====================
-    sf::RenderWindow window;
-    sf::Clock deltaClock;
+    sf::RenderWindow _window;
+    sf::Clock _deltaClock;
 
-    ImVec2 winSize{};
-    float sideWidth{};
-    float bottomHeight{};
-    float centerWidth{};
-    float centerHeight{};
+    ImVec2 _winSize{};
+    float _sideWidth{};
+    float _bottomHeight{};
+    float _centerWidth{};
+    float _centerHeight{};
     std::vector<ParallaxLayer> _paralaxe;
 
     // =====================
     // Data
     // =====================
     std::vector<Entity> entities;
-    int selectedEntityIndex = -1;
+    int _selectedEntityIndex = -1;
+    std::vector<std::string> _log;
 
     // =====================
     // Textures
     // =====================
-    std::unordered_map<std::string, sf::Texture> spriteTextures;
-    sf::Texture defaultTexture;
+    std::unordered_map<std::string, sf::Texture> _spriteTextures;
+    sf::Texture _defaultTexture;
 
     // =====================
     // Core
