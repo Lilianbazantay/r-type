@@ -8,29 +8,83 @@
     "hp": 40,
     "velocity": 3,
     "position": [600, 100],
+
     "hitbox": {
       "size": [64, 64],
       "layer": [2],
-      "mask": [1]
+      "mask": [1],
+      "damage": 0
     },
-    "attack": {
-      "damage": 10,
-      "fireRate": 1.2
-    }
-  },
 
-  "data": {
-    "sprite": {
-      "idle": "assets/sprites/enemy_idle.png",
-      "death": ["assets/sprites/enemy_death.png"]
+    "animatedsprite": {
+      "spritesheet": "assets/sprites/enemy_basic_sheet.png",
+      "frame_rate": 10.0,
+      "default": "idle",
+
+      "animations": {
+        "idle": {
+          "frame_size": [64, 64],
+          "start": [0, 0],
+          "step": [1, 0],
+          "length": 4
+        },
+
+        "death": {
+          "frame_size": [64, 64],
+          "start": [0, 1],
+          "step": [1, 0],
+          "length": 5,
+          "loop": false
+        }
+      }
+    },
+
+    "sound": {
+      "default": "idle",
+
+      "sounds": {
+        "idle": {
+          "file_path": "assets/sounds/enemy_idle.wav",
+          "volume": 0.3,
+          "loop": true
+        },
+
+        "hit": {
+          "file_path": "assets/sounds/enemy_hit.wav",
+          "volume": 0.6,
+          "loop": false
+        },
+
+        "death": {
+          "file_path": "assets/sounds/enemy_death.wav",
+          "volume": 0.9,
+          "loop": false
+        }
+      }
     },
 
     "strategy": {
       "patterns": [
-        "../pattern/straight_line.json",
-        "../pattern/zigzag.json"
-      ],
-      "phase_change_hp": [75, 50]
+        {
+          "hp_range": [100, 50],
+          "sequences": [
+            [
+              [[1, 0], 2],
+              [[0, 0], -1]
+            ]
+          ]
+        },
+        {
+          "hp_range": [50, 0],
+          "sequences": [
+            [
+              [[1, 0], 1],
+              [[0, 1], 1],
+              [[0, 0], -1]
+            ]
+          ]
+        }
+      ]
     }
   }
 }

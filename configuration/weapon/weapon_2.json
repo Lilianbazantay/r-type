@@ -1,0 +1,33 @@
+{
+  "entity": {
+    "type": "weapon",
+    "name": "double_pistol"
+  },
+
+  "components": {
+    "sprite": {
+      "file_path": "assets/sprites/weapon2_on_map.png",
+      "size_x": 32,
+      "size_y": 32
+    },
+
+    "sound": {
+      "default": "shoot",
+
+      "sounds": {
+        "shoot": {
+          "file_path": "assets/sounds/shoot2.wav",
+          "volume": 0.9,
+          "loop": false
+        }
+      }
+    },
+
+    "entityspawner": {
+      "entity_type": "big_bullet",
+      "position": [0.0, 0.0],
+      "cooldown": 0.05,
+      "is_activated": 0
+    }
+  }
+}

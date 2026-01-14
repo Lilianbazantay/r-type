@@ -1,0 +1,114 @@
+{
+  "entity": {
+    "type": "player",
+    "name": "player_basic"
+  },
+
+  "components": {
+    "position": [100, 300],
+    "velocity": 5,
+    "hp": 100,
+
+    "hitbox": {
+      "size": [64, 64],
+      "layer": [10],
+      "mask": [1],
+      "damage": 0
+    },
+
+    "animatedsprite": {
+      "spritesheet": "assets/sprites/player_full_sheet.png",
+      "frame_rate": 12.0,
+      "default": "idle",
+
+      "animations": {
+        "idle": {
+          "frame_size": [64, 64],
+          "start": [0, 0],
+          "step": [1, 0],
+          "length": 4
+        },
+
+        "walk_up": {
+          "frame_size": [64, 64],
+          "start": [0, 1],
+          "step": [1, 0],
+          "length": 4
+        },
+
+        "walk_down": {
+          "frame_size": [64, 64],
+          "start": [0, 2],
+          "step": [1, 0],
+          "length": 4
+        },
+
+        "walk_left": {
+          "frame_size": [64, 64],
+          "start": [0, 3],
+          "step": [1, 0],
+          "length": 4
+        },
+
+        "walk_right": {
+          "frame_size": [64, 64],
+          "start": [0, 4],
+          "step": [1, 0],
+          "length": 4
+        },
+
+        "shoot": {
+          "frame_size": [64, 64],
+          "start": [0, 5],
+          "step": [1, 0],
+          "length": 3
+        },
+
+        "hit": {
+          "frame_size": [64, 64],
+          "start": [0, 6],
+          "step": [1, 0],
+          "length": 2
+        },
+
+        "death": {
+          "frame_size": [64, 64],
+          "start": [0, 7],
+          "step": [1, 0],
+          "length": 5,
+          "loop": false
+        }
+      }
+    },
+
+    "sound": {
+      "default": "idle",
+
+      "sounds": {
+        "idle": {
+          "file_path": "assets/sounds/player_idle.wav",
+          "volume": 0.3,
+          "loop": true
+        },
+
+        "shoot": {
+          "file_path": "assets/sounds/player_shoot.wav",
+          "volume": 0.8,
+          "loop": false
+        },
+
+        "hit": {
+          "file_path": "assets/sounds/player_hit.wav",
+          "volume": 0.7,
+          "loop": false
+        },
+
+        "death": {
+          "file_path": "assets/sounds/player_death.wav",
+          "volume": 1.0,
+          "loop": false
+        }
+      }
+    }
+  }
+}

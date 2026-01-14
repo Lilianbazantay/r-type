@@ -1,0 +1,26 @@
+{
+  "entity": {
+    "type": "bullet",
+    "name": "big_bullet"
+  },
+
+  "components": {
+    "position": [0.0, 0.0],
+    "velocity": 10,
+    "direction": [1, 0],
+    "hp": 1,
+
+    "hitbox": {
+      "size": [8, 8],
+      "layer": [1],
+      "mask": [2],
+      "damage": 25
+    },
+
+    "sprite": {
+      "file_path": "assets/sprites/big_bullet.png",
+      "size_x": 8,
+      "size_y": 8
+    }
+  }
+}
