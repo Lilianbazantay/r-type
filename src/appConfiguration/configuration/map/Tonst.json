@@ -7,7 +7,7 @@
                         0.0,
                         0.0
                     ],
-                    "length": 23005,
+                    "length": 25783,
                     "loop": true,
                     "start": [
                         0,
@@ -83,6 +83,20 @@
             ]
         },
         "hp": 0,
+        "parallax": [
+            {
+                "path": "test",
+                "speed": 0.0
+            },
+            {
+                "path": "teast",
+                "speed": 0.0
+            },
+            {
+                "path": "tast",
+                "speed": 0.0
+            }
+        ],
         "position": [
             0.0,
             0.0
@@ -126,7 +140,7 @@
         "velocity": 0.0
     },
     "entity": {
-        "name": "Try",
-        "type": "enemy"
+        "name": "Tonst",
+        "type": "map"
     }
 }

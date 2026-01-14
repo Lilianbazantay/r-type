@@ -57,6 +57,22 @@ void GameEditor::RunGameEditor()
 void GameEditor::SaveAllEntities()
 {
     try {
+        std::vector<std::pair<EntityType, std::string>> folders = {
+            {EntityType::player, "src/appConfiguration/configuration/player/"},
+            {EntityType::enemy,  "src/appConfiguration/configuration/ennemy/"},
+            {EntityType::weapon, "src/appConfiguration/configuration/weapon/"},
+            {EntityType::bullet, "src/appConfiguration/configuration/weapon/bullet/"},
+            {EntityType::map, "src/appConfiguration/configuration/map/"},
+            {EntityType::none, "src/appConfiguration/configuration/entity/"}
+        };
+
+        for (auto& [type, folder] : folders) {
+            if (fs::exists(folder)) {
+                fs::remove_all(folder);
+            }
+            fs::create_directories(folder);
+        }
+
         for (auto& e : entities) {
             std::string folder;
             switch (e.type) {
@@ -64,34 +80,37 @@ void GameEditor::SaveAllEntities()
                 case EntityType::enemy:  folder = "src/appConfiguration/configuration/ennemy/"; break;
                 case EntityType::weapon: folder = "src/appConfiguration/configuration/weapon/"; break;
                 case EntityType::bullet: folder = "src/appConfiguration/configuration/weapon/bullet/"; break;
+                case EntityType::map: folder = "src/appConfiguration/configuration/map/"; break;
                 default: folder = "src/appConfiguration/configuration/entity/"; break;
             }
-            fs::create_directories(folder);
-            std::string filepath = folder + e.name + ".json";
 
+            std::string filepath = folder + e.name + ".json";
             json jEntity = e;
             std::ofstream file(filepath);
             if (!file.is_open())
                 throw std::runtime_error("Cannot open file " + filepath);
             file << jEntity.dump(4);
         }
-        std::cout << "All entities saved individually.\n";
+
+        std::cout << "All entities saved and configuration folders reset.\n";
+
     } catch (const std::exception& ex) {
         std::cerr << "SaveAllEntities error: " << ex.what() << "\n";
     }
 }
+
 
 void GameEditor::LoadAllEntities()
 {
     try {
         entities.clear();
 
-        // <-- ici aussi on met les minuscules
         std::vector<std::pair<EntityType, std::string>> folders = {
             {EntityType::player, "src/appConfiguration/configuration/player/"},
-            {EntityType::enemy,  "src/appConfiguration/configuration/ennemy/"},
+            {EntityType::enemy,  "src/appConfiguration/configuration/enemy/"},
             {EntityType::weapon, "src/appConfiguration/configuration/weapon/"},
-            {EntityType::bullet, "src/appConfiguration/configuration/weapon/bullet/"}
+            {EntityType::bullet, "src/appConfiguration/configuration/weapon/bullet/"},
+            {EntityType::map, "src/appConfiguration/configuration/map/"}
         };
 
         for (auto& [type, folder] : folders) {
@@ -256,12 +275,42 @@ void GameEditor::drawRightPanel()
     ImGui::Text("Entity Inspector");
     ImGui::Separator();
 
+    // Name
     ImGui::InputText("Name", &e.name);
 
-    const char* entityTypes[] = { "None", "Enemy", "Player", "Weapon", "Bullet" };
+    // Type dropdown
+    const char* entityTypes[] = { "None", "Enemy", "Player", "Weapon", "Map", "Bullet" };
     int currentType = static_cast<int>(e.type);
-    if (ImGui::Combo("Type", &currentType, entityTypes, IM_ARRAYSIZE(entityTypes)))
-        e.type = static_cast<EntityType>(currentType);
+    if (ImGui::Combo("Type", &currentType, entityTypes, IM_ARRAYSIZE(entityTypes))) {
+        e.type = static_cast<EntityType>(currentType); // met à jour immédiatement
+    }
+
+    // ====================
+    // Bloc Map Parallax
+    // ====================
+    if (e.type == EntityType::map) {
+        ImGui::Separator();
+        ImGui::Text("Parallax");
+
+        for (size_t i = 0; i < e._paralaxe.size(); ++i) {
+            auto& layer = e._paralaxe[i];
+            ImGui::PushID((int)i);
+
+            ImGui::InputText("Path", &layer.path);
+            ImGui::InputFloat("Speed", &layer.speed);
+            ImGui::SameLine();
+            if (ImGui::Button("X")) {
+                e._paralaxe.erase(e._paralaxe.begin() + i);
+                ImGui::PopID();
+                break;
+            }
+            ImGui::PopID();
+            ImGui::Separator();
+        }
+        if (ImGui::Button("Add Layer")) {
+            e._paralaxe.push_back({ "", 0.f });
+        }
+    }
 
     ImGui::Separator();
     ImGui::Text("Components");
