@@ -318,7 +318,7 @@ void GameEditor::drawRightPanel()
             auto& layer = e._paralaxe[i];
             ImGui::PushID((int)i);
 
-            ImGui::InputText("Path", &layer.path);
+            ComponentDrawer::DrawPathSelector("Path", layer.path, { ".png", ".jpg" });
             ImGui::InputFloat("Speed", &layer.speed);
             ImGui::SameLine();
             if (ImGui::Button("X")) {
