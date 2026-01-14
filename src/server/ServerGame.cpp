@@ -19,7 +19,6 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <iostream>
 #include <memory>
-#include <unistd.h>
 
 #include "ServerGame.hpp"
 

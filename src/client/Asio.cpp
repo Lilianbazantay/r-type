@@ -1,7 +1,6 @@
 #include "Asio.hpp"
 #include <cstdio>
 #include <iostream>
-#include <ostream>
 #include <thread>
 
 /**
@@ -10,7 +9,7 @@
  * @param listen_port UDP port to bind the socket to
  * @param on_receive Callback function
  */
-Asio_network::Asio_network(__uint16_t listen_port, ReceiveCallback on_receive)
+Asio_network::Asio_network(std::uint16_t listen_port, ReceiveCallback on_receive)
     : work_guard_(asio::make_work_guard(io_ctx_)),
     socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
 {
@@ -100,7 +99,7 @@ void Asio_network::do_receive() {
  * @param host Destination ip
  * @param port Destination port
  */
-void Asio_network::send(const std::string& msg, const std::string& host, __uint16_t port)
+void Asio_network::send(const std::string& msg, const std::string& host, std::uint16_t port)
 {
     asio::ip::udp::endpoint endpoint(
         asio::ip::address::from_string(host),

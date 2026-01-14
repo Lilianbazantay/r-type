@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <csignal>
 #include <exception>
 #include <iostream>
 #include <memory>
@@ -21,7 +22,7 @@
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
-Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkClientBuffer *newCBuffer)
+Server::Server(std::uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkClientBuffer *newCBuffer)
 : receivedBuffer(newRBuffer),
   sendBuffer(newSBuffer),
   io_ctx_(),
@@ -120,7 +121,7 @@ void Server::do_receive() {
  * @param host host's IP
  * @param port host's port
  */
-void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
+void Server::send(size_t actVal, const std::string& host, std::uint16_t port) {
     std::shared_ptr<asio::ip::udp::endpoint> endpoint =
         std::make_shared<asio::ip::udp::endpoint>(asio::ip::address::from_string(host), port);
     std::shared_ptr<std::vector<uint8_t>> buffer = std::make_shared<std::vector<uint8_t>>();
@@ -150,7 +151,7 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
     }
 }
 
-void Server::send(const std::string& host, __uint16_t port, std::vector<uint8_t> packet) {
+void Server::send(const std::string& host, std::uint16_t port, std::vector<uint8_t> packet) {
     std::shared_ptr<asio::ip::udp::endpoint> endpoint =
         std::make_shared<asio::ip::udp::endpoint>(asio::ip::address::from_string(host), port);
     try {
