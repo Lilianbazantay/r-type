@@ -137,3 +137,5 @@ ServerPacket pkt = decodeServerPacket(data, size);
 ```
 
 The client never blocks while waiting for packets.
+
+To see what will be received, follow the basic protocol in`server_network.md`.

@@ -23,6 +23,8 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     data.window.create(sf::VideoMode({1920, 1080}), "RTYPE");
     data.window.clear(sf::Color::Black);
     data.window.setActive(true);
+    data.bullet_count = 0;
+    data.enemy_count = 0;
     clock.restart();
     _inputManager.setClient(&client);
     Prevtime = clock.getElapsedTime();
@@ -41,6 +43,15 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     client.sendStartGame();
 }
 
+bool ClientGame::IsEntityExist(int type, int id) {
+    std::vector<std::unique_ptr<IMediatorEntity>> &list = data.entityList;
+    for (size_t i = 0; i < list.size(); i++)
+        if (list[i]->getType() == type && list[i]->getId() == id)
+            return true;
+    return false;
+}
+
+
 /**
  * @brief updates the deltatime(runtime), and go through every entity and system.
  *
@@ -49,12 +60,9 @@ void ClientGame::Update() {
     sf::Time Newtime = clock.getElapsedTime();
     data.runtime = (Newtime.asMicroseconds() - Prevtime.asMicroseconds()) / 1000000.;
     Prevtime = Newtime;
-
-    size_t SListSize = systemList.size();
-    size_t EListSize = data.entityList.size();
-    for (size_t i = 0; i < SListSize; i++)
-        for (size_t j = 0; j < EListSize; j++)
-            systemList[i]->checkEntity(*data.entityList[j].get(), data);
+    for (size_t i = 0; i < systemList.size(); i++)
+        for (size_t j = 0; j < data.entityList.size(); j++)
+            systemList[i]->checkEntity(*data.entityList[j], data);
 }
 
 /**
@@ -94,7 +102,8 @@ void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, f
             data.entityList.push_back(std::make_unique<Background>());
             break;
         } case ENTITY_PLAYER: {
-            data.entityList.push_back(std::make_unique<Player>());
+            if (!IsEntityExist(entity_type, entity_id))
+                data.entityList.push_back(std::make_unique<Player>());
             break;
         } case ENTITY_ENEMY: {
             data.entityList.push_back(std::make_unique<Enemy>());
@@ -137,11 +146,17 @@ void ClientGame::moveEntity(int entity_type, int entity_id, std::pair<float, flo
  * @param entity_id id allocated by the server for the entity
  */
 void ClientGame::deleteEntity(int entity_type, int entity_id) {
-    for (size_t i = 0; i < data.entityList.size(); i++) {
-        if (data.entityList[i]->is_wanted_entity(entity_type, entity_id))
-            data.entityList.erase(data.entityList.begin() + i);
+    std::cout << "[DELETE] looking for type=" << entity_type
+              << " id=" << entity_id << "\n";
+
+    for (const auto& e : data.entityList) {
+        std::cout << "  entity type=" << e->getType()
+                  << " id=" << e->getId() << "\n";
     }
 
+    std::erase_if(data.entityList, [&](const auto& e) {
+        return e->is_wanted_entity(entity_type, entity_id);
+    });
 }
 
 /**
@@ -193,21 +208,27 @@ void ClientGame::setStop(bool value) {
 void ClientGame::processNetworkPackets()
 {
     auto packets = _netBuffer->popAllPackets();
-    for (const auto& pkt : packets) {
-        switch (pkt.actionType)
+//    if (packets.size() != 0)
+//        std::cout << "Packet Size: " << packets.size() << ", " << (int)packets[0].actionType << std::endl;
+    for (size_t i = 0; i < packets.size(); i++) {
+        switch ((int)packets[i].actionType)
         {
         case 0:
-            std::cout << "ENTITY CREATED\n";
-            createEntity(pkt.entityType, pkt.entityId, {pkt.posX, pkt.posY});
+            //std::cout << "ENTITY CREATED\n";
+            createEntity((int)packets[i].entityType, (int)packets[i].entityId, {(int)packets[i].posX, (int)packets[i].posY});
             break;
         case 1:
-            std::cout << "ENTITY MOVED\n";
-            moveEntity(pkt.entityType, pkt.entityId, {pkt.posX, pkt.posY});
+            //std::cout << "ENTITY MOVED\n";
+            moveEntity((int)packets[i].entityType, (int)packets[i].entityId, {(int)packets[i].posX, (int)packets[i].posY});
             break;
         case 2:
-            std::cout << "ENTITY DELETED\n";
-            deleteEntity(pkt.entityType, pkt.entityId);
+            //std::cout << "ENTITY DELETED\n";
+            std::cout << "Message actionType: " << (int)packets[i].actionType << "\n";
+            std::cout << "Message affected entity: " << (int)packets[i].entityId << " type: " << (int)packets[i].entityType << "\n";
+            deleteEntity((int)packets[i].entityType, (int)packets[i].entityId);
             break;
+        case 14:
+            setStop(true);
         default:
             break;
         }

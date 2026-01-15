@@ -1,6 +1,7 @@
 #include "./ClientGame.hpp"
 #include "parser.hpp"
 #include "client.hpp"
+#include "../utils.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -98,7 +99,8 @@ int main(int argc, char **argv)
     //std::thread consoleThread(clientConsoleThread, argc, argv);
 
     Parser parser;
-    parser.parse(argc, argv);
+    if (parser.parse(argc, argv) == EXIT_ERROR)
+        return EXIT_ERROR;
     NetworkBuffer netBuffer;
 
     try {

@@ -21,10 +21,11 @@ This project is a full **R-Type multiplayer engine**, implemented in **C++**, us
 
 The goal is to reproduce the behavior of the classic R-Type shooter while supporting multiplayer gameplay.
 
-The project produces two binaries:
+The project produces three binaries:
 
 - **`r-type_server`** — authoritative server handling the game world
 - **`r-type_client`** — player client handling rendering + inputs
+- **`r-type_app`** — application used to create new entities
 
 ---
 
@@ -49,7 +50,28 @@ This installs dependencies (via vcpkg) and generates:
 ```
 ./r-type_client
 ./r-type_server
+./r-type_app
 ```
+*<u>Note:</u>
+The installation script will install **system-wide dependencies**. These includes:*
+- basic developement tools: used to compile the program and run it
+- `cmake`: our build system
+- `ninja`: a build system paired with cmake to improve compilation speed
+- `freetype`: a library that renders font
+- `X11`: windowing system for Unix-based system
+- `XCB`: library to enable connection with the X11 library
+- `XRandR`: X11 extension to handle the screen's configuration dynamically
+- `XI`: X11 extension to handle touchpads inputs
+- `XCursor`: X11 mouse cursor manager
+- `udev`: a linux device manager to detect and manage hardware dynamically.
+- `OpenAL`: audio API used for spatial sound playback
+- `OpenGL`: graphic API to render in both 2D and 3D. Creates a grpahical context.
+- `libtool`: a build tool to abstract static library creation
+
+The **freetype** library, **X11** library and its dependencies and **OpanAL**/**OPENGL** are all library used by the **SFML** library.
+
+*Every library here is imported that way as to not make the project dependant on them and allow it run without being dependant on the user's system.*
+
 
 <a name="usage"></a>
 ## Usage

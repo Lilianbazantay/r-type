@@ -21,9 +21,10 @@
  * @param listen_port port on which the server will listen
  * @param on_receive callback function used when receiving data
  */
-Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkClientBuffer *newCBuffer)
+Server::Server(__uint16_t listen_port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer *newSBuffer, NetworkContinuousBuffer *newCBuffer)
 : receivedBuffer(newRBuffer),
   sendBuffer(newSBuffer),
+  continuousBuffer(newCBuffer),
   io_ctx_(),
   work_guard_(asio::make_work_guard(io_ctx_)),
   socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port)),
@@ -65,6 +66,7 @@ void Server::start() {
     if (running_)
         return;
     running_ = true;
+    std::signal(SIGINT, Server::SigHandler);
     io_thread_ = std::jthread(&Server::run, this);
     timer.expires_after(interval);
     StartTimer();
@@ -98,11 +100,14 @@ void Server::do_receive() {
                     recv_buffer_.data() + bytes_recvd);
                 receiver.FillReceivedData(arr);
                 for (size_t i = 0; i < 4; i++)
-                    if (list_ip.at(i).empty() != false && list_ip.at(i) == remote_endpoint_.address().to_string())
+                    if (list_ip.at(i) == remote_endpoint_.address().to_string() && list_port.at(i) == remote_endpoint_.port())
                         receiver.FillPlayerId(i);
                 packetDispatch();
             }
-
+            if (shutdown_requested == true) {
+                    handleShutdown();
+                    return;
+            }
             if (running_)
                 do_receive();
         }
@@ -127,11 +132,13 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
     if (actVal == ENTITY_MOVED)
         *buffer = PacketEncoder::encodeMove(currentID, 0, 0, 0, 0);
     if (actVal == ENTITY_DELETED)
-        *buffer = PacketEncoder::encodeDelete(currentID, 0);
+        *buffer = PacketEncoder::encodeDelete(currentID, 0, 0);
     if (actVal == PACKAGE_NOT_RECEIVED)
         *buffer = PacketEncoder::encodeNotReceived(currentID);
     if (actVal == VALIDATION)
         *buffer = PacketEncoder::encodeOK(currentID);
+    if (actVal == ActionTypeServer::SERVER_SHUTDOWN)
+        *buffer = PacketEncoder::encodeSHUTDOWN(currentID);
     currentID++;
     try {
         socket_.async_send_to(
@@ -140,7 +147,7 @@ void Server::send(size_t actVal, const std::string& host, __uint16_t port) {
             [](std::error_code, std::size_t) {}
         );
     } catch(std::exception &e) {
-        std::cout << e.what() << "\n";
+        std::cout << e.what() << std::endl;
     }
 }
 
@@ -148,13 +155,14 @@ void Server::send(const std::string& host, __uint16_t port, std::vector<uint8_t>
     std::shared_ptr<asio::ip::udp::endpoint> endpoint =
         std::make_shared<asio::ip::udp::endpoint>(asio::ip::address::from_string(host), port);
     try {
+        currentID++;
         socket_.async_send_to(
             asio::buffer(packet),
             *endpoint,
             [](std::error_code, std::size_t) {}
         );
     } catch(std::exception &e) {
-        std::cout << e.what() << "\n";
+        std::cout << e.what() << std::endl;
     }
 }
 
@@ -173,7 +181,6 @@ size_t Server::addIp() {
     for (size_t i = 0; i < list_ip.size(); ++i)
         if (list_ip.at(i).empty()) {
             list_ip.at(i) = remote_endpoint_.address().to_string();
-            std::cout << list_ip.at(i);
             return i;
         }
     return 5;
@@ -186,7 +193,6 @@ size_t Server::addIp() {
  * @param tmpIP IP of the client linked to the port
  */
 size_t Server::addPort(size_t id) {
-    std::cout << id;
     if (id == 5)
         return id;
     list_port.at(id) = remote_endpoint_.port();
@@ -201,6 +207,9 @@ void Server::packetDispatch() {
     if (receiver.getPayload() == 6) {
         addConnection(addPort(addIp()));
         send(15, remote_endpoint_.address().to_string(), remote_endpoint_.port());
+        std::vector<std::vector<uint8_t>> continuousPackets = continuousBuffer->getAllPackets();
+        for(size_t i = 0; i < continuousPackets.size(); i++)
+            send(remote_endpoint_.address().to_string(), remote_endpoint_.port(), continuousPackets[i]);
     }
     if (receiver.getPayload() == 1 && is_connected.at(receiver.getPlayerId()) && has_started.at(receiver.getPlayerId())) {
         receivedBuffer->pushPacket(receiver);
@@ -235,13 +244,10 @@ void Server::RoutineSender() {
     std::string ip;
     size_t port;
     std::vector<std::vector<uint8_t>> buff = sendBuffer->popAllPackets();
-    std::string x = std::format("test with i = {}\n", buff.size());
-    std::cout << x;
     for (size_t i = 0; i < buff.size(); i++) {
         for (size_t j = 0; j < list_ip.size(); j++) {
             ip = list_ip.at(j);
             port = list_port.at(j);
-            std::cout << ip << ", " << port << std::endl;
             if (ip.empty() || port == 0)
                 continue;
             send(ip, port, buff[i]);
@@ -282,4 +288,24 @@ void Server::addStart(size_t id) {
     if (id == 5)
         return;
     has_started.at(id) = true;
+}
+
+void Server::SigHandler(int signal)
+{
+    if (signal == SIGINT)
+        shutdown_requested = true;
+}
+
+void Server::handleShutdown()
+{
+    for (size_t i = 0; i < list_ip.size(); ++i)
+        if (!list_ip.at(i).empty())
+            send(ActionTypeServer::SERVER_SHUTDOWN, list_ip.at(i), list_port.at(i));
+    std::vector<uint8_t>p(5);
+    p.at(0) = (static_cast<uint32_t>(0) >> 8u) & 0xFFu;
+    p.at(1) = static_cast<uint32_t>(0) & 0xFFu;
+    p.at(2) = (( static_cast<uint32_t>(14) & 0x0Fu) << 4u) | (static_cast<uint32_t>(0) & 0x0Fu);
+    receiver.FillReceivedData(p);
+    receivedBuffer->pushPacket(receiver);
+    stop();
 }

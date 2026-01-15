@@ -26,9 +26,10 @@ class ClientGame {
         bool Paused = false;
         std::mutex pause_mutex;
 
-        NetworkBuffer *_netBuffer;
+        NetworkBuffer *_netBuffer = nullptr;
         Client client;
 
+        bool IsEntityExist(int, int);
     public:
         ClientGame(std::string ip, int port, NetworkBuffer *netBuffer);
         ~ClientGame() = default;

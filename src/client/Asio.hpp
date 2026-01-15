@@ -1,6 +1,4 @@
-#ifndef ASIO_NETWORK_HPP
-#define ASIO_NETWORK_HPP
-
+#pragma once
 
 #include <cstdint>
 #include <vector>
@@ -29,6 +27,7 @@ class Asio_network {
 
     private:
         asio::io_context io_ctx_;
+        asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;
 
@@ -39,5 +38,3 @@ class Asio_network {
 
         ReceiveCallback receive_callback_;
 };
-
-#endif

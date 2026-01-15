@@ -24,7 +24,7 @@
  */
 class Server {
     public:
-        Server(__uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *, NetworkClientBuffer *);
+        Server(__uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *, NetworkContinuousBuffer *);
         ~Server();
 
         void start();
@@ -48,10 +48,15 @@ class Server {
         size_t addPort(size_t id);
         void addConnection(size_t id);
         void addStart(size_t id);
+        static void SigHandler(int signal);
+        void handleShutdown();
+        static inline std::atomic<bool> shutdown_requested{false};
+        static inline Server* instance{nullptr};
 
     private:
         NetworkServerBuffer *receivedBuffer;
         NetworkClientBuffer *sendBuffer;
+        NetworkContinuousBuffer *continuousBuffer;
         asio::io_context io_ctx_;
         asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::ip::udp::socket socket_;

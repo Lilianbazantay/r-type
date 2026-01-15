@@ -24,17 +24,19 @@ class ServerGame {
 
         NetworkServerBuffer *networkReceiveBuffer;
         NetworkClientBuffer *networkSendBuffer;
-        NetworkClientBuffer *continuousBuffer;
+        NetworkContinuousBuffer *continuousBuffer;
         Server networkServer;
         PacketEncoder encoder;
 
     public:
-        ServerGame(int, NetworkServerBuffer *, NetworkClientBuffer *, NetworkClientBuffer *);
+        ServerGame(int, NetworkServerBuffer *, NetworkClientBuffer *, NetworkContinuousBuffer *);
         ~ServerGame() = default;
         bool createEntity(int, int);
         void changePlayerDirection(int, std::pair<int, int>);
+        void playerShoot(int);
         void parseNetworkPackets();
         void requestGameData();
         void Update();
         void Loop();
+        int bulletID = 0;
 };

@@ -21,11 +21,13 @@ DrawAnimatedSystem::DrawAnimatedSystem() {
  */
 void DrawAnimatedSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) {
     //std::cout << "Drawing" << std::endl;
+    if (!entity.is_Alive())
+        return;
     Position *playerPos = dynamic_cast<Position*>(entity.FindComponent(ComponentType::POSITION));
     Sprite *playerSprite = dynamic_cast<Sprite*>(entity.FindComponent(ComponentType::SPRITE));
     if (playerSprite == nullptr)
         return;
-    sf::Sprite spr = playerSprite->GetSprite();
+    sf::Sprite& spr = playerSprite->GetSprite();
     auto pos = playerPos->GetPosition();
     //std::cout << pos.first << ", " << pos.second << std::endl;
     spr.setPosition(pos.first, pos.second);

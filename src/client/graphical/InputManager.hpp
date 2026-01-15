@@ -12,11 +12,11 @@
  *
  */
 enum Action {
+    Fire,
     Up,
     Down,
     Left,
     Right,
-    Fire,
     Unknown
 };
 

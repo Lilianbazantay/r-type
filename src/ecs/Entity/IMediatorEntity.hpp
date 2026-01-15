@@ -8,6 +8,7 @@ constexpr int ENTITY_BACKGROUND = 0;
 constexpr int ENTITY_PLAYER = 1;
 constexpr int ENTITY_ENEMY = 2;
 constexpr int ENTITY_BULLET = 3;
+constexpr int ENTITY_UNDEFINED = 4;
 
 
 /**
@@ -25,7 +26,7 @@ class IMediatorEntity
         std::vector<IMediatorEntity> _attachedEntities; // Ex: weapon attached to a player, ...
 
         int id;
-        int Entitytype;
+        int Entitytype = ENTITY_UNDEFINED;
         std::mutex _mutex;
         bool entity_created = true;
         bool entity_changed = false;
@@ -55,7 +56,7 @@ class IMediatorEntity
         bool is_Alive();
 
         // CLONE
-        virtual IMediatorEntity *Clone() = 0;
+        virtual std::unique_ptr<IMediatorEntity> Clone() = 0;
 
         // FIND
         IComponent *FindComponent(ComponentType type);
