@@ -140,3 +140,38 @@ add_custom_target(re
     COMMAND ${CMAKE_COMMAND} --build . --target clean
     COMMAND ${CMAKE_COMMAND} --build . --target all -- -j
 )
+
+add_executable(flappy_client
+    src/main_flappy_client.cpp
+    src/FlappyClientGame.cpp
+    src/client/client.cpp
+    src/client/Asio.cpp
+    src/client/NetworkBuffer.cpp
+    src/client/PacketCodec.cpp
+)
+
+add_executable(flappy_server
+    src/main_flappy_server.cpp
+    src/FlappyServerGame.cpp
+    src/server/server.cpp
+    src/server/protocol.cpp
+    src/server/NetworkServerBuffer.cpp
+    src/server/NetworkClientBuffer.cpp
+    src/server/NetworkContinuousBuffer.cpp
+)
+
+foreach(target flappy_client flappy_server)
+    target_include_directories(${target} PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+    )
+
+    target_link_libraries(${target} PRIVATE
+        r-type_ecs
+        asio::asio
+        nlohmann_json::nlohmann_json
+    )
+
+    target_compile_definitions(${target} PRIVATE
+        PROJECT_ROOT_PATH="${CMAKE_SOURCE_DIR}/"
+    )
+endforeach()
