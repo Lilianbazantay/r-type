@@ -520,7 +520,7 @@ void ComponentDrawer::drawComponentList(std::vector<StrategyStruct>& vec, const 
         StrategyStruct& strategy = vec[strat_index];
         ImGui::PushID((int)strat_index);
 
-        if (ImGui::TreeNode((label + std::to_string(strat_index)).c_str())) {
+        if (ImGui::TreeNode((std::string(label) + " " + std::to_string(strat_index)).c_str())) {
 
             for (size_t pattern_index = 0; pattern_index < strategy.strategy.size(); ++pattern_index) {
                 Pattern& pattern = strategy.strategy[pattern_index];
