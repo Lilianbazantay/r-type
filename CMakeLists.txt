@@ -88,8 +88,8 @@ install(TARGETS r-type_ecs
 )
 
 # Add the executables
-add_executable(r-type_client ${CLIENT_SOURCES} ${ECS_SOURCES})
-add_executable(r-type_server ${SERVER_SOURCES} ${ECS_SOURCES})
+add_executable(r-type_client ${CLIENT_SOURCES})
+add_executable(r-type_server ${SERVER_SOURCES})
 add_executable(r-type_app ${APP_SOURCES})
 
 # Target configuration
