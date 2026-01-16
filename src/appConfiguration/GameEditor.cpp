@@ -79,45 +79,60 @@ void GameEditor::SaveAllEntities()
     try {
         std::vector<std::pair<EntityType, std::string>> folders = {
             {EntityType::player, "src/appConfiguration/configuration/player/"},
-            {EntityType::enemy,  "src/appConfiguration/configuration/ennemy/"},
+            {EntityType::enemy,  "src/appConfiguration/configuration/enemy/"},
             {EntityType::weapon, "src/appConfiguration/configuration/weapon/"},
             {EntityType::bullet, "src/appConfiguration/configuration/weapon/bullet/"},
-            {EntityType::map, "src/appConfiguration/configuration/map/"},
-            {EntityType::none, "src/appConfiguration/configuration/entity/"}
+            {EntityType::map,    "src/appConfiguration/configuration/map/"},
+            {EntityType::none,   "src/appConfiguration/configuration/entity/"}
         };
 
-        for (auto& [type, folder] : folders) {
-            if (fs::exists(folder)) {
+        // Reset folders
+        for (const auto& [_, folder] : folders) {
+            if (fs::exists(folder))
                 fs::remove_all(folder);
-            }
             fs::create_directories(folder);
         }
 
-        for (auto& e : entities) {
+        // Save entities
+        for (const auto& e : entities) {
             std::string folder;
+
             switch (e.type) {
-                case EntityType::player: folder = "src/appConfiguration/configuration/player/"; break;
-                case EntityType::enemy:  folder = "src/appConfiguration/configuration/ennemy/"; break;
-                case EntityType::weapon: folder = "src/appConfiguration/configuration/weapon/"; break;
-                case EntityType::bullet: folder = "src/appConfiguration/configuration/weapon/bullet/"; break;
-                case EntityType::map: folder = "src/appConfiguration/configuration/map/"; break;
-                default: folder = "src/appConfiguration/configuration/entity/"; break;
+                case EntityType::player:
+                    folder = "src/appConfiguration/configuration/player/";
+                    break;
+                case EntityType::enemy:
+                    folder = "src/appConfiguration/configuration/enemy/";
+                    break;
+                case EntityType::weapon:
+                    folder = "src/appConfiguration/configuration/weapon/";
+                    break;
+                case EntityType::bullet:
+                    folder = "src/appConfiguration/configuration/weapon/bullet/";
+                    break;
+                case EntityType::map:
+                    folder = "src/appConfiguration/configuration/map/";
+                    break;
+                default:
+                    folder = "src/appConfiguration/configuration/entity/";
+                    break;
             }
 
-            std::string filepath = folder + e.name + ".json";
-            json jEntity = e;
-            std::ofstream file(filepath);
+            std::ofstream file(folder + e.name + ".json");
             if (!file.is_open())
-                throw std::runtime_error("Cannot open file " + filepath);
-            file << jEntity.dump(4);
+                throw std::runtime_error("Cannot open file");
+
+            json j = e;
+            file << j.dump(4);
         }
 
-        std::cout << "All entities saved and configuration folders reset.\n";
-
-    } catch (const std::exception& ex) {
-        std::cerr << "SaveAllEntities error: " << ex.what() << "\n";
+        std::cout << "[Save] All entities saved successfully\n";
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Save ERROR] " << e.what() << '\n';
     }
 }
+
 
 
 void GameEditor::LoadAllEntities()
@@ -125,39 +140,45 @@ void GameEditor::LoadAllEntities()
     try {
         entities.clear();
 
-        std::vector<std::pair<EntityType, std::string>> folders = {
-            {EntityType::player, "src/appConfiguration/configuration/player/"},
-            {EntityType::enemy,  "src/appConfiguration/configuration/enemy/"},
-            {EntityType::weapon, "src/appConfiguration/configuration/weapon/"},
-            {EntityType::bullet, "src/appConfiguration/configuration/weapon/bullet/"},
-            {EntityType::map, "src/appConfiguration/configuration/map/"}
+        std::vector<std::string> folders = {
+            "src/appConfiguration/configuration/player/",
+            "src/appConfiguration/configuration/enemy/",
+            "src/appConfiguration/configuration/weapon/",
+            "src/appConfiguration/configuration/weapon/bullet/",
+            "src/appConfiguration/configuration/map/",
+            "src/appConfiguration/configuration/entity/"
         };
 
-        for (auto& [type, folder] : folders) {
-            if (!fs::exists(folder)) continue;
+        for (const auto& folder : folders) {
+            if (!fs::exists(folder))
+                continue;
 
-            for (auto& entry : fs::directory_iterator(folder)) {
-                if (entry.is_regular_file() && entry.path().extension() == ".json") {
-                    std::ifstream file(entry.path());
-                    if (!file.is_open()) {
-                        std::cerr << "Failed to open " << entry.path() << "\n";
-                        continue;
-                    }
+            for (const auto& entry : fs::directory_iterator(folder)) {
+                if (!entry.is_regular_file() || entry.path().extension() != ".json")
+                    continue;
 
-                    json jEntity;
-                    file >> jEntity;
-                    Entity e = jEntity.get<Entity>();
-                    entities.push_back(e);
+                std::ifstream file(entry.path());
+                if (!file.is_open()) {
+                    std::cerr << "[Load] Failed to open " << entry.path() << '\n';
+                    continue;
                 }
+
+                json j;
+                file >> j;
+
+                Entity e = j.get<Entity>();
+                entities.push_back(e);
             }
         }
 
         _selectedEntityIndex = -1;
-        std::cout << "Loaded all entities from configuration folders.\n";
-    } catch (const std::exception& e) {
-        std::cerr << "LoadAllEntities error: " << e.what() << "\n";
+        std::cout << "[Load] All entities loaded successfully\n";
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Load ERROR] " << e.what() << '\n';
     }
 }
+
 
 // =====================
 // Init
