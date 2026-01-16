@@ -11,6 +11,16 @@ int Hp::GetHp()
 }
 
 /**
+ * @brief Get the Hp object
+ *
+ * @return int The current Hp value in percent
+ */
+int Hp::GetHpPercent()
+{
+    return (_value / _maxHp) * 100;
+}
+
+/**
  * @brief Set the Hp object
  *
  * @param value The new Hp value
