@@ -95,7 +95,6 @@ static void DrawAnimatedContext(const char* name, AnimatedSpriteContext& ctx)
         ImGui::InputFloat("Size Y", &ctx.size.y);
         ImGui::InputInt("Step X", &ctx.step.x);
         ImGui::InputInt("Step Y", &ctx.step.x);
-        ImGui::Checkbox("Visible", &ctx.loop);
         ImGui::TreePop();
     }
 }
@@ -543,7 +542,6 @@ void ComponentDrawer::drawComponentList(std::vector<StrategyStruct>& vec, const 
 
         ImGui::PopID();
     }
-
 }
 
 // ====================
