@@ -533,7 +533,7 @@ void ComponentDrawer::drawComponentList(std::vector<StrategyStruct>& vec, const 
                 strategy.strategy.push_back(Pattern{});
             }
 
-            if (ImGui::Button(("Delete" + std::to_string(strat_index)).c_str())) {
+            if (ImGui::Button("Delete")) {
                 vec.erase(vec.begin() + strat_index);
                 ImGui::PopID();
                 break;
