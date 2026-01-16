@@ -26,10 +26,15 @@ class ClientGame {
         bool Paused = false;
         std::mutex pause_mutex;
 
+        std::pair<unsigned int, unsigned int> prevWindowSize = {1920, 1080};
+        std::pair<unsigned int, unsigned int> actWindowSize = {1920, 1080};
+        std::pair<unsigned int, unsigned int> maxWindowSize = {1920, 1080};
+
         NetworkBuffer *_netBuffer = nullptr;
         Client client;
 
         bool IsEntityExist(int, int);
+        void handleResize(std::pair<unsigned int, unsigned int>);
     public:
         ClientGame(std::string ip, int port, NetworkBuffer *netBuffer);
         ~ClientGame() = default;
