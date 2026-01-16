@@ -6,8 +6,10 @@
 #include "ecs/Component/Cooldown.hpp"
 #include "ecs/Entity/Entities.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
+#include "ecs/IComponent.hpp"
 #include "ecs/System/CollisionSystem.hpp"
 #include "ecs/System/ShootSystem.hpp"
+#include "ecs/System/StrategySystem.hpp"
 #include "protocol.hpp"
 #include "server.hpp"
 #include "server/NetworkServerBuffer.hpp"
@@ -38,6 +40,7 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
     systemList.push_back(std::make_unique<ShootSystem>());
     systemList.push_back(std::make_unique<CollisionSystem>());
     systemList.push_back(std::make_unique<MovementSystem>());
+    systemList.push_back(std::make_unique<StrategySystem>());
     networkServer.start();
 }
 
@@ -53,6 +56,7 @@ void ServerGame::Update() {
         for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
         if (data.entityList[j]->justCreated()) {
+            std::cout << "Creating entity " << data.entityList[j]->getType() << std::endl;
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
@@ -95,19 +99,13 @@ void ServerGame::Update() {
 
 void ServerGame::Loop() {
     Running = true;
-    Cooldown cooldown(20.0);
     Cooldown tmp(0.01);
-    cooldown.LaunchCooldown();
     while(Running) {
         if (tmp.CheckCooldown() == true) {
             Update();
             tmp.LaunchCooldown();
         }
-        if (cooldown.CheckCooldown() == true) {
-            data.enemy_count++;
-            createEntity(2, data.enemy_count);
-            cooldown.LaunchCooldown();
-        }
+        waveManager.computeEntities(&data);
         parseNetworkPackets();
     }
 }
