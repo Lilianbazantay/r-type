@@ -61,5 +61,5 @@ private:
     void LoadAllEntities();
 
 public:
-    void RunGameEditor();
+    void runGameEditor();
 };
