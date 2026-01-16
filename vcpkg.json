@@ -9,12 +9,22 @@
     },
     "asio",
     "fmt",
-    "nlohmann-json"
+    "nlohmann-json",
+    "imgui",
+    "imgui-sfml"
   ],
   "overrides": [
     {
       "name": "sfml",
       "version": "2.6.2"
+    },
+    {
+      "name": "imgui",
+      "version": "1.89.9"
+    },
+    {
+      "name": "imgui-sfml",
+      "version": "2.6"
     }
   ]
 }
