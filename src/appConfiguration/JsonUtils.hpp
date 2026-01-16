@@ -8,9 +8,10 @@
 
 using json = nlohmann::json;
 
-// =====================================================
+// ====================
 // EntityType <-> string
-// =====================================================
+// ====================
+
 
 inline std::string EntityTypeToString(EntityType type)
 {
@@ -35,9 +36,10 @@ inline EntityType StringToEntityType(const std::string& s)
     return EntityType::none;
 }
 
-// =====================================================
+// ====================
 // Entity -> JSON
-// =====================================================
+// ====================
+
 
 inline void to_json(json& j, const Entity& e)
 {
@@ -142,7 +144,7 @@ inline void to_json(json& j, const Entity& e)
         for (const auto& pat : e.strategy[0].strategy) {
             json sequences = json::array();
             for (const auto& seq : pat.movements)
-                sequences.push_back({ { seq.dictio.first, seq.dictio.second }, seq.value });
+                sequences.push_back({ { seq.direction.first, seq.direction.second }, seq.value });
             patterns.push_back({
                 {"hp_range", { pat.hp_range.x, pat.hp_range.y }},
                 {"sequences", sequences}
@@ -178,9 +180,10 @@ inline void to_json(json& j, const Entity& e)
     j["components"] = c;
 }
 
-// =====================================================
+// ====================
 // JSON -> Entity
-// =====================================================
+// ====================
+
 
 inline void from_json(const json& j, Entity& e)
 {
@@ -285,8 +288,8 @@ inline void from_json(const json& j, Entity& e)
             p.hp_range.y = pat.at("hp_range")[1].get<int>();
             for (const auto& seq : pat.at("sequences")) {
                 Move m;
-                m.dictio.first = seq[0][0].get<int>();
-                m.dictio.second = seq[0][1].get<int>();
+                m.direction.first = seq[0][0].get<int>();
+                m.direction.second = seq[0][1].get<int>();
                 m.value = seq[1].get<int>();
                 p.movements.push_back(m);
             }

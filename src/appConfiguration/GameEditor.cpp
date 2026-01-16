@@ -49,7 +49,7 @@ static std::string getCurrentDateTime()
 // =====================
 // Public
 // =====================
-void GameEditor::RunGameEditor()
+void GameEditor::runGameEditor()
 {
     initWindow();
 
@@ -339,7 +339,7 @@ void GameEditor::drawRightPanel()
             auto& layer = e._paralaxe[i];
             ImGui::PushID((int)i);
 
-            ComponentDrawer::DrawPathSelector("Path", layer.path, { ".png", ".jpg" });
+            ComponentDrawer::drawPathSelector("Path", layer.path, { ".png", ".jpg" });
             ImGui::InputFloat("Speed", &layer.speed);
             ImGui::SameLine();
             if (ImGui::Button("X")) {
@@ -475,9 +475,9 @@ void GameEditor::drawCenterPanel()
     ImGui::Text("Visualisation");
     ImGui::Separator();
 
-    // -----------------------------
+    // ====================
     // Sprites
-    // -----------------------------
+    // ====================
     if (!e.sprite.empty()) {
         ImGui::Text("Sprites:");
         for (size_t i = 0; i < e.sprite.size(); ++i) {
@@ -504,9 +504,9 @@ void GameEditor::drawCenterPanel()
         ImGui::Image(_defaultTexture, ImVec2(100, 100));
     }
 
-    // -----------------------------
+    // ====================
     // AnimatedSprites
-    // -----------------------------
+    // ====================
     if (!e.animatedSprite.empty()) {
         ImGui::Separator();
         ImGui::Text("Animated Sprites:");
@@ -529,9 +529,9 @@ void GameEditor::drawCenterPanel()
         }
     }
 
-    // -----------------------------
+    // ====================
     // Parallax Layers
-    // -----------------------------
+    // ====================
     if (e.type == EntityType::map && !e._paralaxe.empty()) {
         ImGui::Separator();
         ImGui::Text("Parallax Layers (superposed):");

@@ -7,7 +7,7 @@ int main()
 {
     try {
         GameEditor editor;
-        editor.RunGameEditor();
+        editor.runGameEditor();
     }
     catch (const std::exception& e) {
         std::cerr << "Fatal error: " << e.what() << std::endl;

@@ -70,7 +70,7 @@ static bool DrawFileBrowserPopup(const char* popup_id, std::string& outPath, con
     return selected;
 }
 
-void ComponentDrawer::DrawPathSelector(const char* label, std::string& path, const std::vector<std::string>& extensions, const std::string& startDir)
+void ComponentDrawer::drawPathSelector(const char* label, std::string& path, const std::vector<std::string>& extensions, const std::string& startDir)
 {
     ImGui::InputText(label, &path);
     ImGui::SameLine();
@@ -83,11 +83,13 @@ void ComponentDrawer::DrawPathSelector(const char* label, std::string& path, con
     DrawFileBrowserPopup(popup.c_str(), path, startDir, extensions);
 }
 
+// ====================
 // Animated Sprite
+// ====================
 static void DrawAnimatedContext(const char* name, AnimatedSpriteContext& ctx)
 {
     if (ImGui::TreeNode(name)) {
-        ComponentDrawer::DrawPathSelector("Path", ctx.path, { ".png", ".jpg", ".jpeg" });
+        ComponentDrawer::drawPathSelector("Path", ctx.path, { ".png", ".jpg", ".jpeg" });
         ImGui::InputInt("Lenth", &ctx.lenth);
         ImGui::InputFloat("Size X", &ctx.size.x);
         ImGui::InputFloat("Size Y", &ctx.size.y);
@@ -129,7 +131,9 @@ void ComponentDrawer::drawComponentList(std::vector<AnimatedSpriteStruct>& vec, 
     }
 }
 
+// ====================
 // Clock
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<ClockStruct> &vec, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -148,7 +152,9 @@ void ComponentDrawer::drawComponentList(std::vector<ClockStruct> &vec, const cha
     }
 }
 
+// ====================
 // Cooldown
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<CooldownStruct> &vec, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -167,7 +173,9 @@ void ComponentDrawer::drawComponentList(std::vector<CooldownStruct> &vec, const 
     }
 }
 
+// ====================
 // Direction
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<DirectionStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -186,7 +194,9 @@ void ComponentDrawer::drawComponentList(std::vector<DirectionStruct> &vec, const
     }
 }
 
+// ====================
 // Entity Spawner
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<EntitySpawnerStruct>& vec, const std::vector<Entity>& allEntities, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -235,7 +245,9 @@ void ComponentDrawer::drawComponentList(std::vector<EntitySpawnerStruct>& vec, c
     }
 }
 
+// ====================
 // Gravity
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<GravityStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -253,7 +265,9 @@ void ComponentDrawer::drawComponentList(std::vector<GravityStruct> &vec, const c
     }
 }
 
+// ====================
 // Hitbox
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<HitboxStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -335,8 +349,9 @@ void ComponentDrawer::drawComponentList(std::vector<HitboxStruct> &vec, const ch
     }
 }
 
-
+// ====================
 // Hp
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<HpStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -354,7 +369,9 @@ void ComponentDrawer::drawComponentList(std::vector<HpStruct> &vec, const char* 
     }
 }
 
+// ====================
 // Position
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<PositionStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -373,11 +390,13 @@ void ComponentDrawer::drawComponentList(std::vector<PositionStruct> &vec, const 
     }
 }
 
+// ====================
 // Sound
+// ====================
 static void DrawSoundContext(const char* name, SoundContext& ctx)
 {
     if (ImGui::TreeNode(name)) {
-        ComponentDrawer::DrawPathSelector("Path", ctx.path, { ".wav", ".ogg", ".mp3" });
+        ComponentDrawer::drawPathSelector("Path", ctx.path, { ".wav", ".ogg", ".mp3" });
         ImGui::InputFloat("Volume", &ctx.volume);
         ImGui::Checkbox("loop", &ctx.loop);
         ImGui::TreePop();
@@ -409,8 +428,9 @@ void ComponentDrawer::drawComponentList(std::vector<SoundStruct>& vec, const cha
     }
 }
 
-
+// ====================
 // Sprite
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<SpriteStruct>& vec, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -420,7 +440,7 @@ void ComponentDrawer::drawComponentList(std::vector<SpriteStruct>& vec, const ch
             ImGui::InputFloat("Size X", &vec[i].size_x);
             ImGui::InputFloat("Size Y", &vec[i].size_y);
             ImGui::Checkbox("Visible", &vec[i].is_visible);
-            ComponentDrawer::DrawPathSelector("Path", vec[i].path, { ".png", ".jpg", ".jpeg" });
+            ComponentDrawer::drawPathSelector("Path", vec[i].path, { ".png", ".jpg", ".jpeg" });
             if (ImGui::Button("Delete")) {
                 vec.erase(vec.begin() + i);
                 ImGui::TreePop();
@@ -434,7 +454,9 @@ void ComponentDrawer::drawComponentList(std::vector<SpriteStruct>& vec, const ch
     }
 }
 
+// ====================
 // Strategy
+// ====================
 inline void DrawVec2i(const char* label, sf::Vector2i& vec) {
     int v[2] = { vec.x, vec.y };
     if (ImGui::InputInt2(label, v)) {
@@ -452,10 +474,10 @@ inline void drawPattern(Pattern& pattern, int pattern_index) {
         ImGui::PushID(move_index);
         ImGui::Text("Move %d", move_index);
 
-        static const char* move_names[] = { "UP", "DOWN", "RIGHT", "LEFT", "SHOOT", "LOOP" };
+        static const char* move_names[] = { "UP", "DOWN", "RIGHT", "UP_RIGHT", "DOWN_RIGHT", "LEFT", "UP_LEFT", "DOWN_LEFT", "SHOOT", "LOOP" };
         int current_index = 0;
         for (int i = 0; i < 6; ++i) {
-            if (StrategyDictionary.at(move_names[i]) == move.dictio) {
+            if (StrategyDictionary.at(move_names[i]) == move.direction) {
                 current_index = i;
                 break;
             }
@@ -463,7 +485,7 @@ inline void drawPattern(Pattern& pattern, int pattern_index) {
 
         std::string combo_label = "Type##" + std::to_string(pattern_index) + "_" + std::to_string(move_index);
         if (ImGui::Combo(combo_label.c_str(), &current_index, move_names, IM_ARRAYSIZE(move_names))) {
-            move.dictio = StrategyDictionary.at(move_names[current_index]);
+            move.direction = StrategyDictionary.at(move_names[current_index]);
         }
 
         std::string input_label = "Value##" + std::to_string(pattern_index) + "_" + std::to_string(move_index);
@@ -483,7 +505,7 @@ inline void drawPattern(Pattern& pattern, int pattern_index) {
 
     if (ImGui::Button(("Add Move##" + std::to_string(pattern_index)).c_str())) {
         Move new_move;
-        new_move.dictio = StrategyDictionary.at("UP");
+        new_move.direction = StrategyDictionary.at("UP");
         new_move.value = 1;
         pattern.movements.push_back(new_move);
     }
@@ -524,7 +546,9 @@ void ComponentDrawer::drawComponentList(std::vector<StrategyStruct>& vec, const 
 
 }
 
+// ====================
 // Velocity
+// ====================
 void ComponentDrawer::drawComponentList(std::vector<VelocityStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);

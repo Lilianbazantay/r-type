@@ -18,5 +18,5 @@ public:
     static void drawComponentList(std::vector<SpriteStruct>&, const char*, const char*);
     static void drawComponentList(std::vector<StrategyStruct>&, const char*, const char*);
     static void drawComponentList(std::vector<VelocityStruct>&, const char*, const char*);
-    static void DrawPathSelector(const char* label, std::string& path, const std::vector<std::string>& extensions, const std::string& startDir = "assets");
+    static void drawPathSelector(const char* label, std::string& path, const std::vector<std::string>& extensions, const std::string& startDir = "assets");
 };
