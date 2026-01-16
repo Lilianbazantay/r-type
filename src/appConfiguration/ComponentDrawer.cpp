@@ -489,7 +489,7 @@ inline void drawPattern(Pattern& pattern, int pattern_index) {
         }
 
         std::string input_label = "Value##" + std::to_string(pattern_index) + "_" + std::to_string(move_index);
-        ImGui::InputInt(input_label.c_str(), &move.value);
+        ImGui::InputFloat(input_label.c_str(), &move.value);
 
         std::string button_label = "Remove Move##" + std::to_string(pattern_index) + "_" + std::to_string(move_index);
         if (ImGui::Button(button_label.c_str())) {

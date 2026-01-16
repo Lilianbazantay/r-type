@@ -102,7 +102,7 @@ inline const std::unordered_map<std::string, std::pair<int,int>> StrategyDiction
 
 struct Move {
     std::pair<int,int> direction;
-    int value;
+    float value;
 };
 
 struct Pattern {
