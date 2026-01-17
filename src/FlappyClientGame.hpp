@@ -20,6 +20,6 @@ private:
     NetworkBuffer* netBuf;
     sf::Texture _texBird;
     sf::Sprite  _sprBird;
-    sf::Texture _texPipes;
-    sf::Sprite  _sprPipes;
+    sf::Texture _texBackground;
+    sf::Sprite  _sprBackground;
 };

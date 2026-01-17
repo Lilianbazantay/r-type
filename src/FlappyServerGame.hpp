@@ -40,4 +40,5 @@ private:
     bool _gameOver = false;
     bool _started = false;
     bool _sentShutdown = false;
+    float _lastPipeX = -1000.f;
 };
