@@ -1,8 +1,8 @@
 #include "FlappyServerGame.hpp"
 
-#include "ecs/Component/Position.hpp"
-#include "ecs/Entity/Entities.hpp"
-#include "server/encoder.hpp"
+#include "../ecs/Component/Position.hpp"
+#include "../ecs/Entity/Entities.hpp"
+#include "../server/encoder.hpp"
 
 #include <algorithm>
 #include <chrono>

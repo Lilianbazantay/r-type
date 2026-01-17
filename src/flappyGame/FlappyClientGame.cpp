@@ -1,7 +1,7 @@
 #include "FlappyClientGame.hpp"
 
-#include "ecs/Component/Position.hpp"
-#include "ecs/Entity/Entities.hpp"
+#include "../ecs/Component/Position.hpp"
+#include "../ecs/Entity/Entities.hpp"
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>

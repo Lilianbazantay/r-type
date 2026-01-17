@@ -173,8 +173,8 @@ add_custom_target(re
 )
 
 add_executable(flappy_client
-    src/main_flappy_client.cpp
-    src/FlappyClientGame.cpp
+    src/flappyGame/main_flappy_client.cpp
+    src/flappyGame/FlappyClientGame.cpp
     src/client/client.cpp
     src/client/Asio.cpp
     src/client/NetworkBuffer.cpp
@@ -182,8 +182,8 @@ add_executable(flappy_client
 )
 
 add_executable(flappy_server
-    src/main_flappy_server.cpp
-    src/FlappyServerGame.cpp
+    src/flappyGame/main_flappy_server.cpp
+    src/flappyGame/FlappyServerGame.cpp
     src/server/server.cpp
     src/server/protocol.cpp
     src/server/NetworkServerBuffer.cpp
