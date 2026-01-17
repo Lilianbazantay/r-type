@@ -1,4 +1,4 @@
-#include "server/ServerGame.hpp"
+#include "../server/ServerGame.hpp"
 #include "FlappyServerGame.hpp"
 
 int main()

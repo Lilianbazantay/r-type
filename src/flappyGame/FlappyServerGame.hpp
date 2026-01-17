@@ -1,9 +1,9 @@
 #pragma once
 
-#include "server/server.hpp"
-#include "server/NetworkServerBuffer.hpp"
-#include "ecs/System/ISystem.hpp"
-#include "ecs/relevant_data.hpp"
+#include "../server/server.hpp"
+#include "../server/NetworkServerBuffer.hpp"
+#include "../ecs/System/ISystem.hpp"
+#include "../ecs/relevant_data.hpp"
 
 #include <memory>
 #include <vector>

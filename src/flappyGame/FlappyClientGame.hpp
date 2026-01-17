@@ -1,7 +1,7 @@
 #pragma once
 
-#include "client/client.hpp"
-#include "ecs/relevant_data.hpp"
+#include "../client/client.hpp"
+#include "../ecs/relevant_data.hpp"
 #include <vector>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>

@@ -1,4 +1,4 @@
-#include "client/NetworkBuffer.hpp"
+#include "../client/NetworkBuffer.hpp"
 #include "FlappyClientGame.hpp"
 
 int main()
