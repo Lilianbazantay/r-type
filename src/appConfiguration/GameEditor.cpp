@@ -78,12 +78,12 @@ void GameEditor::SaveAllEntities()
 {
     try {
         std::vector<std::pair<EntityType, std::string>> folders = {
-            {EntityType::player, "src/appConfiguration/configuration/player/"},
-            {EntityType::enemy,  "src/appConfiguration/configuration/enemy/"},
-            {EntityType::weapon, "src/appConfiguration/configuration/weapon/"},
-            {EntityType::bullet, "src/appConfiguration/configuration/weapon/bullet/"},
-            {EntityType::map,    "src/appConfiguration/configuration/map/"},
-            {EntityType::none,   "src/appConfiguration/configuration/entity/"}
+            {EntityType::player, "./configuration/player/"},
+            {EntityType::enemy,  "./configuration/enemy/"},
+            {EntityType::weapon, "./configuration/weapon/"},
+            {EntityType::bullet, "./configuration/weapon/bullet/"},
+            {EntityType::map,    "./configuration/map/"},
+            {EntityType::none,   "./configuration/entity/"}
         };
 
         // Reset folders
@@ -99,22 +99,22 @@ void GameEditor::SaveAllEntities()
 
             switch (e.type) {
                 case EntityType::player:
-                    folder = "src/appConfiguration/configuration/player/";
+                    folder = "./configuration/player/";
                     break;
                 case EntityType::enemy:
-                    folder = "src/appConfiguration/configuration/enemy/";
+                    folder = "./configuration/enemy/";
                     break;
                 case EntityType::weapon:
-                    folder = "src/appConfiguration/configuration/weapon/";
+                    folder = "./configuration/weapon/";
                     break;
                 case EntityType::bullet:
-                    folder = "src/appConfiguration/configuration/weapon/bullet/";
+                    folder = "./configuration/weapon/bullet/";
                     break;
                 case EntityType::map:
-                    folder = "src/appConfiguration/configuration/map/";
+                    folder = "./configuration/map/";
                     break;
                 default:
-                    folder = "src/appConfiguration/configuration/entity/";
+                    folder = "./configuration/entity/";
                     break;
             }
 
@@ -141,12 +141,12 @@ void GameEditor::LoadAllEntities()
         entities.clear();
 
         std::vector<std::string> folders = {
-            "src/appConfiguration/configuration/player/",
-            "src/appConfiguration/configuration/enemy/",
-            "src/appConfiguration/configuration/weapon/",
-            "src/appConfiguration/configuration/weapon/bullet/",
-            "src/appConfiguration/configuration/map/",
-            "src/appConfiguration/configuration/entity/"
+            "./configuration/player/",
+            "./configuration/enemy/",
+            "./configuration/weapon/",
+            "./configuration/weapon/bullet/",
+            "./configuration/map/",
+            "./configuration/entity/"
         };
 
         for (const auto& folder : folders) {
@@ -514,14 +514,14 @@ void GameEditor::drawCenterPanel()
         for (size_t i = 0; i < e.animatedSprite.size(); ++i) {
             AnimatedSpriteStruct& a = e.animatedSprite[i];
 
-            if (_spriteTextures.find(a.idle.path) == _spriteTextures.end()) {
+            if (_spriteTextures.find(a.path) == _spriteTextures.end()) {
                 sf::Texture tex;
-                if (!tex.loadFromFile(a.idle.path))
+                if (!tex.loadFromFile(a.path))
                     tex = _defaultTexture;
-                _spriteTextures[a.idle.path] = tex;
+                _spriteTextures[a.path] = tex;
             }
 
-            sf::Texture& tex = _spriteTextures[a.idle.path];
+            sf::Texture& tex = _spriteTextures[a.path];
             sf::IntRect rect(a.idle.start.x, a.idle.start.y, a.idle.size.x, a.idle.size.y);
 
             ImGui::Text("AnimatedSprite %zu:", i);

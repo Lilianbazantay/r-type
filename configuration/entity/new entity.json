@@ -1,0 +1,63 @@
+{
+    "components": {
+        "animatedsprite": {
+            "animations": {
+                "death": {
+                    "frame_size": [
+                        0.0,
+                        0.0
+                    ],
+                    "length": 0,
+                    "loop": false,
+                    "start": [
+                        0,
+                        0
+                    ],
+                    "step": [
+                        0,
+                        0
+                    ]
+                },
+                "idle": {
+                    "frame_size": [
+                        0.0,
+                        0.0
+                    ],
+                    "length": 0,
+                    "loop": false,
+                    "start": [
+                        0,
+                        0
+                    ],
+                    "step": [
+                        0,
+                        0
+                    ]
+                },
+                "up": {
+                    "frame_size": [
+                        0.0,
+                        0.0
+                    ],
+                    "length": 0,
+                    "loop": false,
+                    "start": [
+                        0,
+                        0
+                    ],
+                    "step": [
+                        0,
+                        0
+                    ]
+                }
+            },
+            "default": "idle",
+            "frame_rate": 0.0,
+            "spritesheet": "assets/Enemy.png"
+        }
+    },
+    "entity": {
+        "name": "new entity",
+        "type": "none"
+    }
+}

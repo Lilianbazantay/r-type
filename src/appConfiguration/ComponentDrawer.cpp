@@ -89,7 +89,6 @@ void ComponentDrawer::drawPathSelector(const char* label, std::string& path, con
 static void DrawAnimatedContext(const char* name, AnimatedSpriteContext& ctx)
 {
     if (ImGui::TreeNode(name)) {
-        ComponentDrawer::drawPathSelector("Path", ctx.path, { ".png", ".jpg", ".jpeg" });
         ImGui::InputInt("Lenth", &ctx.lenth);
         ImGui::InputFloat("Size X", &ctx.size.x);
         ImGui::InputFloat("Size Y", &ctx.size.y);
@@ -106,6 +105,7 @@ void ComponentDrawer::drawComponentList(std::vector<AnimatedSpriteStruct>& vec, 
 
         if (ImGui::TreeNode((std::string(label) + " " + std::to_string(i)).c_str())) {
 
+            ComponentDrawer::drawPathSelector("Path", vec[i].path, { ".png", ".jpg", ".jpeg" });
             ImGui::InputFloat("Animation Rate", &vec[i].animation_rate);
             ImGui::Checkbox("Visible", &vec[i].is_visible);
 
