@@ -15,8 +15,9 @@
 static constexpr float PIPE_SPEED     = 240.f;
 static constexpr float PIPE_SPAWN_X   = 1200.f;
 static constexpr float PIPE_DESPAWN_X = -200.f;
+static constexpr float PIPE_MIN_DISTANCE = 200.f;
 
-static constexpr float GRAVITY = 1800.f;
+static constexpr float GRAVITY = 1200.f;
 static constexpr float FLAP_VY = -520.f;
 
 static constexpr float FLOOR_Y = 650.f;
@@ -57,7 +58,8 @@ FlappyServerGame::FlappyServerGame(int port,
         _playerVy(0.f),
         _gameOver(false),
         _started(false),
-        _sentShutdown(false)
+        _sentShutdown(false),
+        _lastPipeX(-1000.f)
 {
     std::srand((unsigned)std::time(nullptr));
     server.start();
@@ -69,9 +71,6 @@ FlappyServerGame::FlappyServerGame(int port,
     if (pos) pos->SetPosition({BIRD_X, 300.f});
 
     data.entityList.push_back(std::move(player));
-
-    for (int i = 0; i < 3; ++i)
-        spawnPipe();
 }
 
 void FlappyServerGame::handleFlap(int playerId)
@@ -90,8 +89,21 @@ void FlappyServerGame::spawnPipe()
     auto* pos = dynamic_cast<Position*>(pipe->FindComponent(ComponentType::POSITION));
     if (!pos) return;
 
-    float gapY = float((std::rand() % 380) + 160);
-    pos->SetPosition({PIPE_SPAWN_X, gapY});
+    if (PIPE_SPAWN_X - _lastPipeX < PIPE_MIN_DISTANCE)
+        return;
+
+    float gapY;
+    static int initial = 0;
+    if (initial < 3) {
+        gapY = 360.f;
+        initial++;
+    } else {
+        gapY = float((std::rand() % 380) + 160);
+}
+
+pos->SetPosition({PIPE_SPAWN_X, gapY});
+_lastPipeX = PIPE_SPAWN_X;
+
 
     int id = pipe->getId();
     data.entityList.push_back(std::move(pipe));
@@ -151,22 +163,10 @@ void FlappyServerGame::Update()
                 break;
             }
         }
-        for (auto &e : data.entityList) {
-            if (e->getType() != ENTITY_ENEMY) continue;
-            auto *ppos = dynamic_cast<Position*>(e->FindComponent(ComponentType::POSITION));
-            if (!ppos) continue;
-            auto p = ppos->GetPosition();
-            auto pkt = PacketEncoder::encodeCreate(
-                nextPacketId(server),
-                (uint8_t)ENTITY_ENEMY,
-                (uint16_t)e->getId(),
-                (uint16_t)p.first,
-                (uint16_t)p.second
-            );
-            sendBuf->pushPacket(pkt);
-        }
+        for (int i = 0; i < 3; ++i)
+            spawnPipe();
         sentInitialCreates = true;
-    }
+        }
 
     if (_gameOver) {
         if (!_sentShutdown) {
@@ -220,6 +220,7 @@ void FlappyServerGame::Update()
             if (!ppos) continue;
             auto pp = ppos->GetPosition();
             pp.first -= PIPE_SPEED * (float)data.runtime;
+            _lastPipeX = std::max(_lastPipeX, pp.first);
             if (pp.first < PIPE_DESPAWN_X) {
                 pp.first = PIPE_SPAWN_X;
                 pp.second = float((std::rand() % 380) + 160);

@@ -33,21 +33,26 @@ FlappyClientGame::FlappyClientGame(std::string ip, int port, NetworkBuffer* net)
     data.window.setActive(true);
     data.window.setKeyRepeatEnabled(false);
     const std::string birdPath  = std::string(PROJECT_ROOT_PATH) + "assets/Bird1-1.png";
-    const std::string pipesPath = std::string(PROJECT_ROOT_PATH) + "assets/demo-img-1.png";
+    const std::string BackgroundPath = std::string(PROJECT_ROOT_PATH) + "assets/Background5.png";
 
     if (_texBird.loadFromFile(birdPath)) {
         _sprBird.setTexture(_texBird);
+        const sf::Vector2u texSize = _texBird.getSize();
+        constexpr int FRAME_COUNT = 4;
+        int frameWidth  = static_cast<int>(texSize.x / FRAME_COUNT);
+        int frameHeight = static_cast<int>(texSize.y);
+        _sprBird.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
+        _sprBird.setOrigin(frameWidth / 2.f, frameHeight / 2.f);
         _sprBird.setScale(2.f, 2.f);
-        _sprBird.setOrigin(_texBird.getSize().x / 2.f, _texBird.getSize().y / 2.f);
     } else {
         std::cerr << "[FlappyClient] WARN: cannot load " << birdPath << " (fallback rect)\n";
     }
 
-    if (_texPipes.loadFromFile(pipesPath)) {
-        _sprPipes.setTexture(_texPipes);
-        _sprPipes.setScale(2.f, 2.f);
+    if (_texBackground.loadFromFile(BackgroundPath)) {
+        _sprBackground.setTexture(_texBackground);
+        _sprBackground.setScale(6.f, 3.f);
     } else {
-        std::cerr << "[FlappyClient] WARN: cannot load " << pipesPath << " (no background)\n";
+        std::cerr << "[FlappyClient] WARN: cannot load " << BackgroundPath << " (no background)\n";
     }
 
     client.start();
@@ -152,9 +157,9 @@ void FlappyClientGame::Loop()
 
         data.window.clear(sf::Color::Black);
 
-        if (_texPipes.getSize().x > 0) {
-            _sprPipes.setPosition(0.f, 0.f);
-            data.window.draw(_sprPipes);
+        if (_texBackground.getSize().x > 0) {
+            _sprBackground.setPosition(0.f, 0.f);
+            data.window.draw(_sprBackground);
         }
 
         for (auto &e : data.entityList) {
