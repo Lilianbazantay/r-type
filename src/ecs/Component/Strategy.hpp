@@ -1,41 +1,32 @@
 #pragma once
 
 #include "../IComponent.hpp"
+#include <SFML/System/Clock.hpp>
 #include <vector>
-
-/**
- * @brief All action possible for the strategy
- */
-
-constexpr int NUMBER_STRATEGY_POSSIBILITY = 6;
-
-enum StrategyType {
-    UP,
-    DOWN,
-    RIGHT,
-    LEFT,
-    SHOOT,
-    LOOP,
-};
 
 class Strategy : public IComponent
 {
 private:
-    std::vector<std::pair<StrategyType, int>> _pattern;
-
+    std::vector<std::pair<std::vector<std::pair<std::pair<float, float>, float>>, int>> _patternList = {};
+    std::vector<std::pair<std::pair<float, float>, float>> _pattern;
+    int _patternHp = 0;
+    sf::Clock clock;
+    size_t arrayPos;
+    void switchPattern(int);
 public:
-    Strategy(std::vector<std::pair<StrategyType, int>> strategy);
+    Strategy(std::vector<std::pair<std::pair<float, float>, float>> strategy);
+    Strategy(int number_of_element, int max_element_value, bool is_infinitly_looping);
     ~Strategy() override = default;
 
     // GET / SET
-    std::vector<std::pair<StrategyType, int>> GetPattern();
-    void SetPattern(std::vector<std::pair<StrategyType, int>> new_pattern);
+    std::vector<std::pair<std::pair<float, float>, float>> GetPatternFromHp(int);
+    void SetPattern(std::vector<std::pair<std::pair<float, float>, float>>, int);
 
     // MODIFY PATTERN
-    void AddElementToPattern(std::pair<StrategyType, int> element);
-    void AddElementToPattern(StrategyType action, int value);
+    void AddElementToPattern(std::pair<std::pair<float, float>, float> element, int);
+    void AddElementToPattern(std::pair<float, float>, int, int);
 
-    std::vector<std::pair<StrategyType, int>> CreateRandomPattern(int number_of_element, int max_element_value, bool is_infinitly_looping);
-
-    void RemoveElementToPattern(size_t index);
+    void CreateRandomPattern(int, int, int, bool);
+    std::pair<float, float> getDir(int);
+    void RemoveElementToPattern(size_t index, int);
 };

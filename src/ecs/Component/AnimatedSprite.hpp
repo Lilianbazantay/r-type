@@ -3,54 +3,69 @@
 #include "../IComponent.hpp"
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Vector2.hpp>
+
+typedef enum {
+    NOTHING = -1,
+    IDLE = 0,
+    UP = 1,
+    DOWN = 2,
+    SHOOT = 3,
+    DEATH = 4
+} ANIMATION_TYPE;
+
+typedef struct Animation_s {
+    bool loop = false;
+    ANIMATION_TYPE type = NOTHING;
+    int length = 0;
+    sf::Vector2f frameSize = {0, 0};
+    sf::Vector2f frameOrigin = {0, 0};
+    sf::Vector2f framePosition = {0, 0};
+    sf::Vector2f offset = {0, 0};
+} Animation_t;
 
 class AnimatedSprite : public IComponent
 {
-private:
-    sf::Texture _texture;
-    sf::Sprite _sprite;
-    sf::IntRect _currentRect;
-    int _number_of_sprite_x;
-    int _number_of_sprite_y;
-    float _animation_rate;
-    float _elapsed_time = 0.f;
-    int _current_frame_x = 0;
-    int _current_frame_y = 0;
-    bool _is_visible = true;
+    private:
+        sf::Texture _texture;
+        sf::Sprite _sprite;
+        sf::IntRect _currentRect = {0, 0, 0, 0};
 
-public:
-    // ANIMATED SPRITE
-    AnimatedSprite(const std::string& file_path, float size_x, float size_y, int number_of_sprite_x, int number_of_sprite_y);
-    ~AnimatedSprite() override = default;
+        sf::Clock _clock;
+        bool _visible = true;
+        bool _locked = false;
+        float _animationRate = 0.3f;
+        int _actualLength = 0;
 
-    // GET / SET
-    sf::Sprite& GetSprite();
-    void SetTexture(const std::string& file_path);
+        ANIMATION_TYPE _lockedAnimation = NOTHING;
 
-    // SIZE
-    std::pair<float, float> GetSize() const;
-    void SetSize(std::pair<float, float> size);
-    void SetSize(float size_x, float size_y);
-    void multiplySize(std::pair<float, float> multiplicator);
-    void multiplySize(float multiplicator_x, float multiplicator_y);
-    void deviseSize(std::pair<float, float> divisor);
-    void deviseSize(float divisor_x, float divisor_y);
+        std::vector<Animation_t> _animationArray = {};
+        Animation_t _actualAnimation;
+        sf::Vector2f _scaleMultiplier = {1, 1};
+    public:
+        AnimatedSprite(const std::string, std::pair<float, float>, std::pair<float, float>);
+        ~AnimatedSprite() = default;
 
-    // NUMBER OF SPRITE
-    std::pair<int, int> GetNumberOfSprite() const;
-    void SetNumberOfSprite(std::pair<int, int> number_of_sprite);
-    void SetNumberOfSprite(int number_of_sprite_x, int number_of_sprite_y);
+        void setScale(float, float);
+        void setScale(std::pair<float, float>);
+        void setAnimationRate(float);
+        void setTexture(const std::string);
 
-    // ANIMATION
-    float GetAnimationRate() const;
-    void SetAnimationRate(float animation_rate);
+        void hide();
+        void show();
+        void update();
+        void changeAnimation(const ANIMATION_TYPE, bool);
+        void resetAnimation();
+        void addAnimation(std::pair<float, float>, std::pair<float, float>, std::pair<float, float>, ANIMATION_TYPE, bool, int);
+        bool AnimationExists(const ANIMATION_TYPE);
 
-    // VISIBILITY
-    bool GetVisibility() const;
-    void SetVisibility(bool visibility);
-    void show();
-    void hide();
-
-    // UPDATE
-    void update(float deltaTime);
+        float getAnimationRate();
+        bool getVisibility();
+        std::pair<float, float> getScale();
+        std::pair<float, float> getSize() const;
+        sf::Sprite &getSprite();
 };

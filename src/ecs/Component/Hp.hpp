@@ -11,14 +11,18 @@ class Hp : public IComponent
 {
     private:
         int _value;
+        int _maxHp = 1;
     public:
-        Hp(int value) : _value(value) {
+        Hp(int value) : _value(value), _maxHp(value) {
+            if (_maxHp == 0)
+                _maxHp++;
             _type = ComponentType::HP;
         };
         ~Hp() override = default;
 
         // SET/GET
         int GetHp();
+        int GetHpPercent();
         void SetHp(int value);
 
         // ADD/SUB
