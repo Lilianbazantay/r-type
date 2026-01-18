@@ -22,7 +22,6 @@
 #include <cstddef>
 #include <iostream>
 #include <memory>
-#include <unistd.h>
 #include <atomic>
 #include <csignal>
 

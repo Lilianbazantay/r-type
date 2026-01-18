@@ -10,7 +10,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <unistd.h>
 
 static constexpr float PIPE_SPEED     = 240.f;
 static constexpr float PIPE_SPAWN_X   = 1200.f;
