@@ -8,6 +8,10 @@
 #include <vector>
 
 #include "./IMediatorEntity.hpp"
+#include "ecs/Component/Hitbox.hpp"
+#include "ecs/Component/Position.hpp"
+#include "ecs/Component/Sprite.hpp"
+#include "ecs/Component/Strategy.hpp"
 
 class Background: public IMediatorEntity {
     private:
@@ -46,6 +50,7 @@ class Enemy: public IMediatorEntity {
         std::mutex _mutex;
     public:
         Enemy();
+        Enemy(Sprite, Hitbox, Position, Strategy, int, int);
         ~Enemy() override = default;
         void run() override;
         std::unique_ptr<IMediatorEntity> Clone() override;

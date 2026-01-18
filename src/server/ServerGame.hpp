@@ -11,9 +11,12 @@
 #include "../ecs/System/ISystem.hpp"
 #include "../ecs/relevant_data.hpp"
 
+#include "ecs/Entity/IMediatorEntity.hpp"
 #include "server.hpp"
 #include "server/NetworkServerBuffer.hpp"
+#include "server/WaveManager.hpp"
 #include "server/encoder.hpp"
+#include "WaveManager.hpp"
 
 class ServerGame {
     private:
@@ -29,6 +32,7 @@ class ServerGame {
         NetworkContinuousBuffer *continuousBuffer;
         Server networkServer;
         PacketEncoder encoder;
+        WaveManager waveManager;
 
     public:
         ServerGame(int, NetworkServerBuffer *, NetworkClientBuffer *, NetworkContinuousBuffer *);

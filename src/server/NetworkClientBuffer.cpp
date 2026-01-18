@@ -1,7 +1,6 @@
 #include "NetworkServerBuffer.hpp"
 #include <cstddef>
 #include <cstdint>
-#include <iostream>
 
 /**
  * @brief add a packet to the buffer
@@ -34,9 +33,11 @@ void NetworkClientBuffer::pushWholePacket(std::vector<std::vector<uint8_t>>& vec
  */
 std::vector<uint8_t> NetworkClientBuffer::popPacket()
 {
+    if (packets.empty())
+        return {};
     std::lock_guard<std::mutex> lock(mtx);
 
-    std::vector<uint8_t> out = packets.front();
+    std::vector<uint8_t> out = packets[0];
     packets.erase(packets.begin());
     return out;
 }

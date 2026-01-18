@@ -6,8 +6,10 @@
 #include "ecs/Component/Cooldown.hpp"
 #include "ecs/Entity/Entities.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
+#include "ecs/IComponent.hpp"
 #include "ecs/System/CollisionSystem.hpp"
 #include "ecs/System/ShootSystem.hpp"
+#include "ecs/System/StrategySystem.hpp"
 #include "protocol.hpp"
 #include "server.hpp"
 #include "server/NetworkServerBuffer.hpp"
@@ -17,6 +19,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
+#include <cstddef>
 #include <iostream>
 #include <memory>
 #include <unistd.h>
@@ -33,6 +36,7 @@ static void handleSigint(int)
 }
 
 ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer *newCBuffer):
+    systemList(),
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
     continuousBuffer(newCBuffer),
@@ -46,6 +50,7 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
     systemList.push_back(std::make_unique<ShootSystem>());
     systemList.push_back(std::make_unique<CollisionSystem>());
     systemList.push_back(std::make_unique<MovementSystem>());
+    systemList.push_back(std::make_unique<StrategySystem>());
     networkServer.start();
     std::signal(SIGINT, handleSigint);
 }
@@ -72,6 +77,7 @@ void ServerGame::Update() {
             continue;
         }
         if (data.entityList[j]->justCreated()) {
+            std::cout << "Creating entity " << data.entityList[j]->getType() << std::endl;
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
@@ -105,11 +111,7 @@ void ServerGame::Loop() {
             Update();
             tmp.LaunchCooldown();
         }
-        if (cooldown.CheckCooldown() == true) {
-            data.enemy_count++;
-            createEntity(2, data.enemy_count);
-            cooldown.LaunchCooldown();
-        }
+        waveManager.computeEntities(&data);
         parseNetworkPackets();
     }
     Running = false;

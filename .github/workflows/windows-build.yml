@@ -31,10 +31,10 @@ jobs:
         ./bootstrap-vcpkg.bat
 
     # Patch installer.sh for CI
-    - name: Patch installer.sh for CI
+    - name: Patch windows.ps1 for CI
       shell: pwsh
       run: |
-        $installer = Get-Content "installer.sh" -Raw
+        $installer = Get-Content "./scripts/windows.ps1" -Raw
         # Remove any git pull / vcpkg update lines
         $installer = $installer -replace ".*vcpkg\.exe update.*", ""
         Set-Content "installer.sh" $installer
@@ -42,5 +42,6 @@ jobs:
         $env:USE_CI_VCPKG = "1"
 
     # Run the installer
-    - name: Run installer.sh
-      run: ./installer.sh
+    - name: Run windows.ps1
+      shell: pwsh
+      run: ./scripts/windows.ps1

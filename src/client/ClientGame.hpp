@@ -32,6 +32,10 @@ class ClientGame {
         std::mutex pause_mutex;
         int _localPlayerId = -1;
 
+        std::pair<unsigned int, unsigned int> prevWindowSize = {1920, 1080};
+        std::pair<unsigned int, unsigned int> actWindowSize = {1920, 1080};
+        std::pair<unsigned int, unsigned int> maxWindowSize = {1920, 1080};
+
         NetworkBuffer *_netBuffer = nullptr;
         Client client;
 
@@ -59,6 +63,7 @@ class ClientGame {
         void applyNetworkInterpolation();
 
         bool IsEntityExist(int, int);
+        void handleResize(std::pair<unsigned int, unsigned int>);
     public:
         ClientGame(std::string ip, int port, NetworkBuffer *netBuffer);
         ~ClientGame() = default;

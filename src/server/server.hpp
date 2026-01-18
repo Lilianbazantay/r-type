@@ -24,12 +24,12 @@
  */
 class Server {
     public:
-        Server(__uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *, NetworkContinuousBuffer *);
+        Server(std::uint16_t listen_port, NetworkServerBuffer *, NetworkClientBuffer *, NetworkContinuousBuffer *);
         ~Server();
 
         void start();
         void stop();
-        void send(size_t actVal, const std::string& host, __uint16_t port);
+        void send(size_t actVal, const std::string& host, std::uint16_t port);
         void send(const std::string& host, uint16_t port, std::vector<uint8_t> pck);
         size_t currentID = 0;
 

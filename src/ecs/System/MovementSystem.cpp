@@ -4,6 +4,7 @@
 #include "../Component/Velocity.hpp"
 #include "../Component/Direction.hpp"
 #include "../Component/Gravity.hpp"
+#include "../Component/Strategy.hpp"
 #include "../IComponent.hpp"
 #include <utility>
 
@@ -16,6 +17,7 @@ MovementSystem::MovementSystem() {
 
     this->optionnalComponents.push_back(ComponentType::VELOCITY);
     this->optionnalComponents.push_back(ComponentType::GRAVITY);
+    this->optionnalComponents.push_back(ComponentType::STRATEGY);
 }
 
 /**
