@@ -54,10 +54,9 @@ Packet encodeClientPacket(
  * @param size Number of bytes received.
  * @return ServerPacket Decoded packet structure.
  */
-NetworkPacket decodeNetworkPacket(std::vector<uint8_t>b, size_t size) {
-    NetworkPacket p {};
+NetworkPacket decodeNetworkPacket(std::vector<uint8_t> b, size_t size) {
+    NetworkPacket p{};
 
-    //std::cout << "Decoding..." << std::endl;
     p.packetId = (static_cast<uint32_t>(b.at(0)) << 8u) | b[1];
     p.payloadSize = (static_cast<uint32_t>(b.at(2)) >> 4u) & 0x0Fu;
     p.actionType  =  b.at(2) & 0x0Fu;
@@ -67,9 +66,21 @@ NetworkPacket decodeNetworkPacket(std::vector<uint8_t>b, size_t size) {
 
     if (p.payloadSize >= 1) p.entityType = b[3];
     if (p.payloadSize >= 3) p.entityId = (static_cast<uint32_t>(b.at(4)) << 8u) | b[5];
-    if (p.payloadSize >= 6) {
-        uint32_t pos = (static_cast<uint32_t>(b.at(6)) << 16u) |
-        (static_cast<uint32_t>(b.at(7)) << 8u) | b[8];
+
+    if (p.payloadSize >= 7) {
+        p.serverTick =
+            (static_cast<uint32_t>(b.at(6)) << 24u) |
+            (static_cast<uint32_t>(b.at(7)) << 16u) |
+            (static_cast<uint32_t>(b.at(8)) <<  8u) |
+            (static_cast<uint32_t>(b.at(9)));
+    }
+
+    if (p.payloadSize >= 10) {
+        uint32_t pos =
+            (static_cast<uint32_t>(b.at(10)) << 16u) |
+            (static_cast<uint32_t>(b.at(11)) <<  8u) |
+            (static_cast<uint32_t>(b.at(12)));
+
         p.posX = (pos >> 12u) & 0xFFFu;
         p.posY = pos & 0xFFFu;
     }

@@ -1,6 +1,7 @@
 #include "InputManager.hpp"
 #include <cstddef>
 #include <iostream>
+#include "../ClientGame.hpp"
 
 /**
  * @brief Construct a new Input Manager:: Input Manager object
@@ -15,6 +16,7 @@ InputManager::InputManager() : textBuffer("")
     _keyBindings.at(Action::Right) = sf::Keyboard::D;
     _keyBindings.at(Action::Fire)  = sf::Keyboard::Space;
 }
+
 /**
  * @brief set the client of the input manager
  *
@@ -23,6 +25,11 @@ InputManager::InputManager() : textBuffer("")
 void InputManager::setClient(Client* client)
 {
     _client = client;
+}
+
+void InputManager::setClientGame(ClientGame* game)
+{
+    _clientGame = game;
 }
 
 /**
@@ -69,15 +76,26 @@ bool InputManager::isActionPressed(Action action) const
  */
 void InputManager::processEvent(const sf::Event& event)
 {
+    if (!_client)
+        return;
+
     if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == getKey(Action::Up))
+        if (event.key.code == getKey(Action::Up)) {
             _client->sendInput(true, static_cast<uint8_t>(Action::Up));
-        if (event.key.code == getKey(Action::Down))
+            if (_clientGame) _clientGame->predictLocalMove(0.f, -1.f);
+        }
+        if (event.key.code == getKey(Action::Down)) {
             _client->sendInput(true, static_cast<uint8_t>(Action::Down));
-        if (event.key.code == getKey(Action::Left))
+            if (_clientGame) _clientGame->predictLocalMove(0.f, 1.f);
+        }
+        if (event.key.code == getKey(Action::Left)) {
             _client->sendInput(true, static_cast<uint8_t>(Action::Left));
-        if (event.key.code == getKey(Action::Right))
+            if (_clientGame) _clientGame->predictLocalMove(-1.f, 0.f);
+        }
+        if (event.key.code == getKey(Action::Right)) {
             _client->sendInput(true, static_cast<uint8_t>(Action::Right));
+            if (_clientGame) _clientGame->predictLocalMove(1.f, 0.f);
+        }
         if (event.key.code == getKey(Action::Fire))
             _client->sendInput(true, static_cast<uint8_t>(Action::Fire));
     }
