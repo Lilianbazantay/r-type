@@ -9,6 +9,9 @@
 
 #include "Entity.hpp"
 
+/**
+ * @brief This class contain every data on the game actualy modified
+ */
 class GameEditor {
 private:
     // =====================

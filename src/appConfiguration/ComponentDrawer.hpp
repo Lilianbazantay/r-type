@@ -2,6 +2,9 @@
 #include <vector>
 #include "Entity.hpp"
 
+/**
+ * @brief This class contain every function that Display a component with polymorphism
+ */
 class ComponentDrawer
 {
 public:
