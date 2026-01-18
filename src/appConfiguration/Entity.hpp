@@ -17,7 +17,6 @@ enum class EntityType {
 
 struct AnimatedSpriteContext
 {
-    std::string path;
     sf::Vector2i start;
     sf::Vector2i step;
     sf::Vector2f size;
@@ -34,6 +33,7 @@ struct AnimatedSpriteStruct
     AnimatedSpriteContext hit;
     AnimatedSpriteContext death;
 
+    std::string path;
     float animation_rate = 0.f;
     bool is_visible = true;
 };

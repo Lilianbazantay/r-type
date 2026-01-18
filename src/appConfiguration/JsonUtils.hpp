@@ -85,11 +85,11 @@ inline void to_json(json& j, const Entity& e)
             };
         };
         addAnim("idle", a.idle);
-        addAnim("walk", a.up);
+        addAnim("up", a.up);
         addAnim("death", a.death);
 
         c["animatedsprite"] = {
-            {"spritesheet", a.idle.path},
+            {"spritesheet", a.path},
             {"frame_rate", a.animation_rate},
             {"default", "idle"},
             {"animations", animations}
@@ -228,7 +228,7 @@ inline void from_json(const json& j, Entity& e)
     if (c.contains("animatedsprite")) {
         AnimatedSpriteStruct a;
         const auto& anim = c.at("animatedsprite");
-        a.idle.path = anim.at("spritesheet").get<std::string>();
+        a.path = anim.at("spritesheet").get<std::string>();
         a.animation_rate = anim.at("frame_rate").get<float>();
         a.idle.size = sf::Vector2f(anim.at("animations").at("idle").at("frame_size")[0],
                                    anim.at("animations").at("idle").at("frame_size")[1]);
