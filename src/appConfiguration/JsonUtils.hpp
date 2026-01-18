@@ -52,7 +52,7 @@ inline EntityType StringToEntityType(const std::string& s)
 // ====================
 
 /**
- * @brief main function that call every other function to create te json file
+ * @brief main function that calls all other functions to create the json file
  *
  * @param j Adresse of the file to save
  * @param e Entity to put into the file
