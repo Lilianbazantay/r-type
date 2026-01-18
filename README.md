@@ -21,16 +21,26 @@ This project is a full **R-Type multiplayer engine**, implemented in **C++**, us
 
 The goal is to reproduce the behavior of the classic R-Type shooter while supporting multiplayer gameplay.
 
-The project produces three binaries:
+The project is separated into 2 main parts: **Software Architecture & Prototype** and **Advanced Topics**. For more information on the subject, you can download the subject in the [wiki](https://github.com/EpitechPGE3-2025/G-CPP-500-REN-5-2-rtype-4/wiki).
+
+For our part we chose to work on the **game engine** and decided to add multiple features; including:
+- an application to create and customise entities.
+- a second game with its own server and client to prove the efficency of our engine.
+
+The project produces fixe binaries:
 
 - **`r-type_server`** — authoritative server handling the game world
 - **`r-type_client`** — player client handling rendering + inputs
 - **`r-type_app`** — application used to create new entities
+- **`flappy_server`** — an authoritative server handling the world of the second game
+- **`flappy_client`** — player client for the second game
 
 ---
 
 <a name="installation"></a>
 ## Installation
+
+To install the project, you can refer yourself to [the guide](https://github.com/EpitechPGE3-2025/G-CPP-500-REN-5-2-rtype-4/wiki/Deployement)
 
 ### 1. Clone the repository
 
@@ -88,7 +98,7 @@ The **freetype** library, **X11** library and its dependencies and **OpanAL**/**
 ./r-type_client -i <IP of the server machine> -p <same port as server>
 ```
 
-Multiple clients can connect simultaneously. (max 5)
+Multiple clients can connect simultaneously. (max 4)
 
 ---
 

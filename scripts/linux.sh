@@ -12,24 +12,24 @@ echo "cmake ninja freetype X11 xcb xrandr xi xcursor udev openal opengl and libt
 echo "to find more information refer yourself to the readme at the root of the project repository."
 
 if command -v dnf &> /dev/null; then
-    sudo dnf update
-    sudo dnf install --skip-unavailable \
+    dnf update
+    dnf install --skip-unavailable \
       @development-tools cmake ninja-build \
       freetype-devel libX11-devel libxcb-devel \
       libXrandr-devel libXi-devel libXcursor-devel \
       libudev-devel openal-soft-devel mesa-libEGL-devel pkg-config \
       libtool mesa-libGL-devel libglvnd-devel
 elif command -v apt &> /dev/null; then
-    sudo apt-get update
-    sudo apt-get install \
+    apt-get update
+    apt-get install \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
       libudev-dev libopenal-dev libgl1-mesa-dev pkg-config \
       libtool
 elif command -v pacman &> /dev/null; then
-    sudo pacman update
-    sudo pacman install \
+    pacman update
+    pacman install \
       build-essential cmake ninja-build \
       libfreetype6-dev libx11-dev libxcb1-dev \
       libxrandr-dev libxi-dev libxcursor-dev \
