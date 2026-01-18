@@ -2,7 +2,7 @@
 
 ###### An <img src="https://newsroom.ionis-group.com/wp-content/uploads/2023/09/epitech-2023-logo-m.png" height=18/> project
 
-[Project](#project) • [Installation](#installation) • [Usage](#usage) • [Team](#team)
+[Project](#project) • [Installation](#installation) • [Usage](#usage) • [Features](#features) • [Architecture](#architecture) • [Team](#team)
 
 ---
 
@@ -12,7 +12,7 @@
 <a name="project-overview"></a>
 ### Overview
 
-This project is a full **R-Type multiplayer engine**, implemented in **C++**, using:
+This project is a full **R-Type multiplayer engine** with a **game engine**, implemented in **C++**, using:
 
 - **ASIO** (UDP networking)
 - **SFML** (graphics, input, audio)
@@ -78,10 +78,67 @@ The installation script will install **system-wide dependencies**. These include
 - `OpenGL`: graphic API to render in both 2D and 3D. Creates a grpahical context.
 - `libtool`: a build tool to abstract static library creation
 
-The **freetype** library, **X11** library and its dependencies and **OpanAL**/**OPENGL** are all library used by the **SFML** library.
+The **freetype** library, **X11** library and its dependencies and **OpenAL**/**OPENGL** are all library used by the **SFML** library.
 
 *Every library here is imported that way as to not make the project dependant on them and allow it run without being dependant on the user's system.*
 
+---
+
+<a name="features"></a>
+## Features
+
+### Engine
+- Custom **Entity Component System (ECS)**
+- Deterministic **authoritative server**
+- Custom **binary UDP protocol**
+- Hot-reloadable entity definitions
+- Cross-platform architecture (Linux focused)
+
+### Networking
+- Client/server model over **UDP (ASIO)**
+- Lag compensation & client-side prediction
+- Entity state synchronization
+- Server-side collision & game logic
+- Support for up to **4 concurrent players**
+
+### Games
+- **R-Type** multiplayer arcade shooter
+- **Flappy-like** second game demonstrating engine reusability
+
+### Tools
+- **r-type_app**
+  - Create and customize entities
+  - Edit components and behaviors
+  - Export directly to the engine format
+
+---
+
+<a name="architecture"></a>
+## Architecture
+
+The engine follows a **data-oriented ECS design**:
+
+- **Entities** are unique IDs
+- **Components** are plain data structures
+- **Systems** operate on component sets
+
+### Server
+- Owns the authoritative game state
+- Runs physics, collisions, AI and game rules
+- Sends snapshots to clients
+
+### Client
+- Handles rendering, inputs, audio
+- Applies prediction & interpolation
+- Synchronizes entities with the server
+
+### Protocol
+- Fully custom binary protocol
+- Optimized packet size
+- Explicit serialization/deserialization
+- Stateless messages when possible
+
+---
 
 <a name="usage"></a>
 ## Usage
@@ -105,6 +162,14 @@ Multiple clients can connect simultaneously. (max 4)
 <a name="team"></a>
 ## Team
 
-| <img src="https://avatars.githubusercontent.com/u/146708420?v=4" width=92>                                                       | <img src="https://avatars.githubusercontent.com/u/146721664?v=4" width=92>                                                         | <img src="https://avatars.githubusercontent.com/u/146714535?v=4" width=92>                                                                      | <img src="https://avatars.githubusercontent.com/u/114913834?v=4" width=92>                                           | <img src="https://avatars.githubusercontent.com/u/146707823?v=4" width=92>                                        |
-|----------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| [**Lilian BAZANTAY**](https://github.com/Lilianbazantay)<br/>[lilian.bazantay@epitech.eu]("mailto:lilian.bazantay@epitech.eu") | [**Valentin ROQUEJOFRE**](https://github.com/Valentin22r)<br/>[valentin.roquejofre@epitech.eu]("mailto:valentin.roquejofre@epitech.eu") | [**Antoine QUILLET**](https://github.com/Touf272)<br/>[antoine.quillet@epitech.eu]("mailto:antoine.quillet@epitech.eu") | [**Thibaud LE CREURER**](https://github.com/leTLC)<br/>[thibaud.le-creurer@epitech.eu]("mailto:thibaud.le-creurer@epitech.eu") | [**Arthur DRAHY**](https://github.com/tuturicide)<br/>[arthur.drahy@epitech.eu]("mailto:arthur.drahy@epitech.eu") |
+| <img src="https://avatars.githubusercontent.com/u/146708420?v=4" width=92> | <img src="https://avatars.githubusercontent.com/u/146721664?v=4" width=92> | <img src="https://avatars.githubusercontent.com/u/146714535?v=4" width=92> | <img src="https://avatars.githubusercontent.com/u/114913834?v=4" width=92> | <img src="https://avatars.githubusercontent.com/u/146707823?v=4" width=92> |
+|---|---|---|---|---|
+| [**Lilian BAZANTAY**](https://github.com/Lilianbazantay)<br/>lilian.bazantay@epitech.eu | [**Valentin ROQUEJOFRE**](https://github.com/Valentin22r)<br/>valentin.roquejofre@epitech.eu | [**Antoine QUILLET**](https://github.com/Touf272)<br/>antoine.quillet@epitech.eu | [**Thibaud LE CREURER**](https://github.com/leTLC)<br/>thibaud.le-creurer@epitech.eu | [**Arthur DRAHY**](https://github.com/tuturicide)<br/>arthur.drahy@epitech.eu |
+
+---
+
+## License
+
+This project is developed as an **Epitech educational project** between the 01/09/2025 and the 25/01/2026.
+It is not intended for commercial use.
+All rights reserved.
