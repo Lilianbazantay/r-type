@@ -51,8 +51,15 @@ cd r-type
 
 ### 2. Run the build script
 
+Linux:
 ```sh
-./installer.sh
+sudo ./scripts/linux.sh
+```
+
+Windows:
+```ps1
+./scripts/msvc.ps1
+./scripts/windows.ps1
 ```
 
 This installs dependencies (via vcpkg) and generates:
