@@ -34,7 +34,7 @@ jobs:
     - name: Patch windows.ps1 for CI
       shell: pwsh
       run: |
-        $installer = Get-Content "./installation_scripts/windows.ps1" -Raw
+        $installer = Get-Content "./scripts/windows.ps1" -Raw
         # Remove any git pull / vcpkg update lines
         $installer = $installer -replace ".*vcpkg\.exe update.*", ""
         Set-Content "installer.sh" $installer
@@ -44,4 +44,4 @@ jobs:
     # Run the installer
     - name: Run windows.ps1
       shell: pwsh
-      run: ./installation_scripts/windows.ps1
+      run: ./scripts/windows.ps1
