@@ -36,12 +36,11 @@ void NetworkContinuousBuffer::moveEntity(int type, int id, std::vector<uint8_t> 
     if (pos == -1)
         return;
     std::vector<uint8_t> movedPacket = entities[pos].second.second;
-    if (!movedPacket.empty())
-        for (size_t i = 0; i < packets.size(); i++)
-            if (packets[i] == movedPacket) {
-                packets.erase(packets.begin() + i);
-                break;
-            }
+    if (!movedPacket.empty()) {
+        auto it = std::ranges::find(packets.begin(), packets.end(), movedPacket);
+        if (it != packets.end())
+            packets.erase(it);
+    }
     packets.push_back(packet);
     entities[pos].second.second = packet;
 }
@@ -63,23 +62,22 @@ void NetworkContinuousBuffer::deleteEntity(int type, int id) {
     std::vector<uint8_t> createdPacket = entities[pos].second.first;
     bool isMoveDeleted = movedPacket.empty();
     bool isCreationDeleted = false;
-    size_t packetsCount = packets.size();
-    for (size_t i = 0; i < packetsCount; i++) {
+    for (size_t i = 0; i < packets.size(); ) {
         if (!isMoveDeleted && packets[i] == movedPacket) {
             isMoveDeleted = true;
             packets.erase(packets.begin() + i);
             if (isCreationDeleted)
-                return;
-            i--;
+                break;
             continue;
         }
         if (!isCreationDeleted && packets[i] == createdPacket) {
             isCreationDeleted = true;
             packets.erase(packets.begin() + i);
             if (isMoveDeleted)
-                return;
-            i--;
+                break;
+            continue;
         }
+        ++i;
     }
 }
 

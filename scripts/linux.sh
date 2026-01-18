@@ -44,6 +44,9 @@ if [ ! -f "$VCPKG_DIR/vcpkg" ] ; then
     "$VCPKG_DIR/bootstrap-vcpkg.sh"
 fi
 
+# Disable telemetry
+export VCPKG_DISABLE_METRICS=1
+
 # Ensure vcpkg is executable
 export PATH="$VCPKG_DIR:$PATH"
 
