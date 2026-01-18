@@ -41,7 +41,7 @@ jobs:
 
     # Build project using installer.sh
     - name: Build project
-      run: ./scripts/linux.sh
+      run: sudo ./scripts/linux.sh
 
     ## Run clang-tidy
     #- name: Run clang-tidy

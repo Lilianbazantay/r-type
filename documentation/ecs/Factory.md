@@ -1,4 +1,5 @@
 # Entity Factory & Entity Creation Documentation
+[Back to README](../../README.md)
 
 This documentation explains the functionality of the **Entity Factory** and entities within the ECS (Entity–Component–System) architecture used in the project. It covers creation, configuration via JSON prototypes, and interaction with components.
 
@@ -144,11 +145,11 @@ The **Entity Factory** manages creation and configuration of entities using prot
 
 ## Workflow Example
 
-1. Load prototypes using `ConfigParser::loadFile("player.json")`.
+1. Load prototypes using `ConfigParser::loadFile(\"player.json\")`.
 2. Register prototypes in `EntityFactory`.
 3. Register component constructors.
 4. Create a new entity (e.g., `Player` object).
-5. Apply prototype to the entity using `applyPrototypeToEntity("player_basic", playerEntity)`.
+5. Apply prototype to the entity using `applyPrototypeToEntity(\"player_basic\", playerEntity)`.
 6. The entity now has all components defined in the JSON and is ready to be used in the ECS.
 
 ---

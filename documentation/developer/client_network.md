@@ -1,5 +1,26 @@
 # Client Network Module
 
+[Back to README](../../README.md)
+
+---
+
+## Sommaire
+
+1. [Overview](#overview)
+2. [Architecture](#architecture)
+   - [Responsibilities](#responsibilities)
+3. [Packet Format (Client → Server)](#packet-format-client--server)
+   - [Action Types](#action-types)
+   - [Input Codes](#input-codes)
+4. [Using the Client API](#using-the-client-api)
+   - [Creating the Client](#creating-the-client)
+   - [Sending Inputs](#sending-inputs)
+   - [Starting the Game](#starting-the-game)
+   - [Connection Request](#connection-request)
+5. [Receiving Server Packets](#receiving-server-packets)
+
+---
+
 ## Overview
 
 This document describes how to use the **client-side network module** of the project.
@@ -25,12 +46,12 @@ client/
 
 ### Responsibilities
 
-| Component        | Responsibility |
-|------------------|---------------|
-| Asio_network     | Send / receive UDP packets |
-| PacketCodec      | Encode & decode binary protocol |
-| Client           | Expose simple API to the game engine |
-| Game Engine      | Calls Client methods (inputs, start game, etc.) |
+| Component    | Responsibility |
+|-------------|----------------|
+| Asio_network | Send / receive UDP packets |
+| PacketCodec  | Encode & decode binary protocol |
+| Client       | Expose simple API to the game engine |
+| Game Engine  | Calls Client methods (inputs, start game, etc.) |
 
 ---
 
@@ -47,7 +68,7 @@ All packets follow this binary layout:
 ### Action Types
 
 | Action | Value | Payload |
-|------|-------|---------|
+|-------|-------|---------|
 | INPUT_PRESSED | 0x0 | 1 byte |
 | INPUT_RELEASED | 0x1 | 1 byte |
 | PLAYER_CONNECT | 0x2 | 6 bytes |
@@ -138,4 +159,4 @@ ServerPacket pkt = decodeServerPacket(data, size);
 
 The client never blocks while waiting for packets.
 
-To see what will be received, follow the basic protocol in`server_network.md`.
+To see what will be received, follow the basic protocol in `server_network.md`.

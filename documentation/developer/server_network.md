@@ -1,4 +1,5 @@
 # Client Network Module
+[Back to README](../../README.md)
 
 ## Overview
 
@@ -17,9 +18,14 @@ The client network is composed of three main parts:
 
 ```
 server/
-├── server.hpp / server.cpp
+├── ConfigParser.hpp / .cpp
 ├── encoder.hpp
+├── EntityFactory.hpp / .cpp
+├── NetworkServerBuffer.hpp / .cpp
+├── parser.hpp / .cpp
 ├── protocol.hpp / .cpp
+├── Prototype.hpp
+├── server.hpp / .cpp
 ├── ServerGame.hpp / .cpp
 ```
 
@@ -27,10 +33,13 @@ server/
 
 | Component        | Responsibility |
 |------------------|---------------|
-| server     | Send / receive UDP packets |
-| encoder      | Encode binary protocol  for client|
-| protocol           | decode client binary protocol |
-| serverGame      | Calls game methods (entity creation, deletion, etc.) |
+| Encoder      | Encode binary protocol  for client|
+| EntityFactory | Create every entity type based on their parameters |
+| NetworkServerBuffer | receiver buffer |
+| Parser | Argument Parser |
+| Protocol | decode client binary protocol |
+| server | Send / receive UDP packets |
+| serverGame | Calls game methods (entity creation, deletion, etc.) |
 
 ---
 
