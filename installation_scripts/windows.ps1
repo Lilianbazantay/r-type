@@ -1,4 +1,3 @@
-# windows.ps1
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
@@ -62,8 +61,9 @@ $batFile = Join-Path $PWD "build_temp.bat"
 $batContent = @"
 @echo off
 call `"$vcvars`"
-cmake .. -G "NMake Makefiles" -DCMAKE_TOOLCHAIN_FILE="../$VCPKG_DIR/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-cmake --build . --config Release
+REM Change VCPKG_TARGET_TRIPLET to x64-windows-static below
+cmake .. -G "NMake Makefiles" -DCMAKE_TOOLCHAIN_FILE="../$VCPKG_DIR/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build .
 "@
 
 Set-Content -Path $batFile -Value $batContent -Encoding ASCII

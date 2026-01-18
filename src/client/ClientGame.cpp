@@ -30,13 +30,10 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
     clock.restart();
     _inputManager.setClient(&client);
     Prevtime = clock.getElapsedTime();
-
     systemList.push_back(std::make_unique<DrawSpriteSystem>());
     systemList.push_back(std::make_unique<DrawAnimatedSystem>());
-
     createEntity(ENTITY_BACKGROUND, 0, {0, 0});
     data.window.setKeyRepeatEnabled(false);
-    client.start();
     std::string IP = client.getServerIP();
     uint32_t ipValue = 0;
     unsigned a, b, c, d;
@@ -46,6 +43,7 @@ ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): clie
         std::cout << "Invalid IP format\n";
     client.sendConnectionRequest(ipValue, client.getServerPort());
     client.sendStartGame();
+    client.start();
 }
 
 bool ClientGame::IsEntityExist(int type, int id) {

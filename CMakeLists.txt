@@ -4,7 +4,16 @@ project(r-type LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND APPLE)
+# --- STATIC LINKING CONFIGURATION ---
+set(BUILD_SHARED_LIBS OFF)
+set(SFML_STATIC_LIBRARIES TRUE)
+
+# Force MSVC to use Static Runtime (/MT) instead of DLL Runtime (/MD)
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(-stdlib=libc++)
     add_link_options(-stdlib=libc++)
 endif()
@@ -29,21 +38,16 @@ if (WIN32)
     add_compile_definitions(
         _WIN32_WINNT=0x0601
         ASIO_STANDALONE
+        SFML_STATIC  # Crucial for linking SFML statically
     )
 endif()
 
-# Set the compiler optimization flags
+# Compiler optimization flags
 if (MSVC)
-    # Windows Release flags
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /DNDEBUG")
-
-    # Windows Debug flags
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /DDEBUG_MODE")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi /DDEBUG_MODE")
 else()
-    # GCC/Clang Release flags
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
-
-    # GCC/Clang Debug flags
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG_MODE")
 endif()
 
@@ -116,8 +120,7 @@ foreach(target r-type_client r-type_server r-type_app)
             -Wall -Wextra -Wpedantic
             -Wshadow -Winit-self -Wredundant-decls
             -Wstrict-overflow=2 -Wundef -Wunreachable-code
-            -Wwrite-strings
-            -g
+            -Wwrite-strings -g
         )
     endif()
 
@@ -130,11 +133,27 @@ foreach(target r-type_client r-type_server r-type_app)
         ImGui-SFML::ImGui-SFML
     )
 
-    # Define compilation target
+    # Manual link for Windows system libs often dropped during static linking
+    if(WIN32)
+        target_link_libraries(${target} PRIVATE winmm gdi32)
+    endif()
+
     target_compile_definitions(${target} PRIVATE
         PROJECT_ROOT_PATH="${CMAKE_SOURCE_DIR}/"
     )
 endforeach()
+
+# Copy assets
+set(ASSETS_DIR ${CMAKE_SOURCE_DIR}/assets)
+
+foreach(target r-type_client r-type_server)
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${ASSETS_DIR}
+            $<TARGET_FILE_DIR:${target}>/assets
+    )
+endforeach()
+
 
 # Run installation
 install(TARGETS r-type_client r-type_server

@@ -109,8 +109,7 @@ void Server::do_receive() {
                     handleShutdown();
                     return;
             }
-            if (running_)
-                do_receive();
+            do_receive();
         }
     );
 }
@@ -122,49 +121,50 @@ void Server::do_receive() {
  * @param host host's IP
  * @param port host's port
  */
-void Server::send(size_t actVal, const std::string& host, std::uint16_t port) {
-    std::shared_ptr<asio::ip::udp::endpoint> endpoint =
-        std::make_shared<asio::ip::udp::endpoint>(asio::ip::address::from_string(host), port);
-    std::shared_ptr<std::vector<uint8_t>> buffer = std::make_shared<std::vector<uint8_t>>();
-    if (actVal == BEGIN_GAME)
-        *buffer = PacketEncoder::encodeStart(currentID);
-    if (actVal == ENTITY_CREATED)
-        *buffer = PacketEncoder::encodeCreate(currentID, 0, 0, 0, 0);
-    if (actVal == ENTITY_MOVED)
-        *buffer = PacketEncoder::encodeMove(currentID, 0, 0, 0, 0);
-    if (actVal == ENTITY_DELETED)
-        *buffer = PacketEncoder::encodeDelete(currentID, 0, 0);
-    if (actVal == PACKAGE_NOT_RECEIVED)
-        *buffer = PacketEncoder::encodeNotReceived(currentID);
-    if (actVal == VALIDATION)
-        *buffer = PacketEncoder::encodeOK(currentID);
-    if (actVal == ActionTypeServer::SERVER_SHUTDOWN)
-        *buffer = PacketEncoder::encodeSHUTDOWN(currentID);
-    currentID++;
-    try {
-        socket_.async_send_to(
-            asio::buffer(*buffer),
-            *endpoint,
-            [](std::error_code, std::size_t) {}
-        );
-    } catch(std::exception &e) {
-        std::cout << e.what() << std::endl;
+void Server::send(size_t actVal, const std::string& host, std::uint16_t port)
+{
+    auto endpoint = std::make_shared<asio::ip::udp::endpoint>(
+        asio::ip::address::from_string(host), port);
+    auto buffer = std::make_shared<std::vector<uint8_t>>();
+    switch (actVal) {
+        case BEGIN_GAME:
+            *buffer = PacketEncoder::encodeStart(currentID);
+            break;
+        case ENTITY_CREATED:
+            *buffer = PacketEncoder::encodeCreate(currentID, 0, 0, 0, 0);
+            break;
+        case ENTITY_MOVED:
+            *buffer = PacketEncoder::encodeMove(currentID, 0, 0, 0, 0);
+            break;
+        case ENTITY_DELETED:
+            *buffer = PacketEncoder::encodeDelete(currentID, 0, 0);
+            break;
+        case PACKAGE_NOT_RECEIVED:
+            *buffer = PacketEncoder::encodeNotReceived(currentID);
+            break;
+        case VALIDATION:
+            *buffer = PacketEncoder::encodeOK(currentID);
+            break;
+        case ActionTypeServer::SERVER_SHUTDOWN:
+            *buffer = PacketEncoder::encodeSHUTDOWN(currentID);
+            break;
     }
+    ++currentID;
+    socket_.async_send_to(
+        asio::buffer(*buffer),
+        *endpoint,
+        [buffer, endpoint](std::error_code, std::size_t) {});
 }
 
-void Server::send(const std::string& host, std::uint16_t port, std::vector<uint8_t> packet) {
-    std::shared_ptr<asio::ip::udp::endpoint> endpoint =
-        std::make_shared<asio::ip::udp::endpoint>(asio::ip::address::from_string(host), port);
-    try {
-        currentID++;
-        socket_.async_send_to(
-            asio::buffer(packet),
-            *endpoint,
-            [](std::error_code, std::size_t) {}
-        );
-    } catch(std::exception &e) {
-        std::cout << e.what() << std::endl;
-    }
+void Server::send(const std::string& host, uint16_t port, std::vector<uint8_t> packet)
+{
+    auto endpoint = std::make_shared<asio::ip::udp::endpoint>(
+        asio::ip::address::from_string(host), port);
+    auto buffer = std::make_shared<std::vector<uint8_t>>(std::move(packet));
+    socket_.async_send_to(
+        asio::buffer(*buffer),
+        *endpoint,
+        [buffer, endpoint](std::error_code, std::size_t) {});
 }
 
 /**

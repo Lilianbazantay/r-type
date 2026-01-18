@@ -18,9 +18,11 @@ void NetworkServerBuffer::pushPacket(ServerPacket& pkt)
  */
 ServerPacket NetworkServerBuffer::popPacket()
 {
+    if (packets.empty())
+        return {};
     std::lock_guard<std::mutex> lock(mtx);
 
-    ServerPacket out = packets.front();
+    ServerPacket out = packets[0];
     packets.erase(packets.begin());
     return out;
 }

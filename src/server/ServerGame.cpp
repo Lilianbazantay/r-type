@@ -19,6 +19,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
+#include <cstddef>
 #include <iostream>
 #include <memory>
 
@@ -26,6 +27,7 @@
 
 
 ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer *newCBuffer):
+    systemList(),
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
     continuousBuffer(newCBuffer),
