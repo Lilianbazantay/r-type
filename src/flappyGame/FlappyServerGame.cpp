@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 
 static constexpr float PIPE_SPEED     = 240.f;
 static constexpr float PIPE_SPAWN_X   = 1200.f;
@@ -268,6 +267,6 @@ void FlappyServerGame::Loop()
 {
     while (true) {
         Update();
-        usleep(16000);
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }
