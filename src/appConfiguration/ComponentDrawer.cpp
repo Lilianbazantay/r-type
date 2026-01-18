@@ -125,7 +125,7 @@ static void DrawAnimatedContext(const char* name, AnimatedSpriteContext& ctx)
 }
 
 /**
- * @brief Drawn every animation sprite of the entity
+ * @brief Drawn every animation sprite component of the entity
  *
  * @param vec vector of animated sprite
  * @param label name of the animation
@@ -166,7 +166,7 @@ void ComponentDrawer::drawComponentList(std::vector<AnimatedSpriteStruct>& vec, 
 // Clock
 // ====================
 /**
- * @brief Drawn every animation sprite of the entity
+ * @brief Drawn every animation sprite component of the entity
  *
  * @param vec vector of animated sprite
  * @param label name of the animation
@@ -193,7 +193,7 @@ void ComponentDrawer::drawComponentList(std::vector<ClockStruct> &vec, const cha
 // Cooldown
 // ====================
 /**
- * @brief Drawn every cooldown of the entity
+ * @brief Drawn every cooldown component of the entity
  *
  * @param vec vector of cooldown
  * @param label name of the cooldown
@@ -220,7 +220,7 @@ void ComponentDrawer::drawComponentList(std::vector<CooldownStruct> &vec, const 
 // Direction
 // ====================
 /**
- * @brief Drawn every direction of the entity
+ * @brief Drawn every direction component of the entity
  *
  * @param vec vector of direction
  * @param label name of the direction
@@ -247,7 +247,7 @@ void ComponentDrawer::drawComponentList(std::vector<DirectionStruct> &vec, const
 // Entity Spawner
 // ====================
 /**
- * @brief Drawn every entity spawner of the entity
+ * @brief Drawn every entity spawner component of the entity
  *
  * @param vec vector of entity spawner
  * @param allEntities vector of every entity to choose one
@@ -305,7 +305,7 @@ void ComponentDrawer::drawComponentList(std::vector<EntitySpawnerStruct>& vec, c
 // Gravity
 // ====================
 /**
- * @brief Drawn every gravity of the entity
+ * @brief Drawn every gravity component of the entity
  *
  * @param vec vector of gravity
  * @param label name of the gravity
@@ -331,7 +331,7 @@ void ComponentDrawer::drawComponentList(std::vector<GravityStruct> &vec, const c
 // Hitbox
 // ====================
 /**
- * @brief Drawn every hitbox of the entity
+ * @brief Drawn every hitbox component of the entity
  *
  * @param vec vector of hitbox
  * @param label name of the hitbox
@@ -421,7 +421,7 @@ void ComponentDrawer::drawComponentList(std::vector<HitboxStruct> &vec, const ch
 // Hp
 // ====================
 /**
- * @brief Drawn every hp of the entity
+ * @brief Drawn every hp component of the entity
  *
  * @param vec vector of hp
  * @param label name of the hp
@@ -447,7 +447,7 @@ void ComponentDrawer::drawComponentList(std::vector<HpStruct> &vec, const char* 
 // Position
 // ====================
 /**
- * @brief Drawn every position of the entity
+ * @brief Drawn every position component of the entity
  *
  * @param vec vector of position
  * @param label name of the position
@@ -490,7 +490,7 @@ static void DrawSoundContext(const char* name, SoundContext& ctx)
 }
 
 /**
- * @brief Drawn every sound of the entity
+ * @brief Drawn every sound component of the entity
  *
  * @param vec vector of sound
  * @param label name of the sound
@@ -524,7 +524,7 @@ void ComponentDrawer::drawComponentList(std::vector<SoundStruct>& vec, const cha
 // Sprite
 // ====================
 /**
- * @brief Drawn every sprite of the entity
+ * @brief Drawn every sprite component of the entity
  *
  * @param vec vector of sprite
  * @param label name of the sprite
@@ -622,7 +622,7 @@ inline void drawPattern(Pattern& pattern, int pattern_index) {
 }
 
 /**
- * @brief Drawn every strategy of the entity
+ * @brief Drawn every strategy component of the entity
  *
  * @param vec vector of strategy
  * @param label name of the strategy
@@ -665,7 +665,7 @@ void ComponentDrawer::drawComponentList(std::vector<StrategyStruct>& vec, const 
 // Velocity
 // ====================
 /**
- * @brief Drawn every velocity of the entity
+ * @brief Drawn every velocity component of the entity
  *
  * @param vec vector of velocity
  * @param label name of the velocity
