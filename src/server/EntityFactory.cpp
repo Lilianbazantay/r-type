@@ -1,4 +1,6 @@
 #include "EntityFactory.hpp"
+#include "../ecs/Entity/IMediatorEntity.hpp"
+#include "../ecs/Entity/Entities.hpp"
 
 #include "../ecs/Component/Position.hpp"
 #include "../ecs/Component/Velocity.hpp"
@@ -14,39 +16,23 @@
 #include "../ecs/Component/Sound.hpp"
 #include "../ecs/Component/Strategy.hpp"
 
+#include <cstddef>
 #include <iostream>
 #include <algorithm>
 
 using json = nlohmann::json;
 
-/**
- * @brief Registers a map of prototypes in the factory.
- *
- * @param protos Map of prototype name to Prototype objects
- */
 void EntityFactory::registerPrototypes(
     const std::unordered_map<std::string, Prototype>& protos)
 {
     prototypes = protos;
 }
 
-/**
- * @brief Registers a component constructor function for a given type.
- *
- * @param type The component type
- * @param fn The constructor function
- */
 void EntityFactory::registerConstructor(ComponentType type, ConstructorFn fn)
 {
     constructors[type] = std::move(fn);
 }
 
-/**
- * @brief Converts a string key to a ComponentType enum.
- *
- * @param key The string representation of the component
- * @return ComponentType The corresponding ComponentType, or UNKNOWN if invalid
- */
 ComponentType EntityFactory::stringToComponentType(const std::string &key)
 {
     std::string k = key;
@@ -69,33 +55,56 @@ ComponentType EntityFactory::stringToComponentType(const std::string &key)
     return ComponentType::UNKNOWN;
 }
 
-/**
- * @brief Registers the default constructors for all supported component types.
- *
- */
+static std::unique_ptr<IMediatorEntity> createEntityFromType(EntityFactory& factory, const std::string& type) {
+    if (type == "Player") return std::make_unique<Player>(factory);
+    if (type == "Enemy") return std::make_unique<Enemy>(factory);
+    if (type == "PlayerBullet") return std::make_unique<PlayerBullet>(factory);
+    if (type == "EnemyBullet") return std::make_unique<EnemyBullet>(factory);
+    if (type == "Background") return std::make_unique<Background>(factory);
+
+    std::cerr << "[Factory] Unknown entity type: " << type << "\n";
+    return nullptr;
+}
+
+static ANIMATION_TYPE stringToAnimationType(const std::string& str) {
+    std::string s = str;
+    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+
+    if (s == "IDLE") return IDLE;
+    if (s == "UP") return UP;
+    if (s == "DOWN") return DOWN;
+    if (s == "SHOOT") return SHOOT;
+    if (s == "DEATH") return DEATH;
+
+    return NOTHING;
+}
+
 void EntityFactory::registerComponentConstructors()
 {
     registerConstructor(ComponentType::POSITION,
         [](const json& j) {
-            return std::make_unique<Position>(j[0].get<float>(), j[1].get<float>());
+            return std::make_unique<Position>(
+                static_cast<float>(j[0].get<double>()),
+                static_cast<float>(j[1].get<double>())
+            );
         });
 
     registerConstructor(ComponentType::VELOCITY,
         [](const json& j) {
-            return std::make_unique<Velocity>(j.get<float>());
+            return std::make_unique<Velocity>(static_cast<float>(j.get<double>()));
         });
 
     registerConstructor(ComponentType::DIRECTION,
         [](const json& j) {
             return std::make_unique<Direction>(
-                j[0].get<float>(),
-                j[1].get<float>()
+                static_cast<float>(j[0].get<double>()),
+                static_cast<float>(j[1].get<double>())
             );
         });
 
     registerConstructor(ComponentType::HP,
         [](const json& j) {
-            return std::make_unique<Hp>(j.get<int>());
+            return std::make_unique<Hp>(static_cast<int>(j.get<int>()));
         });
 
     registerConstructor(ComponentType::HITBOX,
@@ -106,8 +115,8 @@ void EntityFactory::registerComponentConstructors()
             int damage = j["damage"].get<int>();
 
             return std::make_unique<Hitbox>(
-                size[0].get<float>(),
-                size[1].get<float>(),
+                static_cast<float>(size[0].get<double>()),
+                static_cast<float>(size[1].get<double>()),
                 damage,
                 layer,
                 mask
@@ -116,146 +125,124 @@ void EntityFactory::registerComponentConstructors()
 
     registerConstructor(ComponentType::ANIMATED_SPRITE,
         [](const json& j) {
+            auto sprite = std::make_unique<AnimatedSprite>(
+                j["spritesheet"].get<std::string>(),
+                std::make_pair(1.f, 1.f),
+                std::make_pair(
+                    static_cast<float>(j["animations"].begin().value()["frame_size"][0].get<double>()),
+                    static_cast<float>(j["animations"].begin().value()["frame_size"][1].get<double>())
+                )
+            );
 
-            std::unordered_map<std::string, AnimationData> animations;
+            sprite->setAnimationRate(static_cast<float>(j["frame_rate"].get<double>()));
 
             for (auto& [name, anim] : j["animations"].items()) {
-                AnimationData data;
-                data.frameSize = {
-                    anim["frame_size"][0].get<int>(),
-                    anim["frame_size"][1].get<int>()
-                };
-                data.start = {
-                    anim["start"][0].get<int>(),
-                    anim["start"][1].get<int>()
-                };
-                data.step = {
-                    anim["step"][0].get<int>(),
-                    anim["step"][1].get<int>()
-                };
-                data.length = anim["length"].get<int>();
-                data.loop = anim.value("loop", true);
+                ANIMATION_TYPE type = stringToAnimationType(name);
+                if (type == NOTHING)
+                    continue;
 
-                animations.emplace(name, data);
+                sprite->addAnimation(
+                    { static_cast<float>(anim["frame_size"][0].get<double>()), static_cast<float>(anim["frame_size"][1].get<double>()) },
+                    { static_cast<float>(anim["start"][0].get<double>()), static_cast<float>(anim["start"][1].get<double>()) },
+                    { static_cast<float>(anim["step"][0].get<double>()), static_cast<float>(anim["step"][1].get<double>()) },
+                    type,
+                    anim.value("loop", true),
+                    anim["length"].get<int>()
+                );
             }
 
-            return std::make_unique<AnimatedSprite>(
-                j["spritesheet"].get<std::string>(),
-                j["frame_rate"].get<float>(),
-                j["default"].get<std::string>(),
-                animations
+            sprite->changeAnimation(
+                stringToAnimationType(j["default"].get<std::string>()),
+                false
             );
+
+            return sprite;
         }
     );
 
-
-
     registerConstructor(ComponentType::CLOCK,
         [](const json& j) {
-            if (j.get<bool>())
-                return std::make_unique<Clock>();
-            return std::unique_ptr<IComponent>(nullptr);
+            return std::make_unique<Clock>();
         });
 
     registerConstructor(ComponentType::COOLDOWN,
         [](const json& j) {
-            return std::make_unique<Cooldown>(j.get<double>());
+            return std::make_unique<Cooldown>(static_cast<float>(j.get<double>()));
         });
 
     registerConstructor(ComponentType::ENTITY_SPAWNER,
-        [](const json& j) {
-            auto mediatorEntity = std::make_unique<MediatorEntity>(
-                j["entity_type"].get<std::string>(),
-                j["position"][0].get<float>(), j["position"][1].get<float>()
-            );
+        [this](const json& j) {
+            auto mediatorEntity = createEntityFromType(*this, j["entity_type"].get<std::string>());
+
+            if (!mediatorEntity) {
+                std::cerr << "[Factory] Failed to create entity of type " << j["entity_type"] << "\n";
+                return std::unique_ptr<EntitySpawner>(nullptr);
+            }
+
+            mediatorEntity->AddActuatorComponent(std::make_unique<Position>(
+                static_cast<float>(j["position"][0].get<double>()),
+                static_cast<float>(j["position"][1].get<double>())
+            ));
+
             return std::make_unique<EntitySpawner>(
-                j["cooldown"].get<double>(),
+                static_cast<float>(j["cooldown"].get<double>()),
                 std::move(mediatorEntity),
+                *this,
                 j["is_activated"].get<int>()
             );
-        });
+        }
+    );
 
     registerConstructor(ComponentType::GRAVITY,
         [](const json& j) {
-            return std::make_unique<Gravity>(j["strength"].get<float>());
+            return std::make_unique<Gravity>(true, static_cast<float>(j["strength"].get<double>()));
         });
 
     registerConstructor(ComponentType::SPRITE,
         [](const json& j) {
             return std::make_unique<Sprite>(
                 j["file_path"].get<std::string>(),
-                j["size_x"].get<int>(), j["size_y"].get<int>()
+                static_cast<int>(j["size"][0].get<double>()),
+                static_cast<int>(j["size"][1].get<double>())
             );
         });
-
-    registerConstructor(ComponentType::SOUND,
-        [](const json& j) {
-
-            std::unordered_map<std::string, SoundData> sounds;
-
-            for (auto& [name, snd] : j["sounds"].items()) {
-                SoundData data;
-                data.filePath = snd["file_path"].get<std::string>();
-                data.volume = snd["volume"].get<float>();
-                data.loop = snd["loop"].get<bool>();
-
-                sounds.emplace(name, data);
-            }
-
-            return std::make_unique<Sound>(
-                j["default"].get<std::string>(),
-                sounds
-            );
-        }
-    );
-
 
     registerConstructor(ComponentType::STRATEGY,
         [](const json& j) {
-            std::vector<Strategy::Pattern> patterns;
+
+            auto strategy = std::make_unique<Strategy>(std::vector<std::pair<std::pair<float, float>, float>>{});
 
             for (const auto& patternJson : j["patterns"]) {
-                Strategy::Pattern pattern;
 
-                pattern.hp_max = patternJson["hp_range"][0].get<int>();
-                pattern.hp_min = patternJson["hp_range"][1].get<int>();
+                int hpPercent = static_cast<int>(patternJson["hp_range"][1].get<double>());
 
-                for (const auto& seqJson : patternJson["sequences"]) {
-                    Strategy::Sequence sequence;
+                if (!patternJson.contains("sequences") ||
+                    patternJson["sequences"].empty())
+                    continue;
 
-                    for (const auto& commandJson : seqJson) {
-                        const auto& actionJson = commandJson[0];
+                for (const auto& sequence : patternJson["sequences"]) {
+                    for (const auto& commandJson : sequence) {
+                        const auto& dir = commandJson[0];
 
-                        int actionX = actionJson[0].get<int>();
-                        int actionY = actionJson[1].get<int>();
-                        int value   = commandJson[1].get<int>();
+                        float dx = static_cast<float>(dir[0].get<double>());
+                        float dy = static_cast<float>(dir[1].get<double>());
+                        float time = static_cast<float>(commandJson[1].get<double>());
+                        std::cout << dx << "; " << dy << "; " << time << "\n";
 
-                        sequence.emplace_back(
-                            std::make_pair(actionX, actionY),
-                            value
+                        strategy->AddElementToPattern(
+                            {dx, dy},
+                            time,
+                            hpPercent
                         );
                     }
-
-                    pattern.sequences.push_back(std::move(sequence));
                 }
-
-                patterns.push_back(std::move(pattern));
             }
-
-            return std::make_unique<Strategy>(patterns);
+            for (size_t i = 0; i < strategy->GetPatternFromHp(100).size(); i++)
+                std::cout << "first: " << strategy->GetPatternFromHp(100)[i].first.first << " second " << strategy->GetPatternFromHp(100)[i].first.second << " third " << strategy->GetPatternFromHp(100)[i].second << "\n";
+            return strategy;
         });
-
-
 }
 
-/**
- * @brief Applies a prototype to an entity by adding its components.
- *
- * @param protoName Name of the prototype to apply
- * @param entity The entity to which the prototype will be applied
- * @return true if the prototype was applied successfully
- * @return false if the prototype does not exist or cannot be applied
- */
 bool EntityFactory::applyPrototypeToEntity(
     const std::string &protoName,
     IMediatorEntity &entity)
@@ -281,8 +268,10 @@ bool EntityFactory::applyPrototypeToEntity(
             continue;
 
         auto component = ctorIt->second(value);
-        if (component)
+        if (component) {
+            std::cout << key << "\n";
             entity.AddActuatorComponent(std::move(component));
+        }
 
     }
 

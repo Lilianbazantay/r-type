@@ -37,8 +37,12 @@ void StrategySystem::executeEntity(IMediatorEntity &entity, relevant_data_t &dat
     Hp *playerHp = dynamic_cast<Hp*>(entity.FindComponent(ComponentType::HP));
     EntitySpawner *playerEntitySpawner = dynamic_cast<EntitySpawner*>(entity.FindComponent(ComponentType::ENTITY_SPAWNER));
 
-    if (playerHp == nullptr || playerDirection == nullptr)
+    if (playerHp == nullptr || playerDirection == nullptr || playerStrategy == nullptr) {
+        std::cerr << "[WARN][StrategySystem] Entity id=" << entity.getId()
+                  << " type=" << entity.getType()
+                  << " missing Strategy/DIRECTION/HP component\n";
         return;
+    }
     std::pair<float, float> dir = playerStrategy->getDir(playerHp->GetHpPercent());
     if (dir.first == 2 && playerEntitySpawner != nullptr)
         return playerEntitySpawner->enableSpawn();

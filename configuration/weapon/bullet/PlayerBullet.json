@@ -1,0 +1,25 @@
+{
+  "entity": {
+    "type": "bullet",
+    "name": "PlayerBullet"
+  },
+
+  "components": {
+    "position": [0.0, 0.0],
+    "velocity": 500.0,
+    "hp": 1,
+    "direction": [1.0, 0.0],
+
+    "sprite": {
+      "file_path": "./assets/Bullet.png",
+      "size": [16, 16]
+    },
+
+    "hitbox": {
+      "size": [16.0, 16.0],
+      "layer": [1],
+      "mask": [2],
+      "damage": 1
+    }
+  }
+}

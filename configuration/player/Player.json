@@ -1,0 +1,44 @@
+{
+  "entity": {
+    "type": "player",
+    "name": "Player"
+  },
+
+  "components": {
+    "position": [100.0, 200.0],
+    "velocity": 400.0,
+    "hp": 3,
+    "direction": [0.0, 0.0],
+
+    "animatedsprite": {
+      "spritesheet": "./assets/trantorian.png",
+      "frame_rate": 10.0,
+      "default": "idle",
+      "animations": {
+        "idle": {
+          "frame_size": [76.0, 92.0],
+          "start": [0.0, 0.0],
+          "step": [76.0, 0.0],
+          "length": 3,
+          "loop": true
+        }
+      }
+    },
+
+    "clock": true,
+
+    "hitbox": {
+      "size": [128.0, 128.0],
+      "layer": [1],
+      "mask": [2],
+      "damage": 1
+    },
+
+    "entityspawner": {
+      "entity_type": "PlayerBullet",
+      "position": [0.0, 0.0],
+      "cooldown": 2.0,
+      "is_activated": 1
+    }
+  }
+}

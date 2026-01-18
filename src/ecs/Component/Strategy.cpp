@@ -1,5 +1,6 @@
 #include "Strategy.hpp"
 #include "../IComponent.hpp"
+#include <cstddef>
 #include <cstdlib>
 #include <iostream>
 
@@ -85,11 +86,12 @@ void Strategy::AddElementToPattern(std::pair<std::pair<float, float>, float> ele
  */
 void Strategy::AddElementToPattern(std::pair<float, float> action, int value, int healthPercent)
 {
-    for (size_t i = 0; i < _patternList.size(); i++)
-        if (_patternList[i].second == healthPercent) {
-            _patternList[i].first.push_back({action, value});
+    for (size_t i = 0; i < _patternList.size(); i++) {
+        if (_patternHp == healthPercent) {
+            _pattern.push_back({action, value});
             return;
         }
+    }
     _patternList.push_back({{{action, value}}, healthPercent});
 }
 
@@ -127,12 +129,15 @@ void Strategy::CreateRandomPattern(int number_of_element, int max_time_value,  i
 std::pair<float, float> Strategy::getDir(int healthPercent) {
     if (healthPercent < _patternHp)
         switchPattern(healthPercent);
+    if (_pattern.size() == 0)
+        return {0, 0};
     if (clock.getElapsedTime().asSeconds() > _pattern[arrayPos].second) {
         clock.restart();
         arrayPos++;
         if (_pattern[arrayPos].first.first == -2)
             arrayPos = 0;
     }
+    //std::cout << "going in\n";
     if (arrayPos >= _pattern.size())
         return {0, 0};
     return _pattern[arrayPos].first;

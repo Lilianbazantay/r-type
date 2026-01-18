@@ -1,0 +1,25 @@
+{
+  "entity": {
+    "type": "bullet",
+    "name": "EnemyBullet"
+  },
+
+  "components": {
+    "position": [0.0, 0.0],
+    "velocity": 500.0,
+    "hp": 1,
+    "direction": [-1.0, 0.0],
+
+    "sprite": {
+      "file_path": "./assets/Bullet.png",
+      "size": [128, 128]
+    },
+
+    "hitbox": {
+      "size": [16.0, 16.0],
+      "layer": [2],
+      "mask": [1],
+      "damage": 1
+    }
+  }
+}

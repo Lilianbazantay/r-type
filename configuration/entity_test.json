@@ -18,7 +18,7 @@
     },
 
     "animatedsprite": {
-      "spritesheet": "assets/sprites/enemy_full_sheet.png",
+      "spritesheet": "../assets/Enemy.png",
       "frame_rate": 10.0,
       "default": "idle",
       "animations": {
@@ -28,7 +28,7 @@
           "step": [1, 0],
           "length": 4
         },
-        "walk": {
+        "up": {
           "frame_size": [64, 64],
           "start": [0, 1],
           "step": [1, 0],
@@ -111,7 +111,7 @@
     },
 
     "entityspawner": {
-      "entity_type": "basic_bullet",
+      "entity_type": "EnemyBullet",
       "position": [0.0, 0.0],
       "cooldown": 0.25,
       "is_activated": 1

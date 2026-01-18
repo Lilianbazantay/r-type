@@ -1,0 +1,55 @@
+{
+  "entity": {
+    "type": "enemy",
+    "name": "Enemy"
+  },
+
+  "components": {
+    "position": [1500.0, 500.0],
+    "velocity": 100.0,
+    "hp": 1,
+    "direction": [0.0, 0.0],
+
+    "sprite": {
+      "file_path": "./assets/Enemy.png",
+      "size": [96, 96]
+    },
+
+    "hitbox": {
+      "size": [128.0, 128.0],
+      "layer": [2],
+      "mask": [1],
+      "damage": 1
+    },
+
+    "clock": true,
+
+    "entityspawner": {
+      "entity_type": "EnemyBullet",
+      "position": [0.0, 0.0],
+      "cooldown": 1.0,
+      "is_activated": 1
+    },
+
+    "strategy": {
+      "patterns": [
+        {
+          "hp_range": [100, 0],
+          "sequences": [
+            [
+              [[-1.0,  1.0], 3.0],
+              [[ 2.0,  0.5], 0.0],
+              [[ 0.0,  1.5], 1.0],
+              [[ 2.0,  0.5], 0.0],
+              [[ 0.0,  1.5], 1.0],
+              [[ 2.0,  0.5], 0.0],
+              [[ 1.0,  1.0], 3.0],
+              [[ 0.0, -2.0], 4.5],
+              [[-2.0, -2.0], 0.0]
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

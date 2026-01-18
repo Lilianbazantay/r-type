@@ -102,9 +102,10 @@ int main(int argc, char **argv)
     if (parser.parse(argc, argv) == EXIT_ERROR)
         return EXIT_ERROR;
     NetworkBuffer netBuffer;
+    EntityFactory factory;
 
     try {
-        ClientGame rtype(parser.ip, parser.port, &netBuffer);
+        ClientGame rtype(parser.ip, parser.port, &netBuffer, factory);
         rtype.Loop();
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;

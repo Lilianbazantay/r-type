@@ -22,20 +22,31 @@
 #include <cstddef>
 #include <iostream>
 #include <memory>
-#include <atomic>
-#include <csignal>
+#include <fstream>
 
 #include "ServerGame.hpp"
 
-static std::atomic_bool g_sigint(false);
+static nlohmann::json loadJsonFromFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "[ServerGame] Failed to open file: " << filename << std::endl;
+        return nlohmann::json{};
+    }
 
-static void handleSigint(int)
-{
-    g_sigint = true;
+    nlohmann::json j;
+    try {
+        file >> j;
+    } catch (const nlohmann::json::parse_error& e) {
+        std::cerr << "[ServerGame] Failed to parse JSON in " << filename << ": " << e.what() << std::endl;
+        return nlohmann::json{};
+    }
+    return j;
 }
 
 ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer *newCBuffer):
+    factory(),
     systemList(),
+    waveManager(factory),
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
     continuousBuffer(newCBuffer),
@@ -51,7 +62,47 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
     systemList.push_back(std::make_unique<MovementSystem>());
     systemList.push_back(std::make_unique<StrategySystem>());
     networkServer.start();
-    std::signal(SIGINT, handleSigint);
+
+    factory.registerComponentConstructors();
+
+    std::cerr << "[DEBUG] Starting configuration\n";
+
+    factory.registerPrototypes({
+        {"Background", {"Background", loadJsonFromFile("./configuration/background/Background.json")}},
+        {"Player", {"Player", loadJsonFromFile("./configuration/player/Player.json")}},
+        {"Enemy", {"Enemy", loadJsonFromFile("./configuration/enemy/Enemy.json")}},
+        {"PlayerBullet", {"PlayerBullet", loadJsonFromFile("./configuration/weapon/bullet/PlayerBullet.json")}},
+        {"EnemyBullet", {"EnemyBullet", loadJsonFromFile("./configuration/weapon/bullet/EnemyBullet.json")}}
+    });
+
+    // ========== Option B : on passe un callback pour WaveManager ==========
+    waveManager.setCreateEntityCallback(
+        [this](int type, relevant_data_t* dataPtr){
+            if (!dataPtr) return;
+
+            int newId = 0;
+            switch (type) {
+                case ENTITY_ENEMY:
+                    newId = dataPtr->enemy_count++;
+                    break;
+                case ENTITY_BULLET:
+                    newId = dataPtr->bullet_count++;
+                    break;
+                default:
+                    std::cerr << "[ERROR][ServerGame] Unsupported type in callback: " << type << "\n";
+                    return;
+            }
+
+            if (!this->createEntity(type, newId)) {
+                std::cerr << "[ERROR][ServerGame] Failed to create entity type=" << type << "\n";
+                return;
+            }
+            std::cerr << "[DEBUG][WaveManager] Entity created via createEntity id=" << newId
+                      << " type=" << type << "\n";
+        }
+    );
+
+    std::cerr << "[DEBUG] Configuration finished\n";
 }
 
 
@@ -64,7 +115,7 @@ void ServerGame::Update() {
     size_t EListSize = data.entityList.size();
     _serverTick++;
     for (size_t j = 0; j < EListSize; j++) {
-        for (size_t i = 0; i < SListSize; i++)
+        for (size_t i = 0; i < SListSize; i++) {
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
         if (!data.entityList[j]->is_Alive()) {
             std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
@@ -76,9 +127,11 @@ void ServerGame::Update() {
             continue;
         }
         if (data.entityList[j]->justCreated()) {
-            std::cout << "Creating entity " << data.entityList[j]->getType() << std::endl;
-            Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
-            if (playerPos == nullptr)
+
+            Position *playerPos = dynamic_cast<Position*>(
+                data.entityList[j]->FindComponent(ComponentType::POSITION)
+            );
+            if (playerPos == nullptr) {
                 continue;
             std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
                 data.entityList[j]->getId(), _serverTick, playerPos->GetPosition().first, playerPos->GetPosition().second);
@@ -86,16 +139,50 @@ void ServerGame::Update() {
             continuousBuffer->addEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
             continue;
         }
-        if (data.entityList[j]->hasChanged()) {
-            Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
-            if (playerPos == nullptr)
-                continue;
-            std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, data.entityList[j]->getType(),
-                data.entityList[j]->getId(), _serverTick , playerPos->GetPosition().first, playerPos->GetPosition().second);
-            continuousBuffer->moveEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
+
+        if (!data.entityList[j]->is_Alive()) {
+
+            int type = data.entityList[j]->getType();
+            int id = data.entityList[j]->getId();
+
+            std::vector<uint8_t> pkt =
+                encoder.encodeDelete(networkServer.currentID, type, id);
+
             networkSendBuffer->pushPacket(pkt);
+            continuousBuffer->deleteEntity(type, id);
+
+            data.entityList.erase(data.entityList.begin() + j);
+            j--;
+            EListSize--;
             continue;
         }
+
+        if (data.entityList[j]->hasChanged()) {
+
+            Position *playerPos = dynamic_cast<Position*>(
+                data.entityList[j]->FindComponent(ComponentType::POSITION)
+            );
+            if (playerPos == nullptr) {
+                continue;
+            }
+
+            int type = data.entityList[j]->getType();
+            int id = data.entityList[j]->getId();
+
+            std::vector<uint8_t> pkt = encoder.encodeMove(
+                networkServer.currentID,
+                type,
+                id,
+                playerPos->GetPosition().first,
+                playerPos->GetPosition().second
+            );
+
+            continuousBuffer->moveEntity(type, id, pkt);
+            networkSendBuffer->moveEntity(type, id, pkt);
+            continue;
+        }
+
+        ++j;
     }
 }
 
@@ -110,8 +197,12 @@ void ServerGame::Loop() {
             Update();
             tmp.LaunchCooldown();
         }
+        //std::cerr << "[DEBUG] Starting WaveManager\n";
         waveManager.computeEntities(&data);
+        //std::cerr << "[DEBUG] Finishing WaveManger\n";
+        //std::cerr << "[DEBUG] Starting parseNetworkPackets\n";
         parseNetworkPackets();
+        //std::cerr << "[DEBUG] Finishing parseNetworkPackets\n";
     }
     Running = false;
 }
@@ -185,27 +276,27 @@ void ServerGame::playerShoot(int player_id) {
  * @return false if the entity type was not found
  */
 bool ServerGame::createEntity(int entity_type, int personnal_id) {
+    std::unique_ptr<IMediatorEntity> entity;
+
     switch (entity_type) {
-        case ENTITY_BACKGROUND: {
-            data.entityList.push_back(std::make_unique<Background>());
+        case ENTITY_BACKGROUND:
+            entity = std::make_unique<Background>(factory);
             break;
-        }
-        case ENTITY_PLAYER: {
-            data.entityList.push_back(std::make_unique<Player>());
+        case ENTITY_PLAYER:
+            entity = std::make_unique<Player>(factory);
             break;
-        }
-        case ENTITY_ENEMY: {
-            data.entityList.push_back(std::make_unique<Enemy>());
+        case ENTITY_ENEMY:
+            entity = std::make_unique<Enemy>(factory);
             break;
-        }
-        case ENTITY_BULLET: {
-            data.entityList.push_back(std::make_unique<PlayerBullet>());
+        case ENTITY_BULLET:
+            entity = std::make_unique<PlayerBullet>(factory);
             break;
-        }
         default:
             return false;
     }
-    data.entityList[data.entityList.size() -1]->setId(personnal_id);
+
+    entity->setId(personnal_id);
+    data.entityList.push_back(std::move(entity));
     return true;
 }
 

@@ -1,17 +1,19 @@
 #include "ClientGame.hpp"
-#include "../src/ecs/relevant_data.hpp"
-#include "ecs/Component/Position.hpp"
-#include "ecs/Entity/Entities.hpp"
-#include "ecs/Entity/IMediatorEntity.hpp"
-#include "ecs/IComponent.hpp"
-#include "ecs/System/DrawAnimatedSystem.hpp"
-#include "ecs/System/DrawSpriteSystem.hpp"
+#include "../ecs/relevant_data.hpp"
+#include "../ecs/Component/Position.hpp"
+#include "../ecs/Component/Sprite.hpp"
+#include "../ecs/Component/Hitbox.hpp"
+#include "../ecs/System/DrawAnimatedSystem.hpp"
+#include "../ecs/System/DrawSpriteSystem.hpp"
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
+
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <cmath>
@@ -24,58 +26,93 @@ static std::pair<float,float> lerp2(const std::pair<float,float>& a,
              a.second + (b.second - a.second) * t };
 }
 
-/**
- * @brief Constructor for ClientGame. Init the window with a nice starfield
- *
- */
-ClientGame::ClientGame(std::string ip, int port, NetworkBuffer *netBuffer): client(ip, port, netBuffer)
+static nlohmann::json loadJsonFromFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "[ServerGame] Failed to open file: " << filename << std::endl;
+        return nlohmann::json{};
+    }
+
+    nlohmann::json j;
+    try {
+        file >> j;
+    } catch (const nlohmann::json::parse_error& e) {
+        std::cerr << "[ServerGame] Failed to parse JSON in " << filename << ": " << e.what() << std::endl;
+        return nlohmann::json{};
+    }
+    return j;
+}
+
+ClientGame::ClientGame(
+    std::string ip,
+    int port,
+    NetworkBuffer *netBuffer,
+    EntityFactory& inFactory
+)
+    : client(ip, port, netBuffer),
+      factory(inFactory)
 {
     _netBuffer = netBuffer;
     _inputManager.setClientGame(this);
     data.window.create(sf::VideoMode({1920, 1080}), "RTYPE");
     data.window.clear(sf::Color::Black);
     data.window.setActive(true);
+
     data.bullet_count = 0;
     data.enemy_count = 0;
+
     clock.restart();
-    _inputManager.setClient(&client);
     Prevtime = clock.getElapsedTime();
+
+    _inputManager.setClient(&client);
+
     systemList.push_back(std::make_unique<DrawSpriteSystem>());
     systemList.push_back(std::make_unique<DrawAnimatedSystem>());
-    createEntity(ENTITY_BACKGROUND, 0, {0, 0});
+
+    factory.registerComponentConstructors();
+    factory.registerPrototypes({
+        {"Background", {"Background", loadJsonFromFile("./configuration/background/Background.json")}},
+        {"Player", {"Player", loadJsonFromFile("./configuration/player/Player.json")}},
+        {"Enemy", {"Enemy", loadJsonFromFile("./configuration/enemy/Enemy.json")}},
+        {"PlayerBullet", {"PlayerBullet", loadJsonFromFile("./configuration/weapon/bullet/PlayerBullet.json")}},
+        {"EnemyBullet", {"EnemyBullet", loadJsonFromFile("./configuration/weapon/bullet/EnemyBullet.json")}}
+    });
+    createEntity(ENTITY_BACKGROUND, 0, {0.f, 0.f});
+
     data.window.setKeyRepeatEnabled(false);
+
     std::string IP = client.getServerIP();
     uint32_t ipValue = 0;
     unsigned a, b, c, d;
+
     if (sscanf(IP.c_str(), "%u.%u.%u.%u", &a, &b, &c, &d) == 4)
         ipValue = (a << 24u) | (b << 16u) | (c << 8u) | d;
     else
         std::cout << "Invalid IP format\n";
+
     client.sendConnectionRequest(ipValue, client.getServerPort());
     client.sendStartGame();
     client.start();
 }
 
-bool ClientGame::IsEntityExist(int type, int id) {
-    std::vector<std::unique_ptr<IMediatorEntity>> &list = data.entityList;
-    for (size_t i = 0; i < list.size(); i++)
-        if (list[i]->getType() == type && list[i]->getId() == id)
+bool ClientGame::IsEntityExist(int type, int id)
+{
+    for (const auto& e : data.entityList)
+        if (e->getType() == type && e->getId() == id)
             return true;
     return false;
 }
 
-
-/**
- * @brief updates the deltatime(runtime), and go through every entity and system.
- *
- */
-void ClientGame::Update() {
+void ClientGame::Update()
+{
     sf::Time Newtime = clock.getElapsedTime();
-    data.runtime = (Newtime.asMicroseconds() - Prevtime.asMicroseconds()) / 1000000.;
+    data.runtime =
+        (Newtime.asMicroseconds() - Prevtime.asMicroseconds()) / 1'000'000.f;
     Prevtime = Newtime;
-    for (size_t i = 0; i < systemList.size(); i++)
-        for (size_t j = 0; j < data.entityList.size(); j++)
-            systemList[i]->checkEntity(*data.entityList[j], data);
+
+    for (auto& system : systemList)
+        for (auto& entity : data.entityList)
+            system->checkEntity(*entity, data);
 }
 
 /**
@@ -85,16 +122,21 @@ void ClientGame::Update() {
 void ClientGame::Loop() {
     while(data.window.isOpen()) {
         sf::Event evt;
+
         if (Stopping)
             return;
+
         data.window.clear(sf::Color::Black);
+
         if (!Paused) {
             processNetworkPackets();
             applyNetworkInterpolation();
             Update();
         }
+
         data.window.display();
-        while(data.window.pollEvent(evt)) {
+
+        while (data.window.pollEvent(evt)) {
             if (evt.type == sf::Event::Closed)
                 data.window.close();
             if (evt.type == sf::Event::Resized)
@@ -104,27 +146,43 @@ void ClientGame::Loop() {
     }
 }
 
-void ClientGame::handleResize(std::pair<unsigned int, unsigned int> _newSize) {
+void ClientGame::handleResize(std::pair<unsigned int, unsigned int> _newSize)
+{
     prevWindowSize = actWindowSize;
     actWindowSize = _newSize;
-    for (size_t i = 0; i < data.entityList.size(); i++) {
-        Sprite *playerSprite = dynamic_cast<Sprite*>(data.entityList[i]->FindComponent(ComponentType::SPRITE));
-        Hitbox *playerHitbox = dynamic_cast<Hitbox*>(data.entityList[i]->FindComponent(ComponentType::HITBOX));
-        Position *playerPosition = dynamic_cast<Position*>(data.entityList[i]->FindComponent(ComponentType::POSITION));
-        std::pair<float, float> prevSize = {0, 0};
-        if (playerSprite != nullptr) {
-            prevSize = playerSprite->GetSize();
-            playerSprite->SetSize((float)(prevSize.first / actWindowSize.first) * prevWindowSize.first,
-                (float)(prevSize.second / actWindowSize.second) * prevWindowSize.second);
+
+    for (auto& entity : data.entityList) {
+        auto* sprite   = dynamic_cast<Sprite*>(entity->FindComponent(ComponentType::SPRITE));
+        auto* hitbox   = dynamic_cast<Hitbox*>(entity->FindComponent(ComponentType::HITBOX));
+
+        if (sprite) {
+            auto size = sprite->GetSize();
+            sprite->SetSize(
+                size.first  / actWindowSize.first  * prevWindowSize.first,
+                size.second / actWindowSize.second * prevWindowSize.second
+            );
         }
-        if (playerHitbox != nullptr) {
-            prevSize = playerHitbox->GetHitboxSize();
-            playerHitbox->SetHitboxSize((float)(prevSize.first / actWindowSize.first) * prevWindowSize.first,
-                (float)(prevSize.second / actWindowSize.second) * prevWindowSize.second);
+
+        if (hitbox) {
+            auto size = hitbox->GetHitboxSize();
+            hitbox->SetHitboxSize(
+                size.first  / actWindowSize.first  * prevWindowSize.first,
+                size.second / actWindowSize.second * prevWindowSize.second
+            );
         }
     }
 }
 
+void ClientGame::createEntity(
+    int entity_type,
+    int entity_id,
+    std::pair<float, float> position
+)
+{
+    if (IsEntityExist(entity_type, entity_id))
+        return;
+
+    std::unique_ptr<IMediatorEntity> entity;
 
 /**
  * @brief creates an entity based on its entity type, and assigns it an ID and a position
@@ -132,38 +190,30 @@ void ClientGame::handleResize(std::pair<unsigned int, unsigned int> _newSize) {
 void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, float> position) {
     int prevSize = data.entityList.size();
     switch (entity_type) {
-        case ENTITY_BACKGROUND: {
-            data.entityList.push_back(std::make_unique<Background>());
+        case ENTITY_BACKGROUND:
+            entity = std::make_unique<Background>(factory);
             break;
-        } case ENTITY_PLAYER: {
-            if (!IsEntityExist(entity_type, entity_id))
-                data.entityList.push_back(std::make_unique<Player>());
+        case ENTITY_PLAYER:
+            entity = std::make_unique<Player>(factory);
             break;
-        } case ENTITY_ENEMY: {
-            data.entityList.push_back(std::make_unique<Enemy>());
+        case ENTITY_ENEMY:
+            entity = std::make_unique<Enemy>(factory);
             break;
-        } case ENTITY_BULLET: {
-            data.entityList.push_back(std::make_unique<PlayerBullet>());
+        case ENTITY_BULLET:
+            entity = std::make_unique<PlayerBullet>(factory);
             break;
-        } default:
+        default:
             return;
     }
-    data.entityList[prevSize]->setId(entity_id);
-    Position *playerPosition = dynamic_cast<Position*>(data.entityList[prevSize]->FindComponent(ComponentType::POSITION));
-    Sprite *playerSprite = dynamic_cast<Sprite*>(data.entityList[prevSize]->FindComponent(ComponentType::SPRITE));
-    Hitbox *playerHitbox = dynamic_cast<Hitbox*>(data.entityList[prevSize]->FindComponent(ComponentType::HITBOX));
-    if (playerPosition != nullptr)
-        playerPosition->SetPosition(position);
-    if (playerSprite != nullptr) {
-        std::pair<float, float> prevSprSize = playerSprite->GetSize();
-        playerSprite->SetSize((float)(prevSprSize.first / actWindowSize.first) * maxWindowSize.first,
-            (float)(prevSprSize.second / actWindowSize.second) * maxWindowSize.second);
-    }
-    if (playerHitbox != nullptr) {
-        std::pair<float, float> prevHitboxSize = playerHitbox->GetHitboxSize();
-        playerHitbox->SetHitboxSize((float)(prevHitboxSize.first / actWindowSize.first) * maxWindowSize.first,
-            (float)(prevHitboxSize.second / actWindowSize.second) * maxWindowSize.second);
-    }
+
+    entity->setId(entity_id);
+    data.entityList.push_back(std::move(entity));
+
+    auto* pos = dynamic_cast<Position*>(
+        data.entityList.back()->FindComponent(ComponentType::POSITION)
+    );
+    if (pos)
+        pos->SetPosition(position);
 }
 
 /**
@@ -173,9 +223,10 @@ void ClientGame::moveEntity(int entity_type, int entity_id, std::pair<float, flo
     for (size_t i = 0; i < data.entityList.size(); i++) {
         if (!data.entityList[i]->is_wanted_entity(entity_type, entity_id))
             continue;
-        Position *playerPosition = dynamic_cast<Position*>(data.entityList[i]->FindComponent(ComponentType::POSITION));
-        if (playerPosition != nullptr)
-            playerPosition->SetPosition(new_position);
+
+        auto* pos = dynamic_cast<Position*>(e->FindComponent(ComponentType::POSITION));
+        if (pos)
+            pos->SetPosition(new_position);
         return;
     }
 }
@@ -210,7 +261,6 @@ bool ClientGame::isPaused() {
 void ClientGame::setPaused(bool value) {
     pause_mutex.lock();
     Paused = value;
-    pause_mutex.unlock();
 }
 
 bool ClientGame::isStop() {
@@ -224,7 +274,6 @@ bool ClientGame::isStop() {
 void ClientGame::setStop(bool value) {
     pause_mutex.lock();
     Stopping = value;
-    pause_mutex.unlock();
 }
 
 void ClientGame::pushSnapshot(uint8_t type, uint16_t id, uint32_t tick, float x, float y)

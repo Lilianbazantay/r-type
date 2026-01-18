@@ -16,7 +16,8 @@
 #include "server/NetworkServerBuffer.hpp"
 #include "server/WaveManager.hpp"
 #include "server/encoder.hpp"
-#include "WaveManager.hpp"
+
+#include "EntityFactory.hpp"
 
 class ServerGame {
     private:
@@ -27,22 +28,26 @@ class ServerGame {
         std::atomic_bool Running{false};
         uint32_t _serverTick = 0;
 
-        NetworkServerBuffer *networkReceiveBuffer;
-        NetworkClientBuffer *networkSendBuffer;
-        NetworkContinuousBuffer *continuousBuffer;
-        Server networkServer;
-        PacketEncoder encoder;
-        WaveManager waveManager;
+    EntityFactory factory;
 
-    public:
-        ServerGame(int, NetworkServerBuffer *, NetworkClientBuffer *, NetworkContinuousBuffer *);
-        ~ServerGame() = default;
-        bool createEntity(int, int);
-        void changePlayerDirection(int, std::pair<int, int>);
-        void playerShoot(int);
-        void parseNetworkPackets();
-        void requestGameData();
-        void Update();
-        void Loop();
-        int bulletID = 0;
+    NetworkServerBuffer* networkReceiveBuffer;
+    NetworkClientBuffer* networkSendBuffer;
+    NetworkContinuousBuffer* continuousBuffer;
+    Server networkServer;
+    PacketEncoder encoder;
+    WaveManager waveManager;
+
+public:
+    ServerGame(int port, NetworkServerBuffer* newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer* newCBuffer);
+    ~ServerGame() = default;
+
+    bool createEntity(int entity_type, int personnal_id);
+    void changePlayerDirection(int personnal_id, std::pair<int, int> newValues);
+    void playerShoot(int player_id);
+    void parseNetworkPackets();
+    void requestGameData();
+    void Update();
+    void Loop();
+
+    int bulletID = 0;
 };

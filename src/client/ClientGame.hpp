@@ -15,6 +15,12 @@
 
 #include "../ecs/System/ISystem.hpp"
 #include "../ecs/relevant_data.hpp"
+#include "../ecs/Component/Sprite.hpp"
+#include "../ecs/Component/Hitbox.hpp"
+#include "../ecs/Component/Position.hpp"
+#include "../ecs/Entity/Entities.hpp"
+#include "../ecs/Entity/IMediatorEntity.hpp"
+#include "../server/EntityFactory.hpp"
 
 #include "./client.hpp"
 #include "./NetworkBuffer.hpp"
@@ -32,12 +38,12 @@ class ClientGame {
         std::mutex pause_mutex;
         int _localPlayerId = -1;
 
-        std::pair<unsigned int, unsigned int> prevWindowSize = {1920, 1080};
-        std::pair<unsigned int, unsigned int> actWindowSize = {1920, 1080};
-        std::pair<unsigned int, unsigned int> maxWindowSize = {1920, 1080};
+    sf::Time Prevtime;
+    sf::Clock clock;
 
-        NetworkBuffer *_netBuffer = nullptr;
-        Client client;
+    bool Stopping = false;
+    bool Paused = false;
+    std::mutex pause_mutex;
 
         struct Snapshot {
             uint32_t tick;

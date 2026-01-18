@@ -1,150 +1,121 @@
-
 #include "WaveManager.hpp"
-#include "ecs/Component/Hitbox.hpp"
-#include "ecs/Component/Sprite.hpp"
-#include "ecs/Entity/Entities.hpp"
-#include "ecs/Entity/IMediatorEntity.hpp"
-#include "ecs/relevant_data.hpp"
-#include <memory>
+#include <iostream>
 
+// ==========================
+// EntityPersonnalization
+// ==========================
 
-EntityPersonnalization::EntityPersonnalization(std::pair<float, float> _pos, std::vector<std::pair<std::pair<float, float>, float>> _strat, float _timer) {
-    pos = _pos;
-    strategy = _strat;
-    creationTimer = _timer;
+EntityPersonnalization::EntityPersonnalization(EntityFactory& factoryRef)
+    : factory(factoryRef) {}
+
+EntityPersonnalization::EntityPersonnalization(
+    EntityFactory& factoryRef,
+    int type,
+    float timer
+)
+    : entityType(type),
+      creationTimer(timer),
+      factory(factoryRef) {}
+
+void EntityPersonnalization::setType(int type) {
+    entityType = type;
 }
 
-void EntityPersonnalization::setEntityPos(std::pair<float, float> _newPos) {
-    pos = _newPos;
+void EntityPersonnalization::setCreationTimer(float timer) {
+    creationTimer = timer;
 }
 
-void EntityPersonnalization::setHitBox(int _newDamage, std::vector<int> _newLayer, std::vector<int> _newmask) {
-    damage = _newDamage;
-    layers = _newLayer;
-    masks = _newmask;
-}
-
-void EntityPersonnalization::setSize(size_t _x, size_t _y) {
-    size = {_x, _y};
-}
-
-void EntityPersonnalization::setSize(std::pair<size_t, size_t> _newSize) {
-    size = _newSize;
-}
-
-void EntityPersonnalization::setSprite(std::string _newPath) {
-    spritePath = _newPath;
-}
-
-void EntityPersonnalization::setType(int _newType) {
-    entityType = _newType;
-}
-
-void EntityPersonnalization::setVelocity(int _newVelocity) {
-    velocity = _newVelocity;
-}
-
-void EntityPersonnalization::setHp(int _newHp) {
-    hp = _newHp;
-}
-
-void EntityPersonnalization::setCreationTimer(float _newTimer) {
-    creationTimer = _newTimer;
-}
-
-void EntityPersonnalization::setStrategy(std::vector<std::pair<std::pair<float, float>, float>> _newStrategy) {
-    strategy = _newStrategy;
-}
-
-void EntityPersonnalization::pushStrategy(std::pair<std::pair<float, float>, float> _Pushed) {
-    strategy.push_back(_Pushed);
-}
-
-float EntityPersonnalization::getCreationTimer() {
+float EntityPersonnalization::getCreationTimer() const {
     return creationTimer;
 }
 
-int EntityPersonnalization::getType() {
+int EntityPersonnalization::getType() const {
     return entityType;
 }
 
-std::unique_ptr<IMediatorEntity> EntityPersonnalization::getEntity() {
-    Sprite _spr(spritePath, size.first, size.second);
-    Hitbox _hitbox(size.first, size.second, damage, layers, masks);
-    Position _pos(pos.first, pos.second);
-    Strategy _strat(strategy);
-    switch (entityType) {
-        case (ENTITY_BULLET): {
-            return std::make_unique<EnemyBullet>();
-            break;
-        }
-        case (ENTITY_ENEMY): {
-            return std::make_unique<Enemy>(_spr, _hitbox, _pos, _strat, velocity, hp);
-            break;
-        }
-        default: {
-            return nullptr;
-            break;
-        }
-    }
-}
+// std::unique_ptr<IMediatorEntity> EntityPersonnalization::getEntity() const {
+//     std::cerr << "[DEBUG][WaveManager] getEntity type = " << entityType << "\n";
 
-WaveManager::WaveManager() {
-    std::vector<std::pair<std::pair<float, float>, float>> strat0 = {{{-1, 1}, 3}, {{2, 0.5}, 0}, {{0, 1.5}, 1}, {{2, 0.5}, 0}, {{0, 1.5}, 1}, {{2, 0.5}, 0}, {{1, 1}, 3}, {{0, -2}, 4.5}, {{-2, -2}, 0}};
-    std::vector<EntityPersonnalization> w0 = {};
-    EntityPersonnalization wall ({2120, 0}, {{{-2, -2}, 0}}, 0);
-    wall.setSprite("./assets/empty.jpg");
-    wall.setType(ENTITY_ENEMY);
-    wall.setSize(0, 1300);
-    wall.setHitBox(40, {1, 2, 3, 4, 5}, std::vector<int> {1, 2, 3, 4, 5});
-    wall.setVelocity(0);
-    wall.setHp(2147483647);
-    w0.push_back(wall);
-    wall.setEntityPos({0, -100});
-    w0.push_back(wall);
-    wall.setSize(2000, 1);
-    w0.push_back(wall);
-    wall.setEntityPos({0, 1680});
-    w0.push_back(wall);
-    for (size_t i = 0; i < 5; i++) {
-        w0.push_back(EntityPersonnalization({1920, 0}, strat0, i * 3));
+//     switch (entityType) {
+//         case ENTITY_ENEMY:
+//             return std::make_unique<Enemy>(factory);
+//         case ENTITY_BULLET:
+//             return std::make_unique<EnemyBullet>(factory);
+//         default:
+//             std::cerr << "[ERROR][WaveManager] Unknown entity type\n";
+//             return nullptr;
+//     }
+// }
+
+// ==========================
+// WaveManager
+// ==========================
+
+WaveManager::WaveManager(EntityFactory& factoryRef)
+    : factory(factoryRef)
+{
+    std::vector<std::unique_ptr<EntityPersonnalization>> wave0;
+
+    for (size_t i = 0; i < 5; ++i) {
+        wave0.push_back(
+            std::make_unique<EntityPersonnalization>(
+                factory,
+                ENTITY_ENEMY,
+                i * 3.0f
+            )
+        );
     }
-    addWave(w0);
+
+    addWave(std::move(wave0));
     setWave(0);
 }
 
-void WaveManager::computeEntities(relevant_data_t *data) {
-    int newId = 0;
-    if (waveEntities.empty())
-        return;
-    if (waveEntities[0].getCreationTimer() > clock.getElapsedTime().asSeconds())
-        return;
-    for (; waveEntities[0].getCreationTimer() <= clock.getElapsedTime().asSeconds() && !waveEntities.empty();
-        waveEntities.erase(waveEntities.begin())) {
-            switch (waveEntities[0].getType()) {
-                case (ENTITY_ENEMY):
-                    newId = data->enemy_count;
-                    data->enemy_count++;
-                    break;
-                case (ENTITY_BULLET):
-                    newId = data->bullet_count;
-                    data->bullet_count++;
-                    break;
-                default:
-                    break;
-            }
-            data->entityList.push_back(waveEntities[0].getEntity());
-            data->entityList[data->entityList.size() -1]->setId(newId);
+void WaveManager::computeEntities(relevant_data_t* data) {
+    if (!data) return;
+    if (waveEntities.empty()) return;
+
+    while (!waveEntities.empty() &&
+           waveEntities.front()->getCreationTimer()
+               <= clock.getElapsedTime().asSeconds()) {
+
+        int entityType = waveEntities.front()->getType();
+        waveEntities.erase(waveEntities.begin());
+
+        std::cerr << "[DEBUG][WaveManager] Spawning entity type=" << entityType << "\n";
+
+        if (!createEntityCallback) {
+            std::cerr << "[ERROR][WaveManager] createEntityCallback not set!\n";
+            continue;
         }
+
+        // crée l'entité via ServerGame pour avoir tous les composants
+        createEntityCallback(entityType, data);
+    }
 }
 
-void WaveManager::addWave(std::vector<EntityPersonnalization> _newWave) {
-    entityWaveCreationArray.push_back(_newWave);
+void WaveManager::addWave(std::vector<std::unique_ptr<EntityPersonnalization>> wave) {
+    entityWaveCreationArray.push_back(std::move(wave));
 }
 
-void WaveManager::setWave(size_t _wave) {
-    if (_wave >= entityWaveCreationArray.size())
+void WaveManager::setWave(size_t wave) {
+    if (wave >= entityWaveCreationArray.size())
         return;
+
+    std::cerr << "[DEBUG][WaveManager] setWave " << wave << "\n";
+
     clock.restart();
-    waveEntities = entityWaveCreationArray[_wave];
+    waveEntities.clear();
+
+    for (const auto& e : entityWaveCreationArray[wave]) {
+        waveEntities.push_back(
+            std::make_unique<EntityPersonnalization>(
+                factory,
+                e->getType(),
+                e->getCreationTimer()
+            )
+        );
+    }
+
+    std::cerr << "[DEBUG][WaveManager] waveEntities size = "
+              << waveEntities.size() << "\n";
 }
