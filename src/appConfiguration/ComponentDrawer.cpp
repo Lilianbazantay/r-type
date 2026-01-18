@@ -12,6 +12,17 @@
 
 namespace fs = std::filesystem;
 
+/**
+ * @brief Display a dropdown button with every asset with the good extension in the given directory
+ *
+ * @param popup_id Id of the button
+ * @param outPath Path of the directory where the are every assets
+ * @param startDir Path of the directory where the are every assets set default as "assets"
+ * @param extensions every extension supported
+ *
+ * @return true return true if it work
+ * @return false return false if it fail
+ */
 static bool DrawFileBrowserPopup(const char* popup_id, std::string& outPath, const std::string& startDir, const std::vector<std::string>& extensions)
 {
     static fs::path currentDir;
@@ -70,6 +81,14 @@ static bool DrawFileBrowserPopup(const char* popup_id, std::string& outPath, con
     return selected;
 }
 
+/**
+ * @brief Display the path selector
+ *
+ * @param label name of the path selector
+ * @param path path to store the assets
+ * @param extensions type of assets accepted
+ * @param startDir place where assets are
+ */
 void ComponentDrawer::drawPathSelector(const char* label, std::string& path, const std::vector<std::string>& extensions, const std::string& startDir)
 {
     ImGui::InputText(label, &path);
@@ -86,6 +105,13 @@ void ComponentDrawer::drawPathSelector(const char* label, std::string& path, con
 // ====================
 // Animated Sprite
 // ====================
+
+/**
+ * @brief Draw the animation sprite context into a tree node
+ *
+ * @param name name of the context ("idle", "death", "up", "down", "shoot", "hit")
+ * @param ctx Contain the structure on animated sprite component
+ */
 static void DrawAnimatedContext(const char* name, AnimatedSpriteContext& ctx)
 {
     if (ImGui::TreeNode(name)) {
@@ -98,6 +124,12 @@ static void DrawAnimatedContext(const char* name, AnimatedSpriteContext& ctx)
     }
 }
 
+/**
+ * @brief Drawn every animation sprite of the entity
+ *
+ * @param vec vector of animated sprite
+ * @param label name of the animation
+ */
 void ComponentDrawer::drawComponentList(std::vector<AnimatedSpriteStruct>& vec, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -133,6 +165,12 @@ void ComponentDrawer::drawComponentList(std::vector<AnimatedSpriteStruct>& vec, 
 // ====================
 // Clock
 // ====================
+/**
+ * @brief Drawn every animation sprite of the entity
+ *
+ * @param vec vector of animated sprite
+ * @param label name of the animation
+ */
 void ComponentDrawer::drawComponentList(std::vector<ClockStruct> &vec, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -154,6 +192,12 @@ void ComponentDrawer::drawComponentList(std::vector<ClockStruct> &vec, const cha
 // ====================
 // Cooldown
 // ====================
+/**
+ * @brief Drawn every cooldown of the entity
+ *
+ * @param vec vector of cooldown
+ * @param label name of the cooldown
+ */
 void ComponentDrawer::drawComponentList(std::vector<CooldownStruct> &vec, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -175,6 +219,12 @@ void ComponentDrawer::drawComponentList(std::vector<CooldownStruct> &vec, const 
 // ====================
 // Direction
 // ====================
+/**
+ * @brief Drawn every direction of the entity
+ *
+ * @param vec vector of direction
+ * @param label name of the direction
+ */
 void ComponentDrawer::drawComponentList(std::vector<DirectionStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -196,6 +246,13 @@ void ComponentDrawer::drawComponentList(std::vector<DirectionStruct> &vec, const
 // ====================
 // Entity Spawner
 // ====================
+/**
+ * @brief Drawn every entity spawner of the entity
+ *
+ * @param vec vector of entity spawner
+ * @param allEntities vector of every entity to choose one
+ * @param label name of the entity spawner
+ */
 void ComponentDrawer::drawComponentList(std::vector<EntitySpawnerStruct>& vec, const std::vector<Entity>& allEntities, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -247,6 +304,12 @@ void ComponentDrawer::drawComponentList(std::vector<EntitySpawnerStruct>& vec, c
 // ====================
 // Gravity
 // ====================
+/**
+ * @brief Drawn every gravity of the entity
+ *
+ * @param vec vector of gravity
+ * @param label name of the gravity
+ */
 void ComponentDrawer::drawComponentList(std::vector<GravityStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -267,6 +330,12 @@ void ComponentDrawer::drawComponentList(std::vector<GravityStruct> &vec, const c
 // ====================
 // Hitbox
 // ====================
+/**
+ * @brief Drawn every hitbox of the entity
+ *
+ * @param vec vector of hitbox
+ * @param label name of the hitbox
+ */
 void ComponentDrawer::drawComponentList(std::vector<HitboxStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -351,6 +420,12 @@ void ComponentDrawer::drawComponentList(std::vector<HitboxStruct> &vec, const ch
 // ====================
 // Hp
 // ====================
+/**
+ * @brief Drawn every hp of the entity
+ *
+ * @param vec vector of hp
+ * @param label name of the hp
+ */
 void ComponentDrawer::drawComponentList(std::vector<HpStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -371,6 +446,12 @@ void ComponentDrawer::drawComponentList(std::vector<HpStruct> &vec, const char* 
 // ====================
 // Position
 // ====================
+/**
+ * @brief Drawn every position of the entity
+ *
+ * @param vec vector of position
+ * @param label name of the position
+ */
 void ComponentDrawer::drawComponentList(std::vector<PositionStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);
@@ -392,6 +473,12 @@ void ComponentDrawer::drawComponentList(std::vector<PositionStruct> &vec, const 
 // ====================
 // Sound
 // ====================
+/**
+ * @brief Draw the sound context into a tree node
+ *
+ * @param name name of the context ("idle", "death", "up", "down", "shoot", "hit")
+ * @param ctx Contain the structure on sound component
+ */
 static void DrawSoundContext(const char* name, SoundContext& ctx)
 {
     if (ImGui::TreeNode(name)) {
@@ -402,6 +489,12 @@ static void DrawSoundContext(const char* name, SoundContext& ctx)
     }
 }
 
+/**
+ * @brief Drawn every sound of the entity
+ *
+ * @param vec vector of sound
+ * @param label name of the sound
+ */
 void ComponentDrawer::drawComponentList(std::vector<SoundStruct>& vec, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -430,6 +523,12 @@ void ComponentDrawer::drawComponentList(std::vector<SoundStruct>& vec, const cha
 // ====================
 // Sprite
 // ====================
+/**
+ * @brief Drawn every sprite of the entity
+ *
+ * @param vec vector of sprite
+ * @param label name of the sprite
+ */
 void ComponentDrawer::drawComponentList(std::vector<SpriteStruct>& vec, const char* label, const char*)
 {
     for (size_t i = 0; i < vec.size(); ++i) {
@@ -456,6 +555,12 @@ void ComponentDrawer::drawComponentList(std::vector<SpriteStruct>& vec, const ch
 // ====================
 // Strategy
 // ====================
+/**
+ * @brief Draw a vector of two integer
+ *
+ * @param label name of the vector
+ * @param vec vector
+ */
 inline void DrawVec2i(const char* label, sf::Vector2i& vec) {
     int v[2] = { vec.x, vec.y };
     if (ImGui::InputInt2(label, v)) {
@@ -464,6 +569,12 @@ inline void DrawVec2i(const char* label, sf::Vector2i& vec) {
     }
 }
 
+/**
+ * @brief Draw the pattern (an action with a value)
+ *
+ * @param pattern pattern to store the action and value
+ * @param pattern_index index of the pattern to delete
+ */
 inline void drawPattern(Pattern& pattern, int pattern_index) {
     ImGui::Separator();
     DrawVec2i(("HP Range##" + std::to_string(pattern_index)).c_str(), pattern.hp_range);
@@ -510,6 +621,12 @@ inline void drawPattern(Pattern& pattern, int pattern_index) {
     }
 }
 
+/**
+ * @brief Drawn every strategy of the entity
+ *
+ * @param vec vector of strategy
+ * @param label name of the strategy
+ */
 void ComponentDrawer::drawComponentList(std::vector<StrategyStruct>& vec, const char* label, const char*)
 {
     if (vec.empty())
@@ -547,6 +664,12 @@ void ComponentDrawer::drawComponentList(std::vector<StrategyStruct>& vec, const 
 // ====================
 // Velocity
 // ====================
+/**
+ * @brief Drawn every velocity of the entity
+ *
+ * @param vec vector of velocity
+ * @param label name of the velocity
+ */
 void ComponentDrawer::drawComponentList(std::vector<VelocityStruct> &vec, const char* label, const char*) {
     for (size_t i = 0; i < vec.size(); ++i) {
         ImGui::PushID((int)i);

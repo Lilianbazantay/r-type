@@ -12,7 +12,12 @@ using json = nlohmann::json;
 // EntityType <-> string
 // ====================
 
-
+/**
+ * @brief Create the placeholder of an entity into the Json file with her type
+ *
+ * @param type Type of the entity
+ * @return std::string place holder of the entity
+ */
 inline std::string EntityTypeToString(EntityType type)
 {
     switch (type)
@@ -26,6 +31,12 @@ inline std::string EntityTypeToString(EntityType type)
     }
 }
 
+/**
+ * @brief Fetch the type of entity with the json file
+ *
+ * @param s json file
+ * @return EntityType type of the entity
+ */
 inline EntityType StringToEntityType(const std::string& s)
 {
     if (s == "enemy")  return EntityType::enemy;
@@ -40,7 +51,12 @@ inline EntityType StringToEntityType(const std::string& s)
 // Entity -> JSON
 // ====================
 
-
+/**
+ * @brief main function that call every other function to create te json file
+ *
+ * @param j Adresse of the file to save
+ * @param e Entity to put into the file
+ */
 inline void to_json(json& j, const Entity& e)
 {
     j["entity"] = {
@@ -184,7 +200,12 @@ inline void to_json(json& j, const Entity& e)
 // JSON -> Entity
 // ====================
 
-
+/**
+ * @brief Load the the file json to allow the user to modify it
+ *
+ * @param j address of the Json to load
+ * @param e entity to create
+ */
 inline void from_json(const json& j, Entity& e)
 {
     e = Entity{}; // reset

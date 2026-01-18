@@ -30,6 +30,11 @@ static const char* componentNames[] = {
 
 ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
 
+/**
+ * @brief Get the Current Date and Time
+ *
+ * @return std::string return the timestamp with the format "jj/mm/aaaa - hh:mm :"
+ */
 static std::string getCurrentDateTime()
 {
     std::time_t now = std::time(nullptr);
@@ -49,6 +54,9 @@ static std::string getCurrentDateTime()
 // =====================
 // Public
 // =====================
+/**
+ * @brief Run every window by opening the sfml window that contain every ImGui window then quit the SFML window
+ */
 void GameEditor::runGameEditor()
 {
     initWindow();
@@ -74,6 +82,9 @@ void GameEditor::runGameEditor()
 // =====================
 // JSON Save / Load
 // =====================
+/**
+ * @brief Save all entity create with the app into Json file but reset the folder before to make the project stable
+ */
 void GameEditor::SaveAllEntities()
 {
     try {
@@ -86,14 +97,12 @@ void GameEditor::SaveAllEntities()
             {EntityType::none,   "./configuration/entity/"}
         };
 
-        // Reset folders
         for (const auto& [_, folder] : folders) {
             if (fs::exists(folder))
                 fs::remove_all(folder);
             fs::create_directories(folder);
         }
 
-        // Save entities
         for (const auto& e : entities) {
             std::string folder;
 
@@ -133,8 +142,9 @@ void GameEditor::SaveAllEntities()
     }
 }
 
-
-
+/**
+ * @brief Load every entity to make them easily modifiable by the app
+ */
 void GameEditor::LoadAllEntities()
 {
     try {
@@ -183,6 +193,9 @@ void GameEditor::LoadAllEntities()
 // =====================
 // Init
 // =====================
+/**
+ * @brief Init the sfml window the set the text font and size
+ */
 void GameEditor::initWindow()
 {
     _window.create(sf::VideoMode(1920, 1080), "[Insert Name] Editor");
@@ -214,6 +227,9 @@ void GameEditor::initWindow()
 // =====================
 // Events
 // =====================
+/**
+ * @brief Handle every SFML event
+ */
 void GameEditor::processEvents()
 {
     sf::Event event;
@@ -227,6 +243,9 @@ void GameEditor::processEvents()
 // =====================
 // Layout
 // =====================
+/**
+ * @brief Update the ImGui windows size
+ */
 void GameEditor::updateLayout()
 {
     _winSize = ImGui::GetIO().DisplaySize;
@@ -240,6 +259,12 @@ void GameEditor::updateLayout()
 // =====================
 // Panels
 // =====================
+
+/**
+ * @brief Display the top bar as an ImGui window
+ *
+ * @note It contain buttons save and load the game
+ */
 void GameEditor::drawTopBar()
 {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -264,6 +289,11 @@ void GameEditor::drawTopBar()
     ImGui::End();
 }
 
+/**
+ * @brief Display the Left panel as an ImGui window
+ *
+ * @note Contain the creation of every entity
+ */
 void GameEditor::drawLeftPanel()
 {
     ImGui::SetNextWindowPos(ImVec2(0.f, 40.f));
@@ -303,6 +333,11 @@ void GameEditor::drawLeftPanel()
     ImGui::End();
 }
 
+/**
+ * @brief Display the Right panel as an ImGui window
+ *
+ * @note Contain the modification of every entity (add/customize components, change the name)
+ */
 void GameEditor::drawRightPanel()
 {
     ImGui::SetNextWindowPos(ImVec2(_winSize.x - _sideWidth, 40.f));
@@ -437,6 +472,11 @@ void GameEditor::drawRightPanel()
     ImGui::End();
 }
 
+/**
+ * @brief Display the Bottom panel as an ImGui window
+ *
+ * @note Display a log of every action made in the app
+ */
 void GameEditor::drawBottomPanel()
 {
     ImGui::SetNextWindowPos(ImVec2(_sideWidth, _winSize.y - _bottomHeight));
@@ -452,6 +492,11 @@ void GameEditor::drawBottomPanel()
     ImGui::End();
 }
 
+/**
+ * @brief Display the Center panel as an ImGui window
+ *
+ * @note Display every sprite and paralaxe to simplify the visualisation
+ */
 void GameEditor::drawCenterPanel()
 {
     ImGui::SetNextWindowPos(ImVec2(_sideWidth, 40.f));
@@ -563,11 +608,12 @@ void GameEditor::drawCenterPanel()
     ImGui::End();
 }
 
-
-
 // =====================
 // Render
 // =====================
+/**
+ * @brief Render all ImGui windows
+ */
 void GameEditor::render()
 {
     _window.clear(sf::Color(40, 40, 40));
