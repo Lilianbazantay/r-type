@@ -106,6 +106,9 @@ The **freetype** library, **X11** library and its dependencies and **OpenAL**/**
 - **Flappy-like** second game demonstrating engine reusability
 
 ### Tools
+- **vcpkg**
+  - Ensures a consistent development environment across all machines
+  - Automatically installs and manages all dependencies and submodules
 - **r-type_app**
   - Create and customize entities
   - Edit components and behaviors
@@ -118,16 +121,17 @@ The **freetype** library, **X11** library and its dependencies and **OpenAL**/**
 
 The engine follows a **data-oriented ECS design**:
 
+- **[Factory](documentation/ecs/Factory.md)** is a [design pattern](https://refactoring.guru/design-patterns) that create all entities
 - **Entities** are unique IDs
-- **Components** are plain data structures
-- **Systems** operate on component sets
+- **[Components](documentation/ecs/Component.md)** are plain data structures
+- **[Systems](documentation/ecs/System.md)** operate on component sets
 
-### Server
+### [Server](documentation/developer/server_network.md)
 - Owns the authoritative game state
 - Runs physics, collisions, AI and game rules
 - Sends snapshots to clients
 
-### Client
+### [Client](documentation/developer/client_network.md)
 - Handles rendering, inputs, audio
 - Applies prediction & interpolation
 - Synchronizes entities with the server
