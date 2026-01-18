@@ -51,6 +51,7 @@ export VCPKG_DISABLE_METRICS=1
 export PATH="$VCPKG_DIR:$PATH"
 
 # Prepare build directory
+rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
@@ -72,5 +73,7 @@ cmake --build . --parallel
 cp r-type_client ../r-type_client || true
 cp r-type_server ../r-type_server || true
 cp r-type_app ../r-type_app || true
+cp flappy_server ../flappy_server || true
+cp flappy_client ../flappy_client || true
 
 echo "Build complete!"

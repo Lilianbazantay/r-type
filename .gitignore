@@ -41,6 +41,7 @@
 
 # binaries
 r-type*
+flappy*
 .env
 imgui.ini
 

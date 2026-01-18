@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 
 # --- Paths ---
 $VCPKG_DIR = "external\vcpkg"
-$EXECUTABLES = @("r-type_client.exe", "r-type_server.exe")
+$EXECUTABLES = @("r-type_client.exe", "r-type_server.exe", "r-type_app.exe", "flappy_client.exe", "flappy_server.exe")
 
 # Fresh timestamped build folder to avoid CMake generator conflicts
 $BUILD_DIR = "build"
