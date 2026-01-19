@@ -8,6 +8,7 @@
 class Background : public IMediatorEntity {
 public:
     explicit Background(EntityFactory& factory);
+    Background() = default;
     ~Background() override = default;
 
     void run() override;
@@ -17,6 +18,7 @@ public:
 class Player : public IMediatorEntity {
 public:
     explicit Player(EntityFactory& factory);
+    Player() = default;
     ~Player() override = default;
 
     void run() override;
@@ -26,6 +28,7 @@ public:
 class Enemy : public IMediatorEntity {
 public:
     explicit Enemy(EntityFactory& factory);
+    Enemy() = default;
     ~Enemy() override = default;
 
     void run() override;
@@ -35,6 +38,7 @@ public:
 class PlayerBullet : public IMediatorEntity {
 public:
     explicit PlayerBullet(EntityFactory& factory);
+    PlayerBullet() = default;
     ~PlayerBullet() override = default;
 
     void run() override;

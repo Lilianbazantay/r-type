@@ -19,10 +19,12 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
+#include <csignal>
 #include <cstddef>
 #include <iostream>
 #include <memory>
 #include <fstream>
+#include <signal.h>
 
 #include "ServerGame.hpp"
 
@@ -44,14 +46,14 @@ static nlohmann::json loadJsonFromFile(const std::string& filename) {
 }
 
 ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer *newCBuffer):
-    factory(),
     systemList(),
-    waveManager(factory),
+    factory(),
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
     continuousBuffer(newCBuffer),
     networkServer(port,
-    newRBuffer, newSBuffer, newCBuffer)
+    newRBuffer, newSBuffer, newCBuffer),
+    waveManager(factory)
 {
     data.bullet_count = 0;
     data.enemy_count = 0;
@@ -115,7 +117,7 @@ void ServerGame::Update() {
     size_t EListSize = data.entityList.size();
     _serverTick++;
     for (size_t j = 0; j < EListSize; j++) {
-        for (size_t i = 0; i < SListSize; i++) {
+        for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
         if (!data.entityList[j]->is_Alive()) {
             std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
@@ -131,7 +133,7 @@ void ServerGame::Update() {
             Position *playerPos = dynamic_cast<Position*>(
                 data.entityList[j]->FindComponent(ComponentType::POSITION)
             );
-            if (playerPos == nullptr) {
+            if (playerPos == nullptr)
                 continue;
             std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
                 data.entityList[j]->getId(), _serverTick, playerPos->GetPosition().first, playerPos->GetPosition().second);

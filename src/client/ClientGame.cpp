@@ -5,6 +5,7 @@
 #include "../ecs/Component/Hitbox.hpp"
 #include "../ecs/System/DrawAnimatedSystem.hpp"
 #include "../ecs/System/DrawSpriteSystem.hpp"
+#include "ecs/Entity/Entities.hpp"
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Clock.hpp>
@@ -16,7 +17,6 @@
 #include <fstream>
 #include <memory>
 #include <string>
-#include <cmath>
 
 static std::pair<float,float> lerp2(const std::pair<float,float>& a,
                                    const std::pair<float,float>& b,
@@ -173,22 +173,12 @@ void ClientGame::handleResize(std::pair<unsigned int, unsigned int> _newSize)
     }
 }
 
-void ClientGame::createEntity(
-    int entity_type,
-    int entity_id,
-    std::pair<float, float> position
-)
-{
-    if (IsEntityExist(entity_type, entity_id))
-        return;
-
-    std::unique_ptr<IMediatorEntity> entity;
-
 /**
  * @brief creates an entity based on its entity type, and assigns it an ID and a position
  */
 void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, float> position) {
     int prevSize = data.entityList.size();
+    std::unique_ptr<IMediatorEntity> entity;
     switch (entity_type) {
         case ENTITY_BACKGROUND:
             entity = std::make_unique<Background>(factory);
@@ -224,7 +214,7 @@ void ClientGame::moveEntity(int entity_type, int entity_id, std::pair<float, flo
         if (!data.entityList[i]->is_wanted_entity(entity_type, entity_id))
             continue;
 
-        auto* pos = dynamic_cast<Position*>(e->FindComponent(ComponentType::POSITION));
+        auto* pos = dynamic_cast<Position*>(data.entityList[i]->FindComponent(ComponentType::POSITION));
         if (pos)
             pos->SetPosition(new_position);
         return;

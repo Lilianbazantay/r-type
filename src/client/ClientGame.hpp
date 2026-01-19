@@ -15,21 +15,19 @@
 
 #include "../ecs/System/ISystem.hpp"
 #include "../ecs/relevant_data.hpp"
-#include "../ecs/Component/Sprite.hpp"
-#include "../ecs/Component/Hitbox.hpp"
-#include "../ecs/Component/Position.hpp"
-#include "../ecs/Entity/Entities.hpp"
-#include "../ecs/Entity/IMediatorEntity.hpp"
-#include "../server/EntityFactory.hpp"
 
 #include "./client.hpp"
 #include "./NetworkBuffer.hpp"
 #include "./graphical/InputManager.hpp"
+#include "server/EntityFactory.hpp"
 
 class ClientGame {
     private:
         InputManager _inputManager;
         relevant_data_t data;
+        Client client;
+        EntityFactory factory;
+        NetworkBuffer *_netBuffer;
         std::vector<std::unique_ptr<ISystem>> systemList;
         sf::Time Prevtime;
         sf::Clock clock;
@@ -37,14 +35,10 @@ class ClientGame {
         bool Paused = false;
         std::mutex pause_mutex;
         int _localPlayerId = -1;
-
-    sf::Time Prevtime;
-    sf::Clock clock;
-
-    bool Stopping = false;
-    bool Paused = false;
-    std::mutex pause_mutex;
-
+        std::pair<unsigned int, unsigned int> prevWindowSize = {1920, 1080};
+        std::pair<unsigned int, unsigned int> actWindowSize = {1920, 1080};
+        std::pair<unsigned int, unsigned int> maxWindowSize = {1920, 1080};
+        
         struct Snapshot {
             uint32_t tick;
             std::pair<float, float> pos;
@@ -71,7 +65,7 @@ class ClientGame {
         bool IsEntityExist(int, int);
         void handleResize(std::pair<unsigned int, unsigned int>);
     public:
-        ClientGame(std::string ip, int port, NetworkBuffer *netBuffer);
+        ClientGame(std::string ip, int port, NetworkBuffer *netBuffer, EntityFactory& factory);
         ~ClientGame() = default;
 
         void createEntity(int, int, std::pair<float, float>);

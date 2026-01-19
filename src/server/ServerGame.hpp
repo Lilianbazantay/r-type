@@ -29,6 +29,7 @@ class ServerGame {
         uint32_t _serverTick = 0;
 
     EntityFactory factory;
+    bool g_sigint = false;
 
     NetworkServerBuffer* networkReceiveBuffer;
     NetworkClientBuffer* networkSendBuffer;
