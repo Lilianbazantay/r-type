@@ -19,7 +19,6 @@
           "frame_size": [32, 16.0],
           "start": [233.0, 120.0],
           "step": [0.0, 0.0],
-          "scale": [3, 3],
           "length": 1,
           "loop": true
         }

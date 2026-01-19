@@ -19,7 +19,6 @@
           "frame_size": [32, 16.0],
           "start": [101.0, 2.0],
           "step": [32.0, -1.0],
-          "scale": [3, 3],
           "length": 3,
           "loop": true
         }
@@ -29,7 +28,7 @@
     "clock": true,
 
     "hitbox": {
-      "size": [128.0, 64.0],
+      "size": [32.0, 16.0],
       "layer": [1],
       "mask": [2],
       "damage": 1

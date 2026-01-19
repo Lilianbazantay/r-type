@@ -39,6 +39,10 @@ class ServerGame {
     PacketEncoder encoder;
     WaveManager waveManager;
 
+    void updateCreation(std::unique_ptr<IMediatorEntity> &entity);
+    void updateDeath(std::unique_ptr<IMediatorEntity> &entity, size_t pos);
+    void updateModifications(std::unique_ptr<IMediatorEntity> &entity);
+
 public:
     ServerGame(int port, NetworkServerBuffer* newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer* newCBuffer);
     ~ServerGame() = default;

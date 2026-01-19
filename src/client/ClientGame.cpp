@@ -177,7 +177,6 @@ void ClientGame::handleResize(std::pair<unsigned int, unsigned int> _newSize)
  * @brief creates an entity based on its entity type, and assigns it an ID and a position
  */
 void ClientGame::createEntity(int entity_type, int entity_id, std::pair<float, float> position) {
-    int prevSize = data.entityList.size();
     std::unique_ptr<IMediatorEntity> entity;
     switch (entity_type) {
         case ENTITY_BACKGROUND:
@@ -213,25 +212,16 @@ void ClientGame::moveEntity(int entity_type, int entity_id, std::pair<float, flo
     for (size_t i = 0; i < data.entityList.size(); i++) {
         if (!data.entityList[i]->is_wanted_entity(entity_type, entity_id))
             continue;
-
-        auto* pos = dynamic_cast<Position*>(data.entityList[i]->FindComponent(ComponentType::POSITION));
-        if (pos)
-            pos->SetPosition(new_position);
+        Position *playerPosition = dynamic_cast<Position*>(data.entityList[i]->FindComponent(ComponentType::POSITION));
+        if (playerPosition != nullptr)
+            playerPosition->SetPosition(new_position);
         return;
     }
 }
-
 /**
  * @brief deletes the specified entity
  */
 void ClientGame::deleteEntity(int entity_type, int entity_id) {
-    std::cout << "[DELETE] looking for type=" << entity_type
-              << " id=" << entity_id << "\n";
-
-    for (const auto& e : data.entityList) {
-        std::cout << "  entity type=" << e->getType()
-                  << " id=" << e->getId() << "\n";
-    }
     std::erase_if(data.entityList, [&](const auto& e) {
         return e->getType() == entity_type && e->getId() == entity_id;
     });
@@ -363,6 +353,7 @@ void ClientGame::processNetworkPackets()
             break;
         }
         case 1: {
+            moveEntity(p.entityType, p.entityId, {(float)p.posX, (float)p.posY});
             pushSnapshot(p.entityType, p.entityId, p.serverTick, (float)p.posX, (float)p.posY);
             break;
         }

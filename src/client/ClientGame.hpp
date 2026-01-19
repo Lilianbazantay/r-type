@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <deque>
 #include <utility>
-#include <algorithm>
 #include <cstdint>
 
 #include "../ecs/System/ISystem.hpp"
@@ -38,7 +37,7 @@ class ClientGame {
         std::pair<unsigned int, unsigned int> prevWindowSize = {1920, 1080};
         std::pair<unsigned int, unsigned int> actWindowSize = {1920, 1080};
         std::pair<unsigned int, unsigned int> maxWindowSize = {1920, 1080};
-        
+
         struct Snapshot {
             uint32_t tick;
             std::pair<float, float> pos;

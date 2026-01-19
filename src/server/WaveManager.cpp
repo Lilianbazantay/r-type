@@ -56,7 +56,7 @@ WaveManager::WaveManager(EntityFactory& factoryRef)
 {
     std::vector<std::unique_ptr<EntityPersonnalization>> wave0;
 
-    for (size_t i = 0; i < 5; ++i) {
+    for (size_t i = 0; i < 7; ++i) {
         wave0.push_back(
             std::make_unique<EntityPersonnalization>(
                 factory,
