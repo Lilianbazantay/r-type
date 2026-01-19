@@ -1,0 +1,120 @@
+{
+  "entity": {
+    "type": "enemy",
+    "name": "entity_test"
+  },
+
+  "components": {
+    "position": [100.0, 200.0],
+    "velocity": 5.0,
+    "direction": [1.0, 0.0],
+    "hp": 150,
+
+    "hitbox": {
+      "size": [64, 64],
+      "layer": [1],
+      "mask": [2],
+      "damage": 25
+    },
+
+    "animatedsprite": {
+      "spritesheet": "../assets/Enemy.png",
+      "frame_rate": 10.0,
+      "default": "idle",
+      "animations": {
+        "idle": {
+          "frame_size": [64, 64],
+          "start": [0, 0],
+          "step": [1, 0],
+          "length": 4
+        },
+        "up": {
+          "frame_size": [64, 64],
+          "start": [0, 1],
+          "step": [1, 0],
+          "length": 6
+        },
+        "death": {
+          "frame_size": [64, 64],
+          "start": [0, 2],
+          "step": [1, 0],
+          "length": 5,
+          "loop": false
+        }
+      }
+    },
+
+    "clock": true,
+    "cooldown": 1.5,
+
+    "gravity": {
+      "strength": 9.81
+    },
+
+    "sound": {
+      "default": "idle",
+      "sounds": {
+        "idle": {
+          "file_path": "assets/sounds/enemy_idle.wav",
+          "volume": 0.4,
+          "loop": true
+        },
+        "shoot": {
+          "file_path": "assets/sounds/enemy_shoot.wav",
+          "volume": 0.8,
+          "loop": false
+        },
+        "hit": {
+          "file_path": "assets/sounds/enemy_hit.wav",
+          "volume": 0.7,
+          "loop": false
+        },
+        "death": {
+          "file_path": "assets/sounds/enemy_death.wav",
+          "volume": 1.0,
+          "loop": false
+        }
+      }
+    },
+
+    "strategy": {
+      "patterns": [
+        {
+          "hp_range": [100, 60],
+          "sequences": [
+            [
+              [[1, 0], 1],
+              [[1, 1], 3],
+              [[2, 2], 2],
+              [[2, 2], 5]
+            ],
+            [
+              [[0, 1], 2],
+              [[-1, 0], 3],
+              [[1, 2], 1],
+              [[1, 1], 3]
+            ]
+          ]
+        },
+        {
+          "hp_range": [60, 0],
+          "sequences": [
+            [
+              [[2, 2], 4],
+              [[-1, 0], 2],
+              [[1, 0], 2],
+              [[2, 2], -1]
+            ]
+          ]
+        }
+      ]
+    },
+
+    "entityspawner": {
+      "entity_type": "EnemyBullet",
+      "position": [0.0, 0.0],
+      "cooldown": 0.25,
+      "is_activated": 1
+    }
+  }
+}

@@ -1,23 +1,29 @@
 #include "EntitySpawner.hpp"
 
 /**
- * @brief Construct a new Entity Spawner:: Entity Spawner object
+ * @brief Construct a new Entity Spawner object
  *
- * @param cooldown_lenth Cooldown lenth of the entity spawner (in second)
- * @param entity Entity that will spawn
- * @param number_of_spawn Number of entity the spawner can spawn (if -1 not limit)
+ * @param cooldown_lenth Cooldown length (seconds)
+ * @param entity Entity prototype to spawn
+ * @param factory EntityFactory used for cloning
  * @param is_activated Enable or disable the spawner
  */
-EntitySpawner::EntitySpawner(double cooldown_lenth, std::unique_ptr<IMediatorEntity> entity, int is_activated)
-    : _entity(std::move(entity)), length(cooldown_lenth), _is_activated(is_activated)
+EntitySpawner::EntitySpawner(
+    double cooldown_lenth,
+    std::unique_ptr<IMediatorEntity> entity,
+    EntityFactory& factory,
+    bool is_activated
+)
+    : _entity(std::move(entity)),
+      _factory(factory),
+      length(cooldown_lenth),
+      _is_activated(is_activated)
 {
     _type = ComponentType::ENTITY_SPAWNER;
 }
 
 /**
- * @brief Return the cooldown lenth
- *
- * @return double
+ * @brief Return the cooldown length
  */
 double EntitySpawner::GetCooldownLenth()
 {
@@ -25,9 +31,7 @@ double EntitySpawner::GetCooldownLenth()
 }
 
 /**
- * @brief Set the cooldown lenth
- *
- * @param new_cooldown Set _cooldown.lenth
+ * @brief Set the cooldown length
  */
 void EntitySpawner::SetCooldownLenth(double new_cooldown)
 {
@@ -35,19 +39,18 @@ void EntitySpawner::SetCooldownLenth(double new_cooldown)
 }
 
 /**
- * @brief Return the Entity the will be spawn
- *
- * @return IMediatorEntity* Entity stocked
+ * @brief Clone and return a new spawned entity
  */
 std::unique_ptr<IMediatorEntity> EntitySpawner::GetEntity()
 {
-    return _entity->Clone();
+    if (!_entity)
+        return nullptr;
+
+    return _entity->Clone(_factory);
 }
 
 /**
- * @brief Replace the entity with a new
- *
- * @param new_entity Set _entity
+ * @brief Replace the prototype entity
  */
 void EntitySpawner::SetEntity(std::unique_ptr<IMediatorEntity> new_entity)
 {
@@ -55,10 +58,7 @@ void EntitySpawner::SetEntity(std::unique_ptr<IMediatorEntity> new_entity)
 }
 
 /**
- * @brief Return if the Spawner is activated
- *
- * @return true The spawner is enable
- * @return false The spawner is disable
+ * @brief Check if the spawner is activated
  */
 bool EntitySpawner::IsActivated()
 {
@@ -66,7 +66,7 @@ bool EntitySpawner::IsActivated()
 }
 
 /**
- * @brief Enable the Spawner
+ * @brief Enable the spawner
  */
 void EntitySpawner::Enable()
 {
@@ -74,7 +74,7 @@ void EntitySpawner::Enable()
 }
 
 /**
- * @brief Disable the Spawner
+ * @brief Disable the spawner
  */
 void EntitySpawner::Disable()
 {
@@ -95,10 +95,7 @@ void EntitySpawner::enableSpawn()
 }
 
 /**
- * @brief Return if an entity can spawn or not
- *
- * @return true An entity can spawn
- * @return false An entity can not spawn
+ * @brief Return if an entity can spawn
  */
 bool EntitySpawner::CanSpawn()
 {

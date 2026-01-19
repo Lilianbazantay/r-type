@@ -1,6 +1,7 @@
 #include "NetworkServerBuffer.hpp"
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 
 /**
  * @brief add a packet to the buffer

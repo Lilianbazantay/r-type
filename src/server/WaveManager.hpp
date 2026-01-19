@@ -1,56 +1,65 @@
-
 #pragma once
-
-#include "ecs/Component/Hitbox.hpp"
+#include "EntityFactory.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
 #include "ecs/relevant_data.hpp"
 #include <SFML/System/Clock.hpp>
-#include <utility>
+#include <memory>
+#include <vector>
+#include <functional>
 
 class EntityPersonnalization {
-    private:
-        int entityType = ENTITY_ENEMY;
-        std::pair<float, float> pos = {};
-        std::string spritePath = "./assets/Enemy.png";
-        std::vector<std::pair<std::pair<float, float>, float>> strategy = {};
-        int damage = 1;
-        std::vector<int> layers = {2};
-        std::vector<int> masks = {1};
-        std::pair<size_t, size_t> size = {64, 64};
-        float creationTimer = 0;
-        int hp = 0;
-        int velocity = 110;
-    public:
-        EntityPersonnalization() = default;
-        EntityPersonnalization(std::pair<float, float>, std::vector<std::pair<std::pair<float, float>, float>>, float);
-        ~EntityPersonnalization() = default;
+private:
+    int entityType = ENTITY_ENEMY;
+    float creationTimer = 0.0f;
+    EntityFactory& factory;
 
-        void setEntityPos(std::pair<float, float>);
-        void setHitBox(int, std::vector<int>, std::vector<int>);
-        void setSize(size_t, size_t);
-        void setSize(std::pair<size_t, size_t>);
-        void setSprite(std::string);
-        void setType(int);
-        void setVelocity(int);
-        void setHp(int);
-        void setCreationTimer(float);
-        void setStrategy(std::vector<std::pair<std::pair<float, float>, float>>);
-        void pushStrategy(std::pair<std::pair<float, float>, float>);
+public:
+    explicit EntityPersonnalization(EntityFactory& factoryRef);
+    EntityPersonnalization(
+        EntityFactory& factoryRef,
+        int entityType,
+        float timer
+    );
 
-        float getCreationTimer();
-        int getType();
-        std::unique_ptr<IMediatorEntity> getEntity();
+    // non copiable
+    EntityPersonnalization(const EntityPersonnalization&) = delete;
+    EntityPersonnalization& operator=(const EntityPersonnalization&) = delete;
+
+    // movable
+    EntityPersonnalization(EntityPersonnalization&&) = default;
+    EntityPersonnalization& operator=(EntityPersonnalization&&) = default;
+
+    ~EntityPersonnalization() = default;
+
+    void setType(int);
+    void setCreationTimer(float);
+
+    float getCreationTimer() const;
+    int getType() const;
+
+    // supprime getEntity() ici, on utilisera createEntity via callback
 };
 
 class WaveManager {
-    private:
-        sf::Clock clock;
-        std::vector<EntityPersonnalization> waveEntities = {};
-        std::vector<std::vector<EntityPersonnalization>> entityWaveCreationArray = {};
-    public:
-        WaveManager();
-        ~WaveManager() = default;
-        void computeEntities(relevant_data_t*);
-        void setWave(size_t);
-        void addWave(std::vector<EntityPersonnalization>);
+private:
+    sf::Clock clock;
+
+    std::vector<std::unique_ptr<EntityPersonnalization>> waveEntities;
+    std::vector<std::vector<std::unique_ptr<EntityPersonnalization>>> entityWaveCreationArray;
+
+    EntityFactory& factory;
+
+    // Callback pour créer des entités via ServerGame
+    std::function<void(int type, relevant_data_t* data)> createEntityCallback;
+
+public:
+    explicit WaveManager(EntityFactory& factoryRef);
+
+    void setCreateEntityCallback(std::function<void(int, relevant_data_t*)> cb) {
+        createEntityCallback = cb;
+    }
+
+    void computeEntities(relevant_data_t*);
+    void setWave(size_t);
+    void addWave(std::vector<std::unique_ptr<EntityPersonnalization>> wave);
 };

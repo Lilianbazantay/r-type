@@ -1,87 +1,91 @@
 #pragma once
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Clock.hpp>
-#include <SFML/System/Time.hpp>
-#include <SFML/Window/Keyboard.hpp>
-#include <mutex>
-#include <vector>
-
+#include <memory>
+#include <string>
+#include "../../server/EntityFactory.hpp"
 #include "./IMediatorEntity.hpp"
-#include "ecs/Component/Hitbox.hpp"
-#include "ecs/Component/Position.hpp"
-#include "ecs/Component/Sprite.hpp"
-#include "ecs/Component/Strategy.hpp"
 
-class Background: public IMediatorEntity {
-    private:
-        std::vector<IComponent> _undergoerComponents;
-        std::vector<IComponent> _actuatorComponents;
-        std::vector<IMediatorEntity> _attachedEntities;
+class Background : public IMediatorEntity {
+public:
+    explicit Background(EntityFactory& factory);
+    Background() = default;
+    ~Background() override = default;
 
-        std::mutex _mutex;
-    public:
-        Background();
-        ~Background() override = default;
-        void run() override;
-        std::unique_ptr<IMediatorEntity> Clone() override;
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
 };
 
-class Player: public IMediatorEntity {
-    private:
-        std::vector<IComponent> _undergoerComponents;
-        std::vector<IComponent> _actuatorComponents;
-        std::vector<IMediatorEntity> _attachedEntities;
+class Player : public IMediatorEntity {
+public:
+    explicit Player(EntityFactory& factory);
+    Player() = default;
+    ~Player() override = default;
 
-        std::mutex _mutex;
-    public:
-        Player();
-        ~Player() override = default;
-        void run() override;
-        std::unique_ptr<IMediatorEntity> Clone() override;
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
 };
 
-class Enemy: public IMediatorEntity {
-    private:
-        std::vector<IComponent> _undergoerComponents;
-        std::vector<IComponent> _actuatorComponents;
-        std::vector<IMediatorEntity> _attachedEntities;
+class Enemy : public IMediatorEntity {
+public:
+    explicit Enemy(EntityFactory& factory);
+    Enemy() = default;
+    ~Enemy() override = default;
 
-        std::mutex _mutex;
-    public:
-        Enemy();
-        Enemy(Sprite, Hitbox, Position, Strategy, int, int);
-        ~Enemy() override = default;
-        void run() override;
-        std::unique_ptr<IMediatorEntity> Clone() override;
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
 };
 
+class PlayerBullet : public IMediatorEntity {
+public:
+    explicit PlayerBullet(EntityFactory& factory);
+    PlayerBullet() = default;
+    ~PlayerBullet() override = default;
 
-class PlayerBullet: public IMediatorEntity {
-    private:
-        std::vector<IComponent> _undergoerComponents;
-        std::vector<IComponent> _actuatorComponents;
-        std::vector<IMediatorEntity> _attachedEntities;
-
-        std::mutex _mutex;
-    public:
-        PlayerBullet();
-        ~PlayerBullet() override = default;
-        void run() override;
-        std::unique_ptr<IMediatorEntity> Clone() override;
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
 };
 
+class EnemyBullet : public IMediatorEntity {
+public:
+    explicit EnemyBullet(EntityFactory& factory);
+    ~EnemyBullet() override = default;
 
-class EnemyBullet: public IMediatorEntity {
-    private:
-        std::vector<IComponent> _undergoerComponents;
-        std::vector<IComponent> _actuatorComponents;
-        std::vector<IMediatorEntity> _attachedEntities;
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
+};
 
-        std::mutex _mutex;
-    public:
-        EnemyBullet();
-        ~EnemyBullet() override = default;
-        void run() override;
-        std::unique_ptr<IMediatorEntity> Clone() override;
+class Wall1 : public IMediatorEntity {
+public:
+    explicit Wall1(EntityFactory& factory);
+    ~Wall1() override = default;
+
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
+};
+
+class Wall2 : public IMediatorEntity {
+public:
+    explicit Wall2(EntityFactory& factory);
+    ~Wall2() override = default;
+
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
+};
+
+class Wall3 : public IMediatorEntity {
+public:
+    explicit Wall3(EntityFactory& factory);
+    ~Wall3() override = default;
+
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
+};
+
+class Wall4 : public IMediatorEntity {
+public:
+    explicit Wall4(EntityFactory& factory);
+    ~Wall4() override = default;
+
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
 };

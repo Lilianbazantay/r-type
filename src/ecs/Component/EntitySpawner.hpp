@@ -2,18 +2,27 @@
 
 #include "../IComponent.hpp"
 #include "../Entity/IMediatorEntity.hpp"
+#include "../../server/EntityFactory.hpp"
 #include "Cooldown.hpp"
 
 class EntitySpawner : public IComponent
 {
 private:
     std::unique_ptr<IMediatorEntity> _entity;
+    EntityFactory& _factory;
+
     bool can_spawn = false;
     double length;
     bool _is_activated;
 
 public:
-    EntitySpawner(double cooldown_lenth, std::unique_ptr<IMediatorEntity> entity, int is_activated);
+    EntitySpawner(
+        double cooldown_lenth,
+        std::unique_ptr<IMediatorEntity> entity,
+        EntityFactory& factory,
+        bool is_activated
+    );
+
     ~EntitySpawner() override = default;
 
     // GET / SET

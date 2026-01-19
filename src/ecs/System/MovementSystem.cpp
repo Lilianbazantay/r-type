@@ -4,7 +4,6 @@
 #include "../Component/Velocity.hpp"
 #include "../Component/Direction.hpp"
 #include "../Component/Gravity.hpp"
-#include "../Component/Strategy.hpp"
 #include "../IComponent.hpp"
 #include <utility>
 

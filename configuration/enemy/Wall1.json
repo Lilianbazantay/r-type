@@ -1,0 +1,17 @@
+{
+  "entity": {
+    "type": "enemy",
+    "name": "Wall1"
+  },
+
+  "components": {
+    "position": [2120.0, 0.0],
+    "hp": 2147483647,
+    "hitbox": {
+      "size": [1.0, 1300.0],
+      "layer": [1, 2, 3, 4, 5],
+      "mask": [1, 2, 3, 4, 5],
+      "damage": 10000
+    }
+  }
+}

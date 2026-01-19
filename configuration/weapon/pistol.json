@@ -1,0 +1,33 @@
+{
+  "entity": {
+    "type": "weapon",
+    "name": "pistol"
+  },
+
+  "components": {
+    "sprite": {
+      "file_path": "assets/sprites/weapon_on_map.png",
+      "size_x": 32,
+      "size_y": 32
+    },
+
+    "sound": {
+      "default": "shoot",
+
+      "sounds": {
+        "shoot": {
+          "file_path": "assets/sounds/shoot.wav",
+          "volume": 0.9,
+          "loop": false
+        }
+      }
+    },
+
+    "entityspawner": {
+      "entity_type": "bullet_basic",
+      "position": [0.0, 0.0],
+      "cooldown": 0.05,
+      "is_activated": 0
+    }
+  }
+}

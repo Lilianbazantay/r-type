@@ -1,0 +1,44 @@
+{
+  "entity": {
+    "type": "player",
+    "name": "Player"
+  },
+
+  "components": {
+    "position": [100.0, 200.0],
+    "velocity": 400.0,
+    "hp": 3,
+    "direction": [0.0, 0.0],
+
+    "animatedsprite": {
+      "spritesheet": "./assets/Player.png",
+      "frame_rate": 0.5,
+      "default": "idle",
+      "animations": {
+        "idle": {
+          "frame_size": [32, 16.0],
+          "start": [101.0, 2.0],
+          "step": [32.0, -1.0],
+          "length": 3,
+          "loop": true
+        }
+      }
+    },
+
+    "clock": true,
+
+    "hitbox": {
+      "size": [32.0, 16.0],
+      "layer": [1],
+      "mask": [2],
+      "damage": 1
+    },
+
+    "entityspawner": {
+      "entity_type": "PlayerBullet",
+      "position": [0.0, 0.0],
+      "cooldown": 2.0,
+      "is_activated": 1
+    }
+  }
+}

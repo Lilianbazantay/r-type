@@ -2,6 +2,7 @@
 #include <asio/ip/address.hpp>
 #include <cstdio>
 #include <iostream>
+#include <ostream>
 #include <thread>
 
 /**
