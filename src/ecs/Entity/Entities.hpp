@@ -53,3 +53,39 @@ public:
     void run() override;
     std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
 };
+
+class Wall1 : public IMediatorEntity {
+public:
+    explicit Wall1(EntityFactory& factory);
+    ~Wall1() override = default;
+
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
+};
+
+class Wall2 : public IMediatorEntity {
+public:
+    explicit Wall2(EntityFactory& factory);
+    ~Wall2() override = default;
+
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
+};
+
+class Wall3 : public IMediatorEntity {
+public:
+    explicit Wall3(EntityFactory& factory);
+    ~Wall3() override = default;
+
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
+};
+
+class Wall4 : public IMediatorEntity {
+public:
+    explicit Wall4(EntityFactory& factory);
+    ~Wall4() override = default;
+
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
+};

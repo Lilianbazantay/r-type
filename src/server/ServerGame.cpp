@@ -69,13 +69,21 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
 
     std::cerr << "[DEBUG] Starting configuration\n";
 
-    factory.registerPrototypes({
+        factory.registerPrototypes({
         {"Background", {"Background", loadJsonFromFile("./configuration/background/Background.json")}},
         {"Player", {"Player", loadJsonFromFile("./configuration/player/Player.json")}},
         {"Enemy", {"Enemy", loadJsonFromFile("./configuration/enemy/Enemy.json")}},
+        {"Wall1", {"Wall1", loadJsonFromFile("./configuration/enemy/Wall1.json")}},
+        {"Wall2", {"Wall2", loadJsonFromFile("./configuration/enemy/Wall2.json")}},
+        {"Wall3", {"Wall3", loadJsonFromFile("./configuration/enemy/Wall3.json")}},
+        {"Wall4", {"Wall4", loadJsonFromFile("./configuration/enemy/Wall4.json")}},
         {"PlayerBullet", {"PlayerBullet", loadJsonFromFile("./configuration/weapon/bullet/PlayerBullet.json")}},
         {"EnemyBullet", {"EnemyBullet", loadJsonFromFile("./configuration/weapon/bullet/EnemyBullet.json")}}
     });
+    createEntity(ENTITY_ENEMY, 1, "Wall1");
+    createEntity(ENTITY_ENEMY, 2, "Wall2");
+    createEntity(ENTITY_ENEMY, 3, "Wall3");
+    createEntity(ENTITY_ENEMY, 4, "Wall4");
 
     // ========== Option B : on passe un callback pour WaveManager ==========
     waveManager.setCreateEntityCallback(
@@ -95,7 +103,7 @@ ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientB
                     return;
             }
 
-            if (!this->createEntity(type, newId)) {
+            if (!this->createEntity(type, newId, "Enemy")) {
                 std::cerr << "[ERROR][ServerGame] Failed to create entity type=" << type << "\n";
                 return;
             }
@@ -277,7 +285,7 @@ void ServerGame::playerShoot(int player_id) {
  * @return true if the entity is successfully created
  * @return false if the entity type was not found
  */
-bool ServerGame::createEntity(int entity_type, int personnal_id) {
+bool ServerGame::createEntity(int entity_type, int personnal_id, std::string subType) {
     std::unique_ptr<IMediatorEntity> entity;
 
     switch (entity_type) {
@@ -288,11 +296,31 @@ bool ServerGame::createEntity(int entity_type, int personnal_id) {
             entity = std::make_unique<Player>(factory);
             break;
         case ENTITY_ENEMY:
-            entity = std::make_unique<Enemy>(factory);
+            if (subType == "Enemy") {
+                entity = std::make_unique<Enemy>(factory);
+                break;
+            }
+            if (subType == "Wall1") {
+                entity = std::make_unique<Wall1>(factory);
+                break;
+            }
+            if (subType == "Wall2") {
+                entity = std::make_unique<Wall2>(factory);
+                break;
+            }
+            if (subType == "Wall3") {
+                entity = std::make_unique<Wall3>(factory);
+                break;
+            }
+            if (subType == "Wall4") {
+                entity = std::make_unique<Wall4>(factory);
+                break;
+            }
             break;
         case ENTITY_BULLET:
             entity = std::make_unique<PlayerBullet>(factory);
             break;
+            return false;
         default:
             return false;
     }
@@ -318,15 +346,15 @@ void ServerGame::parseNetworkPackets() {
                 break;
             }
             case ActionType::NEW_CONNECTION: {
-                createEntity(ENTITY_PLAYER, pkt.getPlayerId());
+                createEntity(ENTITY_PLAYER, pkt.getPlayerId(), "");
                 break;
             }
             case ActionType::PLAYER_CONNECT: {
-                createEntity(ENTITY_PLAYER, pkt.getPlayerId());
+                createEntity(ENTITY_PLAYER, pkt.getPlayerId(), "");
                 break;
             }
             case ActionType::START_GAME: {
-                createEntity(ENTITY_PLAYER, pkt.getPlayerId());
+                createEntity(ENTITY_PLAYER, pkt.getPlayerId(), "");
                 Running = true;
                 continue;
 //                std::vector<uint8_t> start_pkt = encoder.encodeStart(0);

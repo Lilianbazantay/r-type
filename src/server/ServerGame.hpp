@@ -5,6 +5,7 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <memory>
+#include <string>
 #include <vector>
 #include <atomic>
 
@@ -42,7 +43,7 @@ public:
     ServerGame(int port, NetworkServerBuffer* newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer* newCBuffer);
     ~ServerGame() = default;
 
-    bool createEntity(int entity_type, int personnal_id);
+    bool createEntity(int entity_type, int personnal_id, std::string subType);
     void changePlayerDirection(int personnal_id, std::pair<int, int> newValues);
     void playerShoot(int player_id);
     void parseNetworkPackets();

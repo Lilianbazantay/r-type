@@ -10,9 +10,19 @@
     "hp": 1,
     "direction": [-1.0, 0.0],
 
-    "sprite": {
-      "file_path": "./assets/Bullet.png",
-      "size": [128, 128]
+    "animatedsprite": {
+      "spritesheet": "./assets/Player.png",
+      "frame_rate": 0.5,
+      "default": "idle",
+      "animations": {
+        "idle": {
+          "frame_size": [32, 16.0],
+          "start": [267.0, 120.0],
+          "step": [0.0, 0.0],
+          "length": 1,
+          "loop": true
+        }
+      }
     },
 
     "hitbox": {

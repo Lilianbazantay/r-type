@@ -61,6 +61,10 @@ static std::unique_ptr<IMediatorEntity> createEntityFromType(EntityFactory& fact
     if (type == "PlayerBullet") return std::make_unique<PlayerBullet>(factory);
     if (type == "EnemyBullet") return std::make_unique<EnemyBullet>(factory);
     if (type == "Background") return std::make_unique<Background>(factory);
+    if (type == "Wall1") return std::make_unique<Wall1>(factory);
+    if (type == "Wall2") return std::make_unique<Wall2>(factory);
+    if (type == "Wall3") return std::make_unique<Wall3>(factory);
+    if (type == "Wall4") return std::make_unique<Wall4>(factory);
 
     std::cerr << "[Factory] Unknown entity type: " << type << "\n";
     return nullptr;
@@ -237,8 +241,6 @@ void EntityFactory::registerComponentConstructors()
                     }
                 }
             }
-            for (size_t i = 0; i < strategy->GetPatternFromHp(100).size(); i++)
-                std::cout << "first: " << strategy->GetPatternFromHp(100)[i].first.first << " second " << strategy->GetPatternFromHp(100)[i].first.second << " third " << strategy->GetPatternFromHp(100)[i].second << "\n";
             return strategy;
         });
 }
@@ -268,10 +270,8 @@ bool EntityFactory::applyPrototypeToEntity(
             continue;
 
         auto component = ctorIt->second(value);
-        if (component) {
-            std::cout << key << "\n";
+        if (component)
             entity.AddActuatorComponent(std::move(component));
-        }
 
     }
 
