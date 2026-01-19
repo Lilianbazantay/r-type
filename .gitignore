@@ -41,7 +41,9 @@
 
 # binaries
 r-type*
+flappy_*
 .env
+imgui.ini
 
 #build folder
 build

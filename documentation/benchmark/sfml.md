@@ -1,4 +1,5 @@
 # SFML - Benchmark
+[Back to README](../../README.md)
 
 ## Overview
 SFML was chosen as the **client-side multimedia library** for rendering, input, audio, and windowing.

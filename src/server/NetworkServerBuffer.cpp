@@ -1,5 +1,4 @@
 #include "NetworkServerBuffer.hpp"
-#include <cstddef>
 
 /**
  * @brief add a packet to the buffer
@@ -19,9 +18,11 @@ void NetworkServerBuffer::pushPacket(ServerPacket& pkt)
  */
 ServerPacket NetworkServerBuffer::popPacket()
 {
+    if (packets.empty())
+        return {};
     std::lock_guard<std::mutex> lock(mtx);
 
-    ServerPacket out = packets.front();
+    ServerPacket out = packets[0];
     packets.erase(packets.begin());
     return out;
 }
@@ -46,71 +47,6 @@ std::vector<ServerPacket> NetworkServerBuffer::popAllPackets()
  * @return false buffer is not empty
  */
 bool NetworkServerBuffer::empty()
-{
-    std::lock_guard<std::mutex> lock(mtx);
-    return packets.empty();
-}
-
-
-/**
- * @brief add a packet to the buffer
- *
- * @param pkt packet to be added
- */
-void NetworkClientBuffer::pushPacket(std::vector<uint8_t>& pkt)
-{
-    std::lock_guard<std::mutex> lock(mtx);
-    packets.push_back(pkt);
-}
-
-/**
- * @brief add multiple packets to the buffer
- *
- * @param pkt packet to be added
- */
-void NetworkClientBuffer::pushWholePacket(std::vector<std::vector<uint8_t>>& vect_pkt)
-{
-    std::lock_guard<std::mutex> lock(mtx);
-    for (size_t i = 0; i < vect_pkt.size(); i++) {
-        packets.push_back(vect_pkt[i]);
-    }
-}
-
-
-/**
- * @brief remove a packet from a buffer
- *
- * @return packet that was removed
- */
-std::vector<uint8_t> NetworkClientBuffer::popPacket()
-{
-    std::lock_guard<std::mutex> lock(mtx);
-
-    std::vector<uint8_t> out = packets.front();
-    packets.erase(packets.begin());
-    return out;
-}
-
-/**
- * @brief remove all packet from buffer
- *
- * @return std::vector<std::vector<uint8_t>> list of packet
- */
-std::vector<std::vector<uint8_t>> NetworkClientBuffer::popAllPackets()
-{
-    std::lock_guard<std::mutex> lock(mtx);
-    std::vector<std::vector<uint8_t>> out = packets;
-    packets.clear();
-    return out;
-}
-
-/**
- * @brief tell if the buffer is empty
- *
- * @return true buffer is empty
- * @return false buffer is not empty
- */
-bool NetworkClientBuffer::empty()
 {
     std::lock_guard<std::mutex> lock(mtx);
     return packets.empty();

@@ -16,6 +16,8 @@ struct NetworkPacket {
     uint8_t entityType;
     uint16_t entityId;
 
+    uint32_t serverTick;
+
     uint16_t posX;
     uint16_t posY;
 };

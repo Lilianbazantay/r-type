@@ -6,13 +6,17 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <memory>
 #include <vector>
+#include <atomic>
 
 #include "../ecs/System/ISystem.hpp"
 #include "../ecs/relevant_data.hpp"
 
+#include "ecs/Entity/IMediatorEntity.hpp"
 #include "server.hpp"
 #include "server/NetworkServerBuffer.hpp"
+#include "server/WaveManager.hpp"
 #include "server/encoder.hpp"
+#include "WaveManager.hpp"
 
 class ServerGame {
     private:
@@ -20,16 +24,18 @@ class ServerGame {
         std::vector<std::unique_ptr<ISystem>> systemList;
         sf::Time Prevtime;
         sf::Clock clock;
-        bool Running = false;
+        std::atomic_bool Running{false};
+        uint32_t _serverTick = 0;
 
         NetworkServerBuffer *networkReceiveBuffer;
         NetworkClientBuffer *networkSendBuffer;
-        NetworkClientBuffer *continuousBuffer;
+        NetworkContinuousBuffer *continuousBuffer;
         Server networkServer;
         PacketEncoder encoder;
+        WaveManager waveManager;
 
     public:
-        ServerGame(int, NetworkServerBuffer *, NetworkClientBuffer *, NetworkClientBuffer *);
+        ServerGame(int, NetworkServerBuffer *, NetworkClientBuffer *, NetworkContinuousBuffer *);
         ~ServerGame() = default;
         bool createEntity(int, int);
         void changePlayerDirection(int, std::pair<int, int>);

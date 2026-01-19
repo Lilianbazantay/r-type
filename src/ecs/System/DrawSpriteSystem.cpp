@@ -1,4 +1,3 @@
-
 #include "DrawSpriteSystem.hpp"
 #include "../Component/Position.hpp"
 #include "../Component/Sprite.hpp"

@@ -1,7 +1,7 @@
 #include "Asio.hpp"
+#include <asio/ip/address.hpp>
 #include <cstdio>
 #include <iostream>
-#include <ostream>
 #include <thread>
 
 /**
@@ -10,8 +10,8 @@
  * @param listen_port UDP port to bind the socket to
  * @param on_receive Callback function
  */
-Asio_network::Asio_network(__uint16_t listen_port, ReceiveCallback on_receive)
-    : work_guard_(asio::make_work_guard(io_ctx_)),
+Asio_network::Asio_network(std::uint16_t listen_port, ReceiveCallback on_receive) :
+    work_guard_(asio::make_work_guard(io_ctx_)),
     socket_(io_ctx_, asio::ip::udp::endpoint(asio::ip::udp::v4(), listen_port))
 {
     this->receive_callback_ = on_receive;
@@ -45,7 +45,6 @@ void Asio_network::start() {
     running_ = true;
     do_receive();
     io_thread_ = std::jthread(&Asio_network::run, this);
-    //std::cout << "io_context stopped\n";
 }
 
 /**
@@ -68,9 +67,7 @@ void Asio_network::do_receive() {
     socket_.async_receive_from(asio::buffer(recv_buffer_),
         remote_endpoint_,
         [this](std::error_code error_code, std::size_t bytes_recvd) {
-            //std::cout << "listening\n";
             if (!error_code && bytes_recvd > 0) {
-                //std::cout << "Received message:\n" << std::string(recv_buffer_.data(), bytes_recvd) << std::endl;
                 gotText = true;
                 std::vector<uint8_t> arr(recv_buffer_.data(),
                     recv_buffer_.data() + bytes_recvd);
@@ -100,15 +97,13 @@ void Asio_network::do_receive() {
  * @param host Destination ip
  * @param port Destination port
  */
-void Asio_network::send(const std::string& msg, const std::string& host, __uint16_t port)
+void Asio_network::send(const std::string& msg, const std::string& host, std::uint16_t port)
 {
-    asio::ip::udp::endpoint endpoint(
-        asio::ip::address::from_string(host),
-        port
-    );
+    auto endpoint = std::make_shared<asio::ip::udp::endpoint>(
+        asio::ip::address::from_string(host), port);
+    auto buffer = std::make_shared<std::string>(std::move(msg));
     socket_.async_send_to(
-        asio::buffer(msg, msg.size()),
-        endpoint,
-        [](std::error_code, std::size_t) {}
-    );
+        asio::buffer(*buffer),
+        *endpoint,
+        [buffer, endpoint](std::error_code, std::size_t) {});
 }

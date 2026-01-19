@@ -6,8 +6,10 @@
 #include "ecs/Component/Cooldown.hpp"
 #include "ecs/Entity/Entities.hpp"
 #include "ecs/Entity/IMediatorEntity.hpp"
+#include "ecs/IComponent.hpp"
 #include "ecs/System/CollisionSystem.hpp"
 #include "ecs/System/ShootSystem.hpp"
+#include "ecs/System/StrategySystem.hpp"
 #include "protocol.hpp"
 #include "server.hpp"
 #include "server/NetworkServerBuffer.hpp"
@@ -17,27 +19,39 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
+#include <cstddef>
 #include <iostream>
 #include <memory>
-#include <unistd.h>
+#include <atomic>
+#include <csignal>
 
 #include "ServerGame.hpp"
 
+static std::atomic_bool g_sigint(false);
 
-ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkClientBuffer *newCBuffer):
+static void handleSigint(int)
+{
+    g_sigint = true;
+}
+
+ServerGame::ServerGame(int port, NetworkServerBuffer *newRBuffer, NetworkClientBuffer* newSBuffer, NetworkContinuousBuffer *newCBuffer):
+    systemList(),
     networkReceiveBuffer(newRBuffer),
     networkSendBuffer(newSBuffer),
     continuousBuffer(newCBuffer),
     networkServer(port,
     newRBuffer, newSBuffer, newCBuffer)
 {
+    data.bullet_count = 0;
+    data.enemy_count = 0;
     clock.restart();
     Prevtime = clock.getElapsedTime();
     systemList.push_back(std::make_unique<ShootSystem>());
     systemList.push_back(std::make_unique<CollisionSystem>());
     systemList.push_back(std::make_unique<MovementSystem>());
-    createEntity(ENTITY_BACKGROUND, 0);
+    systemList.push_back(std::make_unique<StrategySystem>());
     networkServer.start();
+    std::signal(SIGINT, handleSigint);
 }
 
 
@@ -48,38 +62,40 @@ void ServerGame::Update() {
 
     size_t SListSize = systemList.size();
     size_t EListSize = data.entityList.size();
+    _serverTick++;
     for (size_t j = 0; j < EListSize; j++) {
         for (size_t i = 0; i < SListSize; i++)
             systemList[i]->checkEntity(*data.entityList[j].get(), data);
+        if (!data.entityList[j]->is_Alive()) {
+            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
+            networkSendBuffer->pushPacket(pkt);
+            continuousBuffer->deleteEntity(data.entityList[j]->getType(), data.entityList[j]->getId());
+            data.entityList.erase(data.entityList.begin() + j);
+            j--;
+            EListSize--;
+            continue;
+        }
         if (data.entityList[j]->justCreated()) {
+            std::cout << "Creating entity " << data.entityList[j]->getType() << std::endl;
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
             std::vector<uint8_t> pkt = encoder.encodeCreate(networkServer.currentID,data.entityList[j]->getType(),
-                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
+                data.entityList[j]->getId(), _serverTick, playerPos->GetPosition().first, playerPos->GetPosition().second);
             networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->pushPacket(pkt);
+            continuousBuffer->addEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
             continue;
-        }
-        if (!data.entityList[j]->is_Alive()) {
-            std::vector<uint8_t> pkt = encoder.encodeDelete(networkServer.currentID, data.entityList[j]->getType(), data.entityList[j]->getId());
-            networkSendBuffer->pushPacket(pkt);
-            continuousBuffer->pushPacket(pkt);
-            data.entityList.erase(data.entityList.begin() + j);
-            j--;
-            EListSize--;
-           continue;
         }
         if (data.entityList[j]->hasChanged()) {
             Position *playerPos = dynamic_cast<Position*>(data.entityList[j]->FindComponent(ComponentType::POSITION));
             if (playerPos == nullptr)
                 continue;
             std::vector<uint8_t> pkt = encoder.encodeMove(networkServer.currentID, data.entityList[j]->getType(),
-                data.entityList[j]->getId(), playerPos->GetPosition().first, playerPos->GetPosition().second);
+                data.entityList[j]->getId(), _serverTick , playerPos->GetPosition().first, playerPos->GetPosition().second);
+            continuousBuffer->moveEntity(data.entityList[j]->getType(), data.entityList[j]->getId(), pkt);
             networkSendBuffer->pushPacket(pkt);
             continue;
         }
-        ++j;
     }
 }
 
@@ -88,18 +104,16 @@ void ServerGame::Loop() {
     Running = true;
     Cooldown cooldown(1.0);
     Cooldown tmp(0.01);
-    while(Running) {
+    cooldown.LaunchCooldown();
+    while(Running && !g_sigint) {
         if (tmp.CheckCooldown() == true) {
             Update();
             tmp.LaunchCooldown();
         }
-        if (cooldown.CheckCooldown() == true) {
-            data.enemy_count++;
-            createEntity(2, data.enemy_count);
-            cooldown.LaunchCooldown();
-        }
+        waveManager.computeEntities(&data);
         parseNetworkPackets();
     }
+    Running = false;
 }
 
 /**
@@ -119,7 +133,6 @@ void ServerGame::changePlayerDirection(int personnal_id, std::pair<int, int> new
             continue;
         Direction *playerDirection = dynamic_cast<Direction*>(data.entityList[i]->FindComponent(ComponentType::DIRECTION));
         if (playerDirection == nullptr) {
-            std::cout << "Error Null" << std::endl;
             return;
         }
         std::pair<float, float> direction = playerDirection->GetDirection();
@@ -179,7 +192,6 @@ bool ServerGame::createEntity(int entity_type, int personnal_id) {
         }
         case ENTITY_PLAYER: {
             data.entityList.push_back(std::make_unique<Player>());
-//            createEntity(ENTITY_ENEMY, data.enemy_count);
             break;
         }
         case ENTITY_ENEMY: {
@@ -203,14 +215,12 @@ void ServerGame::parseNetworkPackets() {
         switch (pkt.getActionType()) {
             case ActionType::INPUT_PRESSED: {
                 if (pkt.getActionvalue() == 0) {
-                    std::cout << "IN_PR\n";
                     playerShoot(pkt.getPlayerId());
                 } else
                     changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_PRESSED, pkt.getActionvalue()});
                 break;
             }
             case ActionType::INPUT_RELEASED: {
-                std::cout << "IN_RE\n";
                 changePlayerDirection(pkt.getPlayerId(), {ActionType::INPUT_RELEASED, pkt.getActionvalue()});
                 break;
             }

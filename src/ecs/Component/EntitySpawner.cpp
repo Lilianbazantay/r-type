@@ -102,7 +102,5 @@ void EntitySpawner::enableSpawn()
  */
 bool EntitySpawner::CanSpawn()
 {
-    if (can_spawn)
-        return true;
-    return false;
+    return can_spawn;
 }

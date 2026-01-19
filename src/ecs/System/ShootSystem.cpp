@@ -8,12 +8,12 @@
 #include "../Component/Velocity.hpp"
 #include "../Component/Clock.hpp"
 #include "../Component/EntitySpawner.hpp"
+#include "ecs/Component/AnimatedSprite.hpp"
 #include <cerrno>
-#include <iostream>
 #include <memory>
 
 /**
- * @brief constructor of DrawAnimatedSprite
+ * @brief constructor of Shoot systeù
  */
 ShootSystem::ShootSystem() {
     this->requiedComponents.push_back(ComponentType::ENTITY_SPAWNER);
@@ -31,7 +31,8 @@ ShootSystem::ShootSystem() {
  */
 void ShootSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) {
     Position *playerPos = dynamic_cast<Position*>(entity.FindComponent(ComponentType::POSITION));
-    Sprite *playerSize = dynamic_cast<Sprite*>(entity.FindComponent(ComponentType::SPRITE));
+    Sprite *playerSprite = dynamic_cast<Sprite*>(entity.FindComponent(ComponentType::SPRITE));
+    AnimatedSprite *playerAnimatedSprite = dynamic_cast<AnimatedSprite*>(entity.FindComponent(ComponentType::ANIMATED_SPRITE));
     Velocity *playerVelocity = dynamic_cast<Velocity*>(entity.FindComponent(ComponentType::VELOCITY));
     EntitySpawner *newEntityData = dynamic_cast<EntitySpawner*>(entity.FindComponent(ComponentType::ENTITY_SPAWNER));
     Clock *playerClock = dynamic_cast<Clock*>(entity.FindComponent(ComponentType::CLOCK));
@@ -49,14 +50,20 @@ void ShootSystem::executeEntity(IMediatorEntity &entity, relevant_data_t &data) 
     Position *bulletPos = dynamic_cast<Position*>(newEntity->FindComponent(ComponentType::POSITION));
     if (bulletPos != nullptr) {
         auto pos = playerPos->GetPosition();
-        auto size = playerSize->GetSize();
-
-        float offsetX = size.first;
-        float offsetY = size.second / 2.0f - 3.5f;
+        if (playerSprite != nullptr) {
+            auto size = playerSprite->GetSize();
+            pos.first += size.first;
+            pos.second += size.second / 2.0f;
+        }
+        if (playerAnimatedSprite != nullptr) {
+            auto size = playerAnimatedSprite->getSize();
+            pos.first += size.first;
+            pos.second += size.second / 2.0f;
+        }
 
         bulletPos->SetPosition({
-            pos.first + offsetX,
-            pos.second + offsetY
+            pos.first,
+            pos.second
         });
     }
     newEntity->setId(data.bullet_count);

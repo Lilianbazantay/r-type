@@ -1,6 +1,4 @@
-#ifndef ASIO_NETWORK_HPP
-#define ASIO_NETWORK_HPP
-
+#pragma once
 
 #include <cstdint>
 #include <vector>
@@ -15,12 +13,12 @@ class Asio_network {
     public:
         using ReceiveCallback = std::function<void(std::vector<uint8_t> data, size_t size, const asio::ip::udp::endpoint&)>;
 
-        Asio_network(__uint16_t listen_port, ReceiveCallback on_receive = nullptr);
+        Asio_network(std::uint16_t listen_port, ReceiveCallback on_receive = nullptr);
         ~Asio_network();
 
         void start();
         void stop();
-        void send(const std::string& msg, const std::string& host, __uint16_t port);
+        void send(const std::string& msg, const std::string& host, std::uint16_t port);
         bool gotText = false;
 
     private:
@@ -28,8 +26,8 @@ class Asio_network {
         void run();
 
     private:
-        asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::io_context io_ctx_;
+        asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
         asio::ip::udp::socket socket_;
         asio::ip::udp::endpoint remote_endpoint_;
 
@@ -40,5 +38,3 @@ class Asio_network {
 
         ReceiveCallback receive_callback_;
 };
-
-#endif
