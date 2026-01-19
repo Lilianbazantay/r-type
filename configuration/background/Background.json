@@ -1,0 +1,14 @@
+{
+  "entity": {
+    "type": "background",
+    "name": "Background"
+  },
+
+  "components": {
+    "position": [0.0, 0.0],
+    "sprite": {
+      "file_path": "./assets/stellar_background.jpg",
+      "size": [1920, 1080]
+    }
+  }
+}

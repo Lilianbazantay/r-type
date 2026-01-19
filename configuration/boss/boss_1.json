@@ -8,29 +8,146 @@
     "hp": 500,
     "velocity": 2,
     "position": [1800, 300],
+
     "hitbox": {
       "size": [128, 128],
       "layer": [2],
-      "mask": [1]
+      "mask": [1],
+      "damage": 0
     },
-    "attack": {
-      "damage": 30,
-      "fireRate": 0.8
-    }
-  },
 
-  "data": {
-    "sprite": {
-      "idle": "assets/sprites/boss_idle.png",
-      "death": ["assets/sprites/boss_death.png"]
+    "animatedsprite": {
+      "spritesheet": "assets/sprites/boss_full_sheet.png",
+      "frame_rate": 8.0,
+      "default": "idle",
+      "animations": {
+        "idle": {
+          "frame_size": [128, 128],
+          "start": [0, 0],
+          "step": [1, 0],
+          "length": 4
+        },
+        "attack": {
+          "frame_size": [128, 128],
+          "start": [0, 1],
+          "step": [1, 0],
+          "length": 6
+        },
+        "death": {
+          "frame_size": [128, 128],
+          "start": [0, 2],
+          "step": [1, 0],
+          "length": 5,
+          "loop": false
+        }
+      }
+    },
+
+    "clock": true,
+    "cooldown": 1.5,
+
+    "gravity": {
+      "strength": 9.81
+    },
+
+    "sound": {
+      "default": "idle",
+      "sounds": {
+        "idle": {
+          "file_path": "assets/sounds/boss_idle.wav",
+          "volume": 0.4,
+          "loop": true
+        },
+        "attack": {
+          "file_path": "assets/sounds/boss_attack.wav",
+          "volume": 0.8,
+          "loop": false
+        },
+        "hit": {
+          "file_path": "assets/sounds/boss_hit.wav",
+          "volume": 0.7,
+          "loop": false
+        },
+        "death": {
+          "file_path": "assets/sounds/boss_death.wav",
+          "volume": 1.0,
+          "loop": false
+        }
+      }
     },
 
     "strategy": {
       "patterns": [
-        "../pattern/boss_phase1.json",
-        "../pattern/boss_phase2.json"
-      ],
-      "phase_change_hp": [75]
+        {
+          "hp_range": [100, 75],
+          "sequences": [
+            [
+              [[-1, 0], 2],
+              [[0, 1], 1],
+              [[1, 0], 2],
+              [[0, 0], 2]
+            ],
+            [
+              [[0, 1], 2],
+              [[-1, 0], 1],
+              [[0, 1], 1],
+              [[0, 0], 1]
+            ]
+          ]
+        },
+        {
+          "hp_range": [75, 40],
+          "sequences": [
+            [
+              [[-1, 0], 3],
+              [[0, 1], 2],
+              [[1, 0], 3],
+              [[0, 0], 3]
+            ],
+            [
+              [[0, 1], 3],
+              [[-1, 0], 2],
+              [[1, 0], 2],
+              [[0, 0], 2]
+            ],
+            [
+              [[0, 1], 1],
+              [[0, 1], 1],
+              [[-1, 0], 2],
+              [[1, 0], 2],
+              [[0, 0], 1]
+            ]
+          ]
+        },
+        {
+          "hp_range": [40, 0],
+          "sequences": [
+            [
+              [[0, 1], 4],
+              [[-1, 0], 1],
+              [[1, 0], 1],
+              [[0, 0], -1]
+            ],
+            [
+              [[-1, 0], 2],
+              [[1, 0], 2],
+              [[0, 1], 2],
+              [[0, 0], 2]
+            ],
+            [
+              [[0, 1], 5],
+              [[0, 0], -1]
+            ]
+          ]
+        }
+      ]
+    },
+
+    "entityspawner": {
+      "entity_type": "basic_bullet",
+      "position": [0.0, 0.0],
+      "cooldown": 0.25,
+      "is_activated": 1
     }
   }
 }

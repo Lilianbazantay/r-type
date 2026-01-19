@@ -59,7 +59,7 @@ file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "src/appConfiguration/*.cpp")
 
 # Build the ECS as a standalone library
 
-add_library(r-type_ecs STATIC ${ECS_SOURCES})
+add_library(r-type_ecs STATIC ${ECS_SOURCES} src/server/EntityFactory.cpp)
 
 target_include_directories(r-type_ecs PUBLIC
     ${CMAKE_SOURCE_DIR}/src
