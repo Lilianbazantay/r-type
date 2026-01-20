@@ -54,6 +54,16 @@ public:
     std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
 };
 
+class BlankEntity : public IMediatorEntity {
+public:
+    BlankEntity() = default;
+    ~BlankEntity() override = default;
+
+    void run() override;
+    std::unique_ptr<IMediatorEntity> Clone(EntityFactory& factory) const;
+};
+
+
 class Wall1 : public IMediatorEntity {
 public:
     explicit Wall1(EntityFactory& factory);

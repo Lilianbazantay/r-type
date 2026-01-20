@@ -2,6 +2,14 @@
 
 #include "../ecs/Component/Position.hpp"
 #include "../ecs/Entity/Entities.hpp"
+#include "ecs/Component/AnimatedSprite.hpp"
+#include "ecs/Component/Direction.hpp"
+#include "ecs/Component/Gravity.hpp"
+#include "ecs/Component/Hitbox.hpp"
+#include "ecs/Component/Sprite.hpp"
+#include "ecs/Component/Velocity.hpp"
+#include "ecs/Entity/IMediatorEntity.hpp"
+#include "ecs/IComponent.hpp"
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -11,8 +19,10 @@
 #include <SFML/Window/Keyboard.hpp>
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdio>
 #include <iostream>
+#include <memory>
 
 namespace {
     inline float clampf(float v, float lo, float hi) {
@@ -25,6 +35,44 @@ namespace {
     static constexpr float PIPE_W = 90.f;
     static constexpr float GAP_H  = 200.f;
 }
+
+std::unique_ptr<IMediatorEntity> FlappyClientGame::createPlayer() {
+    auto _blankEntity = std::make_unique<BlankEntity>();
+
+    _blankEntity->setType(ENTITY_PLAYER);
+    _blankEntity->AddActuatorComponent(std::make_unique<Position>(100, 500));
+    _blankEntity->AddActuatorComponent(std::make_unique<Gravity>(true, 100));
+    _blankEntity->AddActuatorComponent(std::make_unique<Velocity>(0));
+    _blankEntity->AddActuatorComponent(std::make_unique<Direction>(0, 0));
+    _blankEntity->AddActuatorComponent(std::make_unique<AnimatedSprite>("./assets/Bird1-1.png",
+        std::make_pair(3.f, 3.f),
+        std::make_pair(16.f, 16.f)));
+    _blankEntity->AddActuatorComponent(std::make_unique<Hitbox>((size_t)16, (size_t)16, 0,
+        std::vector<int>{1}, std::vector<int>{1}));
+    AnimatedSprite* _animation = dynamic_cast<AnimatedSprite*>(_blankEntity->FindComponent(ComponentType::ANIMATED_SPRITE));
+    if (_animation != nullptr)
+        _animation->addAnimation({0, 0}, {16, 16}, {16, 0}, IDLE, true, 3);
+    return _blankEntity;
+}
+
+std::unique_ptr<IMediatorEntity> FlappyClientGame::createWall() {
+    auto _blankEntity = std::make_unique<BlankEntity>();
+
+    _blankEntity->setType(ENTITY_ENEMY);
+    _blankEntity->AddActuatorComponent(std::make_unique<Position>(1920, 1070));
+    _blankEntity->AddActuatorComponent(std::make_unique<Sprite>("./assets/Enemy.png", 32, 32));
+    return _blankEntity;
+}
+
+std::unique_ptr<IMediatorEntity> FlappyClientGame::createBackGround() {
+    auto _blankEntity = std::make_unique<BlankEntity>();
+
+    _blankEntity->setType(ENTITY_BACKGROUND);
+    _blankEntity->AddActuatorComponent(std::make_unique<Position>(1920, 1070));
+    _blankEntity->AddActuatorComponent(std::make_unique<Sprite>("./assets/Background5.png", 1920, 1080));
+    return _blankEntity;
+}
+
 
 FlappyClientGame::FlappyClientGame(std::string ip, int port, NetworkBuffer* net)
     : client(ip, port, net), netBuf(net)
@@ -67,13 +115,12 @@ FlappyClientGame::FlappyClientGame(std::string ip, int port, NetworkBuffer* net)
     client.sendStartGame();
 }
 
-static std::unique_ptr<IMediatorEntity> makeEntityFromType(int entityType)
+std::unique_ptr<IMediatorEntity> FlappyClientGame::makeEntityFromType(int entityType)
 {
     switch (entityType) {
-        case ENTITY_PLAYER:     return std::make_unique<Player>();
-        case ENTITY_ENEMY:      return std::make_unique<Enemy>();
-        case ENTITY_BACKGROUND: return std::make_unique<Background>();
-        case ENTITY_BULLET:     return std::make_unique<PlayerBullet>();
+        case ENTITY_PLAYER:     return createPlayer();
+        case ENTITY_ENEMY:      return createWall();
+        case ENTITY_BACKGROUND: return createBackGround();
         default:                return nullptr;
     }
 }

@@ -25,6 +25,9 @@ private:
     void spawnPipe();
     void handleFlap(int playerId);
 
+    std::unique_ptr<IMediatorEntity> createPlayer();
+    std::unique_ptr<IMediatorEntity> createWall();
+
     relevant_data_t data;
     std::vector<std::unique_ptr<ISystem>> systems;
 

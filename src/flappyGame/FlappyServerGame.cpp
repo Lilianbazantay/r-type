@@ -3,6 +3,13 @@
 #include "../ecs/Component/Position.hpp"
 #include "../ecs/Entity/Entities.hpp"
 #include "../server/encoder.hpp"
+#include "ecs/Component/AnimatedSprite.hpp"
+#include "ecs/Component/Direction.hpp"
+#include "ecs/Component/Gravity.hpp"
+#include "ecs/Component/Hitbox.hpp"
+#include "ecs/Component/Hp.hpp"
+#include "ecs/Component/Sprite.hpp"
+#include "ecs/Component/Velocity.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -28,6 +35,41 @@ static constexpr float GAP_H   = 200.f;
 static constexpr float BIRD_R  = 18.f;
 
 static constexpr float PIPE_SPAWN_PERIOD = 1.35f;
+
+std::unique_ptr<IMediatorEntity> FlappyServerGame::createPlayer() {
+    auto _blankEntity = std::make_unique<BlankEntity>();
+
+    _blankEntity->setType(ENTITY_PLAYER);
+    _blankEntity->AddActuatorComponent(std::make_unique<Position>(100, 500));
+    _blankEntity->AddActuatorComponent(std::make_unique<Gravity>(true, 10));
+    _blankEntity->AddActuatorComponent(std::make_unique<Velocity>(80));
+    _blankEntity->AddActuatorComponent(std::make_unique<Direction>(0, 0));
+    _blankEntity->AddActuatorComponent(std::make_unique<Hp>(1));
+    _blankEntity->AddActuatorComponent(std::make_unique<AnimatedSprite>("./assets/Bird1-1.png",
+        std::make_pair(3.f, 3.f),
+        std::make_pair(16.f, 16.f)));
+    _blankEntity->AddActuatorComponent(std::make_unique<Hitbox>((size_t)16, (size_t)16, 0,
+        std::vector<int>{1}, std::vector<int>{1}));
+    AnimatedSprite* _animation = dynamic_cast<AnimatedSprite*>(_blankEntity->FindComponent(ComponentType::ANIMATED_SPRITE));
+    if (_animation != nullptr)
+        _animation->addAnimation({0, 0}, {16, 16}, {16, 0}, IDLE, true, 3);
+    return _blankEntity;
+}
+
+std::unique_ptr<IMediatorEntity> FlappyServerGame::createWall() {
+    auto _blankEntity = std::make_unique<BlankEntity>();
+
+    _blankEntity->setType(ENTITY_ENEMY);
+    _blankEntity->AddActuatorComponent(std::make_unique<Position>(1920, 1070));
+    _blankEntity->AddActuatorComponent(std::make_unique<Velocity>(100));
+    _blankEntity->AddActuatorComponent(std::make_unique<Direction>(0, 0));
+    _blankEntity->AddActuatorComponent(std::make_unique<Hp>(1000));
+    _blankEntity->AddActuatorComponent(std::make_unique<Hitbox>((size_t)96, (size_t)96, 1,
+        std::vector<int>{1}, std::vector<int>{1}));
+    _blankEntity->AddActuatorComponent(std::make_unique<Sprite>("./assets/Enemy.png", 128, 128));
+    return _blankEntity;
+}
+
 
 static float computeDeltaSeconds()
 {
@@ -62,7 +104,7 @@ FlappyServerGame::FlappyServerGame(int port,
     std::srand((unsigned)std::time(nullptr));
     server.start();
 
-    auto player = std::make_unique<Player>();
+    auto player = createPlayer();
     player->setId(1);
 
     auto *pos = dynamic_cast<Position*>(player->FindComponent(ComponentType::POSITION));
@@ -81,7 +123,7 @@ void FlappyServerGame::spawnPipe()
 {
     static int pipeId = 100;
 
-    auto pipe = std::make_unique<Enemy>();
+    auto pipe = createWall();
     pipe->setId(pipeId++);
 
     auto* pos = dynamic_cast<Position*>(pipe->FindComponent(ComponentType::POSITION));

@@ -72,6 +72,16 @@ std::unique_ptr<IMediatorEntity> EnemyBullet::Clone(EntityFactory& factory) cons
     return clone;
 }
 
+void BlankEntity::run() {}
+
+std::unique_ptr<IMediatorEntity> BlankEntity::Clone(EntityFactory& factory) const {
+    auto clone = std::make_unique<BlankEntity>();
+    clone->setId(id);
+    clone->setType(Entitytype);
+    return clone;
+}
+
+
 Wall1::Wall1(EntityFactory& factory) {
     factory.applyPrototypeToEntity("Wall1", *this);
     this->setType(ENTITY_ENEMY);

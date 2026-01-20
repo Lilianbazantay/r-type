@@ -12,6 +12,11 @@ public:
     FlappyClientGame(std::string ip, int port, NetworkBuffer* buf);
     void Loop();
 
+    std::unique_ptr<IMediatorEntity> makeEntityFromType(int entityType);
+
+    std::unique_ptr<IMediatorEntity> createPlayer();
+    std::unique_ptr<IMediatorEntity> createBackGround();
+    std::unique_ptr<IMediatorEntity> createWall();
 private:
     void processPackets();
 
